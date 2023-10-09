@@ -27,6 +27,9 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 * [참고자료 | Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
 
+### IDE 설정
+* Lombok 사용을 위해 Annotation Processing 옵션을 활성화함
+
 <br>
 
 ## 1. 채용공고 등록 기능
