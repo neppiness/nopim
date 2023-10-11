@@ -28,8 +28,10 @@
     - 사용기술(job_stack): 문자열
     - 채용내용(job_description): 문자열
 * 메소드
+    - `JobDto convertToJobDto()`
+        + 채용공고 상세(Job) 인스턴스를 JobDto 클래스의 인스턴스로 변환하는 메소드
     - `JobSimpleDto convertToJobSimpleDto()`
-        + 채용공고 상세(Job) 클래스를 JobSimpleDto 클래스로 변환하는 메소드
+        + 채용공고 상세(Job) 인스턴스를 JobSimpleDto 클래스의 인스턴스로 변환하는 메소드
 
 ### 채용공고 및 채용공고 상세 데이터 전송 객체 | JobSimpleDto, JobDto
 * 테이블 이름: job
