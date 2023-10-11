@@ -2,46 +2,56 @@
 
 ## 도메인
 ### 회사 | Company
-* 필드
-    - 회사 ID: 숫자
+* 테이블 이름: company
+* 필드(열 이름)
+    - 회사_id(company_id): 숫자, 기본 키
+    - 회사명(company_name): 문자열
+    - 국가(company_country): 문자열
+    - 지역(company_region): 문자열
+* 국가와 지역에 대한 정보를 회사 클래스에 기록
+
+### 사용자 | User
+* 테이블 이름: user
+* 필드(열 이름)
+    - 사용자_id(user_id): 숫자, 기본 키
+    - 사용자_이름(user_name): 문자열
+
+### 채용공고 상세 | Job
+* 테이블 이름: job
+* 필드(열 이름)
+    - 채용공고_id(job_id): 숫자, 기본 키
+    - 회사_id(job_company_id): 숫자, 외래키
+        + 이를 통해 회사명, 국가, 지역 정보를 불러옴.
+    - 회사(job_company): Company 클래스
+    - 채용포지션(job_position): 문자열
+    - 채용보상금(job_bounty): 숫자
+    - 사용기술(job_stack): 문자열
+    - 채용내용(job_description): 문자열
+* 메소드
+    - `JobSimpleDto convertToJobSimpleDto()`
+        + 채용공고 상세(Job) 클래스를 JobSimpleDto 클래스로 변환하는 메소드
+
+### 채용공고 및 채용공고 상세 데이터 전송 객체 | JobSimpleDto, JobDto
+* 테이블 이름: job
+* 공통 필드
+    - 채용공고_id: 숫자
     - 회사명: 문자열
     - 국가: 문자열
     - 지역: 문자열
-
-### 사용자 | User
-* 필드
-    - 사용자 ID: 숫자
-    - 사용자명: 문자열
-
-### 채용공고 상세 | Job
-* 필드
-    - 채용공고 ID: 숫자
-    - 회사 ID: 숫자, 외래키
-        + 이를 통해 회사명, 국가, 지역 정보를 불러옴.
     - 채용포지션: 문자열
-    - 채용포상금: 숫자
+    - 채용보상금: 숫자
     - 사용기술: 문자열
+* 추가 상세 정보 필드
     - 채용내용: 문자열
     - 회사가 올린 다른 채용공고
         + 리스트, 출력이 필요할 때만 DB 정보를 활용해 값을 얻음
-* 메소드
-    - `Job convertToJobInShort()`
-        + Job 클래스를 JobInShort 클래스로 변환하는 메소드
-
-### 채용공고 | JobInShort
-* 필드: Job 클래스의 일부를 활용
-  - 채용공고 ID: 숫자
-  - 회사 ID: 숫자, 외래키
-      + 이를 통해 회사명, 국가, 지역 정보를 불러옴.
-  - 채용포지션: 문자열
-  - 채용포상금: 숫자
-  - 사용기술: 문자열
 
 ### 지원내역 | Application
-* 필드
-    - 지원내역 ID: 숫자
-    - 채용공고 ID: 숫자
-    - 사용자 ID: 숫자
+* 테이블 이름: application
+* 필드(열 이름)
+    - 지원내역_id(application_id): 숫자, 기본 키
+    - 채용공고_id(application_job_id): 숫자, 외래 키
+    - 사용자_id(application_user_id): 숫자, 외래 키
 
 <br>
 
