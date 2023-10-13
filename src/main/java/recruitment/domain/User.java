@@ -1,19 +1,28 @@
 package recruitment.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Setter;
 
 @Entity
-@Getter
 @Setter
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id")
     private long id;
+
+    @Column(name = "user_name")
     private String name;
+
+    @JsonProperty("사용자_id")
+    public long getId() {
+        return id;
+    }
+
+    @JsonProperty("사용자_이름")
+    public String getName() {
+        return name;
+    }
 }
