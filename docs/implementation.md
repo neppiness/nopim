@@ -1,7 +1,7 @@
 # 구현 과정
 
-## 0. 프로젝트 초기화
-### spring initializr 활용
+## 1. 프로젝트 초기화
+### 1-1. spring initializr 활용
 * 프로젝트 설정
     - Project: Gradle - Groovy
     - Spring boot: 3.1.4
@@ -27,29 +27,15 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 * [참고자료 | Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
 
-### IDE 설정
+### 1-2. IDE 설정
 * Lombok 사용을 위해 Annotation Processing 옵션을 활성화함
 
 <br>
 
-## 1. 채용공고 등록 기능
-*
-
-## 2. 채용공고 수정 기능
-*
-
-## 3. 채용공고 삭제 기능
-*
-
-## 4. 채용공고 목록 조회
-### 4.1. 모든 채용공고 목록 조회
-* 
-
-### 4.2. 기준에 부합하는 채용공고 검색 기능
-* 
-
-## 5. 채용 상세 페이지 조회 기능
-*
-
-## 6. 사용자의 채용공고 지원 기능
-*
+## 2. 도메인 설계
+* 기능 요구사항에 명시된 필요 모델에 따라 다음 클래스를 생성
+    - 회사, 사용자, 채용공고, 지원내역
+* 응답 시 활용해야 하는 별도 객체는 DTO 클래스로 구현
+    - 채용공고 상세내용: JobDto
+    - 채용공고 내용: JobSimpleDto
+* 설계 내용은 [docs/design.md](./design.md) 파일을 참고
