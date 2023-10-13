@@ -39,3 +39,35 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
     - 채용공고 상세내용: JobDto
     - 채용공고 내용: JobSimpleDto
 * 설계 내용은 [docs/design.md](./design.md) 파일을 참고
+
+<br>
+
+## 3. `@ManyToOne`, `@OneToMany` 관계 구현
+* 회사(Company) 객체를 가져와서 내부 정보를 필요할 때 출력하도록 설정
+    - 이를 위해 채용공고(Job) 필드에 회사(Company) 정보를 가지고 있도록 함
+* 또한, 회사(Company) 객체에는 회사가 올린 채용공고를 기록함
+* 위 두 가지는 `@ManyToOne`, `@OneToMany`를 활용하여 구현할 수 있음
+    - 한 회사는 여러 채용공고를 받아야 함.
+        + `@OneToMany` 대응관계가 활용됨
+        + 여러 채용공고가 한 회사의 `Set<Job> jobs`에 연결됨
+    - 여러 채용공고가 그 채용공고를 올린 하나의 회사 정보로 전달됨
+        + `@ManyToOne` 대응관계를 활용
+        + `@JoinColumn`에서 열 이름은 'job_company'로 설정
+        + 이는 회사(company) 테이블의 'company_id' 열을 참조하여 대응됨
+* 구현은 채용공고(Job) 클래스와 회사(Company) 클래스를 참조
+
+## 4. 트러블 슈팅
+* 지금까지 설정된 상태로는 아래와 같은 오류가 발생함.
+
+```text
+Unable to determine Dialect without JDBC metadata
+(please set 'javax.persistence.jdbc.url', 'hibernate.connection.url', or 'hibernate.dialect')
+```
+
+* 이를 해결하기 위해서 [다음 블로그](https://velog.io/@gloom/Spring-데이터베이스-연동-시-Access-to-DialectResolutionInfo-cannot-be-null-when-hibernate.dialect-not-set-오류)를 참조.
+    - `application.properties` 파일에 아래와 같은 속성 값을 추가함.
+
+```properties
+spring.jpa.database=mysql
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+```
