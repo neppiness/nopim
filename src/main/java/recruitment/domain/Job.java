@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -66,7 +66,7 @@ public class Job {
 
         jobDto.setDescription(this.description);
 
-        List<Long> jobIdList = new ArrayList<>();
+        Set<Long> jobIdList = new HashSet<>();
         this.company.getJobs().forEach(job -> {
             jobIdList.add(job.getId());
         });

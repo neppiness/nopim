@@ -3,7 +3,7 @@ package recruitment.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Setter
 public class JobDto {
@@ -17,7 +17,7 @@ public class JobDto {
     private String stack;
 
     private String description;
-    private List<Long> otherJobIdsOfCompany;
+    private Set<Long> otherJobIdsOfCompany;
 
     @JsonProperty("채용공고_id")
     public long getId() {
@@ -59,8 +59,8 @@ public class JobDto {
         return stack;
     }
 
-    @JsonProperty("회사가올린다른채용공고")
-    public List<Long> getOtherJobIdsOfCompany() {
+    @JsonProperty("회사가_올린_다른_채용공고")
+    public Set<Long> getOtherJobIdsOfCompany() {
         return otherJobIdsOfCompany;
     }
 }
