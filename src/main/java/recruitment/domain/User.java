@@ -10,10 +10,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
     private long id;
 
-    @Column(name = "user_name")
     private String name;
 
     @JsonProperty("사용자_id")

@@ -4,30 +4,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Setter
-@Table(name = "job")
 public class Job {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "job_id")
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "job_company", referencedColumnName = "company_id")
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 
-    @Column(name = "job_position")
     private String position;
 
-    @Column(name = "job_bounty")
     private long bounty;
 
-    @Column(name = "job_stack")
     private String stack;
 
-    @Column(name = "job_description")
     private String description;
 
     @JsonProperty("채용공고_id")
@@ -69,6 +66,11 @@ public class Job {
 
         jobDto.setDescription(this.description);
 
+        List<Long> jobIdList = new ArrayList<>();
+        this.company.getJobs().forEach(job -> {
+            jobIdList.add(job.getId());
+        });
+        jobDto.setOtherJobIdsOfCompany(jobIdList);
         return jobDto;
     }
 

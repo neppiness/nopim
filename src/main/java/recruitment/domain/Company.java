@@ -8,25 +8,19 @@ import java.util.Set;
 
 @Entity
 @Setter
-@Table(name = "company")
 public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "company_id")
     private long id;
 
-    @Column(name = "company_name")
     private String name;
 
-    @Column(name = "company_country")
     private String country;
 
-    @Column(name = "company_region")
     private String region;
 
     @OneToMany(mappedBy = "company")
-    @Column(name = "company_jobs")
     private Set<Job> jobs;
 
     @JsonProperty("회사_id")

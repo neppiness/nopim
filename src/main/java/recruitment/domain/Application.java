@@ -10,13 +10,10 @@ public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "application_id")
     private long id;
 
-    @Column(name = "application_job_id")
     private long jobId;
 
-    @Column(name = "application_user_id")
     private long userId;
 
     @JsonProperty("지원내역_id")
