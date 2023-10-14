@@ -52,7 +52,15 @@ public class Job {
         return description;
     }
 
-    public JobDto convertToJobDto(Company company) {
+    public String getCompanyName() {
+        return company.getName();
+    }
+
+    public Long getCompanyId() {
+        return company.getId();
+    }
+
+    public JobDto convertToJobDto() {
         JobDto jobDto = new JobDto();
         jobDto.setId(this.id);
 
