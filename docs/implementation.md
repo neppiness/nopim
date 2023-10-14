@@ -76,7 +76,7 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 
 <br>
 
-## 5. 쿼리 처리
+## 5. 조건에 따른 채용공고 검색 기능 구현 - 쿼리 처리
 * 채용공고에 대한 search 기능을 다음과 같이 작성하고자 함
     - 주어진 position이나 stack에 대해서 쿼리를 수행
 * 이를 위해 `@Query` 어노테이션을 인터페이스에 적용하고, 이를 활용하는 방법을 학습함
@@ -144,6 +144,44 @@ public class JobController {
     - 그러나, 여러 요인에 대해서 쿼리를 수행해야 하는 경우를 충분히 대변할 수 없다고 판단함.
     - 이에 따라 모든 채용공고를 조회한 뒤, 제시된 조건에 대해서 필터링을 수행하는 식으로 구현을 변경하고자 함.
 
+<br>
+
+## 6. 조건에 따른 채용공고 검색 기능 구현 - 필터링
+
+```java
+// import statements and annotations
+// ...
+public class JobController {
+    
+    // Other methods
+    // ...
+    @GetMapping(path="/search")
+    public @ResponseBody Iterable<JobSimpleDto> searchJob(
+            @RequestParam(required = false) Long jobId,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) String companyName,
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) String stack
+    ) {
+        Iterable<Job> allJobs = jobRepository.findAll();
+        List<JobSimpleDto> foundJobs = new ArrayList<>();
+
+        allJobs.iterator().forEachRemaining(job -> {
+            if (jobId != null && !Objects.equals(job.getId(), jobId)) return;
+            if (companyId != null && !Objects.equals(job.getCompanyId(), companyId)) return;
+            if (companyName != null && !job.getCompanyName().equals(companyName)) return;
+            if (position != null && !job.getPosition().equals(position)) return;
+            if (stack != null && !job.getStack().equals(stack)) return;
+            foundJobs.add(job.convertToJobSimpleDto());
+        });
+        return foundJobs;
+    }
+}
+```
+* 위같은 방식으로 전달받은 인자가 `null`이 아닌 경우에 해당 인자와 속성 값이 같은지 확인
+    - 모든 조건 만족 시 이터러블(Iterable)의 원소인 잡(job)을 JobSimpleDto 형태로 변환 후 반환할 `List<JobSimpleDto> foundJobs`에 추가.
+
 * `@RequestParam(required = false)`
-    - 필요에 따라서 
+    - 기본값은 `required = true`임. 이는 요청 파라미터가 없는 경우 메소드가 예외를 발생시키도록 구현됨.
+    - `required = false`로 두면 요청 파라미터 없이도 메소드가 동작할 수 있게 설정됨.
     - 참고자료: [Spring @RequestParam Annotation](https://www.baeldung.com/spring-request-param)
