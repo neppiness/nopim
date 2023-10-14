@@ -42,7 +42,7 @@ public class UserController {
 
     @DeleteMapping(path="/{userId}")
     public @ResponseBody String deleteUserById(
-            @PathVariable long userId
+            @PathVariable Long userId
     ) {
         Optional<User> foundUser = userRepository.findById(userId);
         if (foundUser.isEmpty()) throw new NoSuchElementException();

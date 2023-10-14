@@ -35,7 +35,9 @@ public class CompanyController {
         @PathVariable long companyId
     ) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
-        if (foundCompany.isEmpty()) throw new NoSuchElementException();
+        if (foundCompany.isEmpty()) {
+            throw new NoSuchElementException();
+        }
         return foundCompany.get();
     }
 
@@ -49,7 +51,9 @@ public class CompanyController {
             @PathVariable long companyId
     ) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
-        if (foundCompany.isEmpty()) throw new NoSuchElementException();
+        if (foundCompany.isEmpty()) {
+            throw new NoSuchElementException();
+        }
         companyRepository.deleteById(companyId);
         return "The company is deleted (companyId: " + companyId + ")";
     }
