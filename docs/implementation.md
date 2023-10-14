@@ -56,6 +56,8 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
         + 이는 회사(company) 테이블의 'company_id' 열을 참조하여 대응됨
 * 구현은 채용공고(Job) 클래스와 회사(Company) 클래스를 참조
 
+<br>
+
 ## 4. 트러블 슈팅
 * 지금까지 설정된 상태로는 아래와 같은 오류가 발생함.
 
@@ -71,3 +73,77 @@ Unable to determine Dialect without JDBC metadata
 spring.jpa.database=mysql
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 ```
+
+<br>
+
+## 5. 쿼리 처리
+* 채용공고에 대한 search 기능을 다음과 같이 작성하고자 함
+    - 주어진 position이나 stack에 대해서 쿼리를 수행
+* 이를 위해 `@Query` 어노테이션을 인터페이스에 적용하고, 이를 활용하는 방법을 학습함
+    - 참고자료: [Spring Data JPA @Query](https://www.baeldung.com/spring-data-jpa-query)
+* 아래 코드는 `CrudRepository`를 확장한 `JobRepository`에서 쿼리를 수행하는 메소드를 정의한 코드임
+
+```java
+// import statements
+
+public interface JobRepository extends CrudRepository<Job, Long> {
+
+    @Query(value = "SELECT * FROM job j WHERE j.position = :position", nativeQuery = true)
+    Collection<Job> findJobsByPosition(
+            @Param("position") String position
+    );
+
+    @Query(value = "SELECT * FROM job j WHERE j.stack = :stack", nativeQuery = true)
+    Collection<Job> findJobsByStack(
+            @Param("stack") String stack
+    );
+
+    @Query(
+            value = "SELECT j.id, j.company_id, j.position, j.bounty, j.stack, j.description, c.name " +
+                    "FROM job AS j JOIN company AS c ON j.company_id = c.id " +
+                    "WHERE c.name = :companyName",
+            nativeQuery = true
+    )
+    Collection<Job> findJobsByCompanyName(
+            @Param("companyName") String companyName
+    );
+}
+```
+
+* 이를 통해서 `Collection<Job>`을 반환받음.
+* `@RequestParam`은 기본적으로 `required = true`로 설정함
+    - 이를 변경해야만 요청 파라미터로 값이 없어도 문제가 발생하지 않음.
+* 원래는 원시형(primitive type) 변수인 `long companyId`를 활용했음
+    - 이 경우, `required = false`여서 값이 할당되지 않으면 `companyId = null`이 되어야 함.
+    - 그러나, 원시형 변수는 null 값을 가질 수 없어 에러가 발생
+    - 따라서 Wrapper 타입인 `Long`으로 설정해줘야 함. 이를 통해 구현한 컨트롤러 로직은 아래와 같음.
+
+```java
+@Controller
+@RequestMapping(path="/job")
+public class JobController {
+
+    // fields and methods
+    // ...
+    
+    @GetMapping(path="/search")
+    public @ResponseBody Iterable<JobSimpleDto> searchJob(
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) String stack
+    ) {
+        Collection<Job> foundJobs = jobRepository.findJobsByPosition(position);
+        List<JobSimpleDto> jobs = new ArrayList<>();
+        foundJobs.forEach(job -> jobs.add(job.convertToJobSimpleDto()));
+        return jobs;
+    }
+}
+```
+
+* 이는 `position` 변수 값을 통해 탐색하는 `searchJob()` 메소드의 구현임
+    - 그러나, 여러 요인에 대해서 쿼리를 수행해야 하는 경우를 충분히 대변할 수 없다고 판단함.
+    - 이에 따라 모든 채용공고를 조회한 뒤, 제시된 조건에 대해서 필터링을 수행하는 식으로 구현을 변경하고자 함.
+
+* `@RequestParam(required = false)`
+    - 필요에 따라서 
+    - 참고자료: [Spring @RequestParam Annotation](https://www.baeldung.com/spring-request-param)
