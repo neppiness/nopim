@@ -56,7 +56,7 @@ public class JobDto {
 
     @JsonProperty("채용내용")
     public String getDescription() {
-        return stack;
+        return description;
     }
 
     @JsonProperty("회사가_올린_다른_채용공고")
