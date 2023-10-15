@@ -68,15 +68,15 @@ public class JobController {
         return foundJobs;
     }
 
-    @GetMapping(path="/detail/{job_id}")
+    @GetMapping(path="/detail/{jobId}")
     public @ResponseBody JobDto getJobDetail(
             @PathVariable Long jobId
     ) {
-        Optional<Job> foundJob = jobRepository.findById(jobId);
-        if (foundJob.isEmpty()) {
+        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
+        if (mayBeFoundJob.isEmpty()) {
             throw new NoSuchElementException();
         }
-        return foundJob.get().convertToJobDto();
+        return mayBeFoundJob.get().convertToJobDto();
     }
 
     @GetMapping(path="/all")
@@ -87,9 +87,27 @@ public class JobController {
         return jobs;
     }
 
-    // TODO: 채용공고 수정 메소드 구현
+    @PutMapping(path="/update/{jobId}")
+    public @ResponseBody JobSimpleDto updateJob(
+            @PathVariable Long jobId,
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) Long bounty,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String stack
+    ) {
+        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
+        if (mayBeFoundJob.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        Job foundJob = mayBeFoundJob.get();
+        if (position != null) foundJob.setPosition(position);
+        if (bounty != null) foundJob.setBounty(bounty);
+        if (description != null) foundJob.setDescription(description);
+        if (stack != null) foundJob.setStack(stack);
+        return foundJob.convertToJobSimpleDto();
+    }
 
-    @DeleteMapping(path="/delete/{job_id}")
+    @DeleteMapping(path="/delete/{jobId}")
     public @ResponseBody String deleteJobById(
             @PathVariable Long jobId
     ) {
