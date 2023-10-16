@@ -31,12 +31,12 @@ public class JobController {
             @RequestParam String description
     ) {
         Job job = new Job();
-        Optional<Company> foundCompany = companyRepository.findById(companyId);
-        if (foundCompany.isEmpty()) {
+        Optional<Company> mayBeFoundJob = companyRepository.findById(companyId);
+        if (mayBeFoundJob.isEmpty()) {
             String msg = "The company not found (companyId: " + companyId + ")";
             throw new Error(msg);
         }
-        job.setCompany(foundCompany.get());
+        job.setCompany(mayBeFoundJob.get());
         job.setPosition(position);
         job.setBounty(bounty);
         job.setStack(stack);
@@ -111,8 +111,8 @@ public class JobController {
     public @ResponseBody String deleteJobById(
             @PathVariable Long jobId
     ) {
-        Optional<Job> foundJob = jobRepository.findById(jobId);
-        if (foundJob.isEmpty()) {
+        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
+        if (mayBeFoundJob.isEmpty()) {
             throw new NoSuchElementException();
         }
         jobRepository.deleteById(jobId);
