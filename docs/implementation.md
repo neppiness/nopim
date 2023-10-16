@@ -186,6 +186,8 @@ public class JobController {
     - `required = false`로 두면 요청 파라미터 없이도 메소드가 동작할 수 있게 설정됨.
     - 참고자료: [Spring @RequestParam Annotation](https://www.baeldung.com/spring-request-param)
   
+<br>
+
 ## 7. 지원내역 컨트롤러 구현
 * 해당 유저의 모든 지원내역 삭제 기능
     - 유저가 있는지만 확인되면 쿼리를 통해서 직접적으로 삭제하는 게 효율적이라 판단함.
@@ -235,3 +237,42 @@ public class ApplicationController {
     }
 }
 ```
+
+<br>
+
+## 8. 스프링 통합 테스트
+* 도메인(domain)에 속한 클래스들이 수행하는 기능은 간단한 할당 수준의 기능
+* 컨트롤러 로직을 스프링 환경에서 테스트하는 것만이 의미 있는 테스트라고 판단함.
+* 이를 위해 다음과 같은 어노테이션을 활용함
+
+```java
+// import statements
+// ...
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@Transactional
+class UserControllerTest {
+
+    @Autowired
+    public UserRepository userRepository;
+
+    @Autowired
+    public UserController userController;
+
+    // following methods
+    // ...
+}
+```
+
+* SpringBootTest 어노테이션은 스프링부트 테스트를 수행할 수 있도록 함
+    - 이와 같이 어노테이션을 둔 뒤 configuration을 인식시켜줘야 함.
+* 이를 ExtendWith(SpringExtension.class) 어노테이션으로 수행
+    - 이를 통해 SpringBootConfiguration을 인식시킬 수 있음.
+    - 이렇게 둠으로써 Autowired 어노테이션으로 연결된 repository도 정상 동작함.
+```text
+23:59:50.345 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper
+-- Found @SpringBootConfiguration recruitment.RecruitmentApplication for test class recruitment.controller.UserControllerTest
+```
+
+* 마지막으로, Transactional 어노테이션을 활용해서 조작한 데이터베이스 내용이 실제 DB에 반영되지 않도록 분리함.

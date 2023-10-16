@@ -30,11 +30,11 @@ public class UserController {
     public @ResponseBody User findUserById(
             @PathVariable long userId
     ) {
-        Optional<User> foundUser = userRepository.findById(userId);
-        if (foundUser.isEmpty()) {
+        Optional<User> mayBeUserFound = userRepository.findById(userId);
+        if (mayBeUserFound.isEmpty()) {
             throw new NoSuchElementException();
         }
-        return foundUser.get();
+        return mayBeUserFound.get();
     }
 
     @GetMapping(path="/all")
