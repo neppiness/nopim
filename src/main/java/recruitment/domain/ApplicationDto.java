@@ -6,20 +6,11 @@ import lombok.Setter;
 
 @Entity
 @Setter
-public class Application {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+public class ApplicationDto {
 
     private long jobId;
 
     private long userId;
-
-    @JsonProperty("지원내역_id")
-    public long getId() {
-        return id;
-    }
 
     @JsonProperty("채용공고_id")
     public long getJobId() {
@@ -31,3 +22,4 @@ public class Application {
         return userId;
     }
 }
+
