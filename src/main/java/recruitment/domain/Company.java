@@ -43,7 +43,7 @@ public class Company {
         return region;
     }
 
-    @JsonProperty("회사가_올린_다른_채용공고")
+    @JsonProperty("회사가_올린_채용공고")
     public Set<Job> getJobs() {
         return jobs;
     }
