@@ -11,7 +11,7 @@
     - 채용내용(description)
     - 사용기술(stack)
 * 호출 예시
-    + `{{base_url}}/job/add?companyId=1&position=백엔드 주니어 개발자&bounty=500000&stack=python&description=원티드에서 주니어 백엔드 개발자를 채용합니다. 필수스택 파이썬.`
+    + `localhost:8080/job/add?companyId=1&position=백엔드 주니어 개발자&bounty=500000&stack=python&description=원티드에서 주니어 백엔드 개발자를 채용합니다. 필수스택 파이썬.`
 * 결과 예시
 ```json
 {
@@ -38,7 +38,7 @@
     - 사용기술(stack)
 * 요청 인자에 대해서만 수정 가능하도록 구현
 * 호출 예시
-    - `{{base_url}}/job/update/52?position=백엔드 시니어 개발&bounty=1000000&stack=spring&description=원티드에서 백엔드 시니어를 모십니다. 필수스택 스프링.`
+    - `localhost:8080/job/update/52?position=백엔드 시니어 개발&bounty=1000000&stack=spring&description=원티드에서 백엔드 시니어를 모십니다. 필수스택 스프링.`
 * 결과 예시
 ```json
 {
@@ -59,7 +59,7 @@
 * 경로 인자(path variable)
     - 채용공고 ID(jobId)
 * 호출 예시
-    - `{{base_url}}/job/delete/52`
+    - `localhost:8080/job/delete/52`
 * 결과 예시
 ```text
 The job is deleted (jobId: 52)
@@ -71,7 +71,7 @@ The job is deleted (jobId: 52)
 * 요청메소드: GET
 * 요청 URI: `/job/all`
 * 호출
-    - `{{base_url}}/job/all`
+    - `localhost:8080/job/all`
 * 결과 예시
 ```json
 [
@@ -106,7 +106,7 @@ The job is deleted (jobId: 52)
     - 채용내용(description)
     - 사용기술(stack)
 * 호출 예시
-    - `{{base_url}}/job/search?companyName=naver&position=백엔드 주니어 개발자&stack=spring` 
+    - `localhost:8080/job/search?companyName=naver&position=백엔드 주니어 개발자&stack=spring` 
 * 결과 예시
 ```json
 [
@@ -129,7 +129,7 @@ The job is deleted (jobId: 52)
 * 경로 인자(path variable)
     - 채용공고 ID(jobId)
 * 호출 예시
-    - `{{base_url}}/job/detail/1` 
+    - `localhost:8080/job/detail/1` 
 * 결과 예시
 ```json
 {
@@ -149,4 +149,19 @@ The job is deleted (jobId: 52)
 ```
 
 ## 6. 사용자는 채용공고에 지원합니다.
-* 구현 예정
+* 구현 메소드: ApplicationController 클래스의 addApplication 메소드
+* 요청메소드: POST
+* 요청 URI: `/application/{userId}/add`
+* 경로 인자(path variable)
+    - 사용자 ID(userId)
+* 요청 인자(request parameter)
+    - 채용공고 ID(jobId)
+* 호출 예시
+    - `localhost:8080/application/1/add?jobId=3`
+* 결과 예시
+```json
+{
+    "사용자_id": 1,
+    "채용공고_id": 2
+}
+```

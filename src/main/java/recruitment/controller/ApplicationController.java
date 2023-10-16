@@ -1,0 +1,98 @@
+package recruitment.controller;
+
+import com.sun.jdi.request.DuplicateRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import recruitment.domain.Application;
+import recruitment.domain.ApplicationDto;
+import recruitment.domain.Job;
+import recruitment.domain.User;
+import recruitment.repository.ApplicationRepository;
+import recruitment.repository.JobRepository;
+import recruitment.repository.UserRepository;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Controller
+@RequestMapping(path="/application")
+public class ApplicationController {
+
+    @Autowired
+    ApplicationRepository applicationRepository;
+
+    @Autowired
+    JobRepository jobRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @GetMapping(path="/{userId}/{jobId}")
+    public @ResponseBody ApplicationDto findApplicationByUserIdAndJobId(
+            @PathVariable Long userId,
+            @PathVariable Long jobId
+    ) {
+        Optional<Application> mayBeApplicationFound = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        if (mayBeApplicationFound.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return mayBeApplicationFound.get().convertToDto();
+    }
+
+    @PostMapping(path="/{userId}/add")
+    public @ResponseBody ApplicationDto addApplication(
+            @PathVariable Long userId,
+            @RequestParam Long jobId
+    ) {
+        Optional<Job> mayBeJobFound = jobRepository.findById(jobId);
+        if (mayBeJobFound.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        Optional<Application> mayBeApplicationFound = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        if (mayBeApplicationFound.isPresent()) {
+            throw new DuplicateRequestException();
+        }
+        Application application = new Application();
+        application.setUserId(userId);
+        application.setJobId(jobId);
+        applicationRepository.save(application);
+        return application.convertToDto();
+    }
+
+    @GetMapping(path="/{userId}/all")
+    public @ResponseBody Collection<ApplicationDto> findApplicationsByUserId(
+            @PathVariable Long userId
+    ) {
+        Collection<Application> foundApplications = applicationRepository.findApplicationsByUserId(userId);
+        return foundApplications.stream().map(Application::convertToDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @DeleteMapping(path="/{userId}/delete/{jobId}")
+    public @ResponseBody String deleteByUserIdAndJobId(
+            @PathVariable Long userId,
+            @PathVariable Long jobId
+    ) {
+        Optional<Application> mayBeApplicationFound = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        if (mayBeApplicationFound.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        applicationRepository.delete(mayBeApplicationFound.get());
+        return "The application data is deleted (userId: " + userId + ", jobId: " + jobId + ")";
+    }
+
+    @Transactional
+    @DeleteMapping(path="/{userId}/delete/all")
+    public @ResponseBody String deleteAllApplicationOfUserUsingUserId(
+            @PathVariable Long userId
+    ) {
+        Optional<User> mayBeUserFound = userRepository.findById(userId);
+        if (mayBeUserFound.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        applicationRepository.deleteApplicationByUserId(userId);
+        return "All application data of the user is deleted (userId : "+ userId + ")";
+    }
+}
