@@ -24,7 +24,7 @@ public interface ApplicationRepository extends CrudRepository<Application, Long>
 
     @Modifying
     @Query(value = "DELETE FROM application a WHERE a.user_id = :userId", nativeQuery = true)
-    void deleteApplicationByUserId(
+    void deleteApplicationsByUserId(
             @Param("userId") Long userId
     );
 }

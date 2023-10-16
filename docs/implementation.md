@@ -185,3 +185,53 @@ public class JobController {
     - 기본값은 `required = true`임. 이는 요청 파라미터가 없는 경우 메소드가 예외를 발생시키도록 구현됨.
     - `required = false`로 두면 요청 파라미터 없이도 메소드가 동작할 수 있게 설정됨.
     - 참고자료: [Spring @RequestParam Annotation](https://www.baeldung.com/spring-request-param)
+  
+## 7. 지원내역 컨트롤러 구현
+* 해당 유저의 모든 지원내역 삭제 기능
+    - 유저가 있는지만 확인되면 쿼리를 통해서 직접적으로 삭제하는 게 효율적이라 판단함.
+    - `ApplicationRepository` 인터페이스에 `void deleteApplicationsByUserId(long userId);` 메소드를 구현
+* 쿼리 어노테이션을 사용하여 직접적으로 데이터베이스에 delete 명령을 수행하고자 함.
+    - 이에 대해선 에러가 발생
+        + `@Modifying` 어노테이션이 없으면 수정이나 삭제와 같이 DB 내 데이터를 조작하는 쿼리는 처리할 수 없다는 사실을 확인
+    - 이후에 DELETE 메소드를 수행했으나, `TransactionRequiredException` 발생
+        + `org.springframework.transaction.annotation.Transactional` 어노테이션을 컨트롤러 메소드에 추가함.
+* 이를 통해 아래와 같은 코드를 얻음
+    - ApplicationRepository.java 파일
+```java
+public interface ApplicationRepository extends CrudRepository<Application, Long> {
+
+    // other methods
+    // ...
+    
+    @Modifying
+    @Query(value = "DELETE FROM application a WHERE a.user_id = :userId", nativeQuery = true)
+    void deleteApplicationsByUserId(
+            @Param("userId") Long userId
+    );
+}
+```
+
+    - ApplicationController.java 파일
+
+```java
+@Controller
+@RequestMapping(path="/application")
+public class ApplicationController {
+    
+    // other methods
+    // ...
+    
+    @Transactional
+    @DeleteMapping(path="/{userId}/delete/all")
+    public @ResponseBody String deleteAllApplicationOfUserUsingUserId(
+            @PathVariable Long userId
+    ) {
+        Optional<User> mayBeUserFound = userRepository.findById(userId);
+        if (mayBeUserFound.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        applicationRepository.deleteApplicationsByUserId(userId);
+        return "All application data of the user is deleted (userId : "+ userId + ")";
+    }
+}
+```

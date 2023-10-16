@@ -69,7 +69,6 @@ public class ApplicationController {
         return foundApplications.stream().map(Application::convertToDto).collect(Collectors.toList());
     }
 
-    @Transactional
     @DeleteMapping(path="/{userId}/delete/{jobId}")
     public @ResponseBody String deleteByUserIdAndJobId(
             @PathVariable Long userId,
@@ -92,7 +91,7 @@ public class ApplicationController {
         if (mayBeUserFound.isEmpty()) {
             throw new NoSuchElementException();
         }
-        applicationRepository.deleteApplicationByUserId(userId);
+        applicationRepository.deleteApplicationsByUserId(userId);
         return "All application data of the user is deleted (userId : "+ userId + ")";
     }
 }
