@@ -28,10 +28,12 @@ public class UserController {
 
     @GetMapping(path="/{userId}")
     public @ResponseBody User findUserById(
-        @PathVariable long userId
+            @PathVariable long userId
     ) {
         Optional<User> foundUser = userRepository.findById(userId);
-        if (foundUser.isEmpty()) throw new NoSuchElementException();
+        if (foundUser.isEmpty()) {
+            throw new NoSuchElementException();
+        }
         return foundUser.get();
     }
 
@@ -45,7 +47,9 @@ public class UserController {
             @PathVariable Long userId
     ) {
         Optional<User> foundUser = userRepository.findById(userId);
-        if (foundUser.isEmpty()) throw new NoSuchElementException();
+        if (foundUser.isEmpty()) {
+            throw new NoSuchElementException();
+        }
         userRepository.deleteById(userId);
         return "The user is deleted (userId: " + userId + ")";
     }

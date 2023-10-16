@@ -32,7 +32,7 @@ public class CompanyController {
 
     @GetMapping(path="/{companyId}")
     public @ResponseBody Company findCompanyById(
-        @PathVariable long companyId
+            @PathVariable long companyId
     ) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
         if (foundCompany.isEmpty()) {

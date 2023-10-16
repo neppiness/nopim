@@ -12,13 +12,18 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private long jobId;
-
     private long userId;
+
+    private long jobId;
 
     @JsonProperty("지원내역_id")
     public long getId() {
         return id;
+    }
+
+    @JsonProperty("사용자_id")
+    public long getUserId() {
+        return userId;
     }
 
     @JsonProperty("채용공고_id")
@@ -26,8 +31,10 @@ public class Application {
         return jobId;
     }
 
-    @JsonProperty("사용자_id")
-    public long getUserId() {
-        return userId;
+    public ApplicationDto convertToDto() {
+        ApplicationDto dto = new ApplicationDto();
+        dto.setJobId(this.jobId);
+        dto.setUserId(this.userId);
+        return dto;
     }
 }
