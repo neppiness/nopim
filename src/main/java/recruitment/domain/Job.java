@@ -75,6 +75,10 @@ public class Job {
         jobDto.setDescription(this.description);
 
         Set<Long> jobIdList = new HashSet<>();
+        if (this.company.getJobs() == null) {
+            jobDto.setOtherJobIdsOfCompany(jobIdList);
+            return jobDto;
+        }
         this.company.getJobs().forEach(job -> {
             long jobId = job.getId();
             if (jobId == this.id) return;

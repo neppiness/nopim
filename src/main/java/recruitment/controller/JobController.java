@@ -31,12 +31,12 @@ public class JobController {
             @RequestParam String description
     ) {
         Job job = new Job();
-        Optional<Company> mayBeFoundJob = companyRepository.findById(companyId);
-        if (mayBeFoundJob.isEmpty()) {
+        Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
+        if (mayBeFoundCompany.isEmpty()) {
             String msg = "The company not found (companyId: " + companyId + ")";
             throw new Error(msg);
         }
-        job.setCompany(mayBeFoundJob.get());
+        job.setCompany(mayBeFoundCompany.get());
         job.setPosition(position);
         job.setBounty(bounty);
         job.setStack(stack);
@@ -83,7 +83,9 @@ public class JobController {
     public @ResponseBody Iterable<JobSimpleDto> findAllJobs() {
         Iterable<Job> allJobs = jobRepository.findAll();
         List<JobSimpleDto> jobs = new ArrayList<>();
-        allJobs.forEach(job -> jobs.add(job.convertToJobSimpleDto()));
+        for (Job job : allJobs) {
+            jobs.add(job.convertToJobSimpleDto());
+        }
         return jobs;
     }
 
