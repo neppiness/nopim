@@ -276,3 +276,121 @@ class UserControllerTest {
 ```
 
 * 마지막으로, Transactional 어노테이션을 활용해서 조작한 데이터베이스 내용이 실제 DB에 반영되지 않도록 분리함.
+
+<br>
+
+## 9. Mocking Web Context Beans
+* MockMvc를 활용하여 서버에 URI로 접근하는 것과 같은 방식으로 테스트를 수행할 수 있음.
+* 이를 세팅하기 위해선 아래와 같이 코드를 작성함
+
+```java
+private MockMvc mockMvc;
+
+@Autowired
+private WebApplicationContext webApplicationContext;
+
+@BeforeEach
+void testSetup() {
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+}
+```
+
+* 이를 통해 모든 테스트를 수행하기 전에 필드에 위치한 mockMvc 변수를 testSetup() 메소드에 따라 초기화함
+* mockMvc를 활용하면 아래와 같은 URI 호출이 가능함.
+
+```java
+	@Test
+	@DisplayName("MockMvc를 활용한 회사 추가 기능 테스트")
+	void addCompanyTest() throws Exception {
+		String name = "센벡스";
+		String country = "한국";
+		String region = "서울 당산";
+		String requestUri = "/company/add";
+		this.mockMvc
+				.perform(post(requestUri)
+						.param("name", name)
+						.param("country", country)
+						.param("region", region))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.회사명").value(name))
+				.andExpect(jsonPath("$.국가").value(country))
+				.andExpect(jsonPath("$.지역").value(region));
+	}
+```
+
+* `perform()` 메소드를 통해서 URI 호출을 수행
+    - post(), get() 등, 리퀘스트 메소드를 선택할 수 있으며, 어떤 URI에 요청할 것인지 문자열 인자로 전달할 수 있음.
+    - param()에는 어떤 쿼리 파라미터에 어떤 값을 입력할 것인지 작성
+* 이후, 이렇게 HTTP 요청을 수행한 뒤 돌아온 HTTP 응답이 어떤 상태인지, 그리고 그 응답에 어떤 메시지가 들어있는지 확인할 수 있음.
+    - `andExpect(status().isOk())`: HTTP 스테이터스가 OK일 것이라 예상
+    - `andExpect(jsonPath("$.회사명").value(name))`: 응답으로 전달받은 json의 '회사명' 변수가 name과 값이 같을 것이라 예상.
+* 참고자료: [Integration Testing in Spring](https://www.baeldung.com/integration-testing-in-spring#3-mocking-web-context-beans)
+
+<br>
+
+## 10. ReflectionEquals
+* 동일한 객체는 아니지만, 안에 든 내용을 가지고 비교할 수 있는 Wrapper 클래스
+    - `convertToDto()` 메소드를 통해 반환되는 결과들은 동일한 객체가 아니다.
+    - 다만, 동일한 내용을 담고 있으므로, `Assertions.assertThat().isEqualTo();`를 통해 판단할 수 없다.
+    - 따라서, `ReflectionEquals`를 통해 비교를 수행했다. 예시 코드는 아래와 같다.
+
+```java
+    @Test
+    @DisplayName("채용공고 추가 및 검색 기능 테스트")
+    void addJobAndSearchJobTest() throws JsonProcessingException {
+        JobSimpleDto addedJobInSimpleDto = jobController.addJob(
+                naver.getId(),
+                "머신러닝 주니어 개발자",
+                500_000L,
+                "tensorflow",
+                "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
+        );
+
+        ReflectionEquals re = new ReflectionEquals(addedJobInSimpleDto);
+        Iterable<JobSimpleDto> foundJobs = jobController
+                .searchJob(null, null, null, null, "tensorflow");
+        for (JobSimpleDto jobSimpleDto : foundJobs) {
+            String json = ow.writeValueAsString(jobSimpleDto);
+            System.out.println(json);
+            assertThat(re.matches(jobSimpleDto)).isTrue();
+        }
+    }
+```
+
+* `re.matches()` 메소드를 통해 두 인스턴스의 필드가 온전히 일치하는지 확인한다.
+    - 일치하는 경우 true를, 그렇지 않은 경우 false를 반환한다.
+
+<br>
+
+### 11. Java 객체를 JSON 형식으로 보기 좋게 출력하기
+* 아래와 같은 ObjectWriter를 설정하여 주어진 오브젝트를 깔끔하게 출력할 수 있다.
+
+```java
+static final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+```
+
+* 이후 아래와 같은 for 문을 통해서 JobSimpleDto 클래스의 인스턴스들을 가독성 좋게 출력하였다.
+
+```java
+for (JobSimpleDto jobSimpleDto : foundJobs) {
+    String json = ow.writeValueAsString(jobSimpleDto);
+    System.out.println(json);
+    assertThat(re.matches(jobSimpleDto)).isTrue();
+}
+```
+
+* 위 for 문을 통해 출력한 결과는 아래와 같다.
+
+```json
+{
+  "채용공고_id" : 2004,
+  "회사명" : "네이버",
+  "국가" : "한국",
+  "지역" : "분당",
+  "채용포지션" : "머신러닝 주니어 개발자",
+  "채용보상금" : 500000,
+  "사용기술" : "tensorflow"
+}
+```
+
+* 참고자료: [Converting Java objects to JSON with Jackson](https://stackoverflow.com/questions/15786129/converting-java-objects-to-json-with-jackson)
