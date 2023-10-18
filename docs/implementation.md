@@ -362,7 +362,7 @@ void testSetup() {
 
 <br>
 
-### 11. Java 객체를 JSON 형식으로 보기 좋게 출력하기
+## 11. Java 객체를 JSON 형식으로 보기 좋게 출력하기
 * 아래와 같은 ObjectWriter를 설정하여 주어진 오브젝트를 깔끔하게 출력할 수 있다.
 
 ```java
