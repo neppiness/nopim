@@ -60,6 +60,15 @@ public class Job {
         return company.getId();
     }
 
+    public boolean hasKeywordInAttributes(String keyword) {
+        if (String.valueOf(this.id).contains(keyword)) return true;
+        if (this.position.contains(keyword)) return true;
+        if (this.stack.contains(keyword)) return true;
+        if (this.description.contains(keyword)) return true;
+        if (this.getCompanyName().contains(keyword)) return true;
+        return false;
+    }
+
     public JobDto convertToJobDto() {
         JobDto jobDto = new JobDto();
         jobDto.setId(this.id);

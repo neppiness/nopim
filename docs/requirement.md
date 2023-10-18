@@ -101,12 +101,9 @@ The job is deleted (jobId: 52)
 * 요청메소드: GET
 * 요청 URI: `/job/search`
 * 요청 인자(request parameter)
-    - 채용공고 ID(jobId)
-    - 채용보상금(bounty)
-    - 채용내용(description)
-    - 사용기술(stack)
+    - 키워드(keyword)
 * 호출 예시
-    - `localhost:8080/job/search?companyName=naver&position=백엔드 주니어 개발자&stack=spring` 
+    - `localhost:8080/job/search?keyword=naver`
 * 결과 예시
 ```json
 [

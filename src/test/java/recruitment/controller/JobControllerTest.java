@@ -86,7 +86,7 @@ public class JobControllerTest {
 
         ReflectionEquals re = new ReflectionEquals(addedJobInSimpleDto);
         Iterable<JobSimpleDto> foundJobs = jobController
-                .searchJob(null, null, null, null, "tensorflow");
+                .searchJob("tensorflow");
         for (JobSimpleDto jobSimpleDto : foundJobs) {
             String json = ow.writeValueAsString(jobSimpleDto);
             System.out.println(json);
@@ -106,7 +106,7 @@ public class JobControllerTest {
         );
 
         Iterable<JobSimpleDto> foundJobs = jobController
-                .searchJob(null, null, "네이버", null, null);
+                .searchJob("네이버");
         String json = ow.writeValueAsString(foundJobs);
         System.out.println(json);
 
@@ -143,13 +143,7 @@ public class JobControllerTest {
         );
         long jobId = addedJobInSimpleDto.getId();
         jobController.deleteJobById(jobId);
-        Iterable<JobSimpleDto> foundJobs = jobController.searchJob(
-                jobId,
-                null,
-                null,
-                null,
-                null
-        );
+        Iterable<JobSimpleDto> foundJobs = jobController.searchJob(String.valueOf(jobId));
         int count = 0;
         for (JobSimpleDto foundJob : foundJobs) {
             count++;

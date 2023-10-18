@@ -48,22 +48,15 @@ public class JobController {
 
     @GetMapping(path="/search")
     public @ResponseBody Iterable<JobSimpleDto> searchJob(
-            @RequestParam(required = false) Long jobId,
-            @RequestParam(required = false) Long companyId,
-            @RequestParam(required = false) String companyName,
-            @RequestParam(required = false) String position,
-            @RequestParam(required = false) String stack
+            @RequestParam String keyword
     ) {
         Iterable<Job> allJobs = jobRepository.findAll();
         List<JobSimpleDto> foundJobs = new ArrayList<>();
 
         allJobs.iterator().forEachRemaining(job -> {
-            if (jobId != null && !Objects.equals(job.getId(), jobId)) return;
-            if (companyId != null && !Objects.equals(job.getCompanyId(), companyId)) return;
-            if (companyName != null && !job.getCompanyName().equals(companyName)) return;
-            if (position != null && !job.getPosition().equals(position)) return;
-            if (stack != null && !job.getStack().equals(stack)) return;
-            foundJobs.add(job.convertToJobSimpleDto());
+            if (job.hasKeywordInAttributes(keyword)) {
+                foundJobs.add(job.convertToJobSimpleDto());
+            }
         });
         return foundJobs;
     }
