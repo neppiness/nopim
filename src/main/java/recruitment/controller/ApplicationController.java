@@ -70,7 +70,7 @@ public class ApplicationController {
     }
 
     @DeleteMapping(path="/{userId}/delete/{jobId}")
-    public @ResponseBody String deleteByUserIdAndJobId(
+    public @ResponseBody String deleteApplicationByUserIdAndJobId(
             @PathVariable Long userId,
             @PathVariable Long jobId
     ) {
@@ -84,7 +84,7 @@ public class ApplicationController {
 
     @Transactional
     @DeleteMapping(path="/{userId}/delete/all")
-    public @ResponseBody String deleteAllApplicationOfUserUsingUserId(
+    public @ResponseBody String deleteAllApplicationsByUserId(
             @PathVariable Long userId
     ) {
         Optional<User> mayBeUserFound = userRepository.findById(userId);
