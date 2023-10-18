@@ -16,6 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 import recruitment.domain.Company;
 import recruitment.domain.JobDto;
 import recruitment.domain.JobSimpleDto;
+import recruitment.repository.ApplicationRepository;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,22 +27,22 @@ public class JobControllerTest {
 
     static final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    JobController jobController;
-
-    @Autowired
-    CompanyController companyController;
+    @Autowired private WebApplicationContext webApplicationContext;
+    @Autowired ApplicationRepository applicationRepository;
+    @Autowired JobController jobController;
+    @Autowired CompanyController companyController;
+    @Autowired UserController userController;
 
     Company wanted;
     Company naver;
 
     @BeforeEach
     void jobControllerTestSetup() {
+        applicationRepository.deleteAll();
+        userController.deleteAllUsers();
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
+
         wanted = companyController.addCompany("원티드", "한국", "서울");
         naver = companyController.addCompany("네이버", "한국", "분당");
         jobController.addJob(

@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Company;
+import recruitment.repository.ApplicationRepository;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,11 +21,10 @@ import static org.assertj.core.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 public class CompanyControllerTest {
 
-    @Autowired
-    CompanyController companyController;
-
-    @Autowired
-    JobController jobController;
+    @Autowired CompanyController companyController;
+    @Autowired JobController jobController;
+    @Autowired ApplicationRepository applicationRepository;
+    @Autowired UserController userController;
 
     final static String senvexName = "센벡스";
     final static String senvexCountry = "한국";
@@ -32,6 +32,11 @@ public class CompanyControllerTest {
 
     @BeforeEach
     void companyTestSetup() {
+        applicationRepository.deleteAll();
+        userController.deleteAllUsers();
+        jobController.deleteAllJobs();
+        companyController.deleteAllCompanies();
+
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
         companyController.addCompany("원티드", "한국", "서울");

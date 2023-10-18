@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.User;
+import recruitment.repository.ApplicationRepository;
 import recruitment.repository.UserRepository;
 
 import java.util.HashMap;
@@ -21,14 +22,13 @@ import java.util.Optional;
 @Transactional
 class UserControllerTest {
 
-    @Autowired
-    public UserRepository userRepository;
-
-    @Autowired
-    public UserController userController;
+    @Autowired UserRepository userRepository;
+    @Autowired UserController userController;
+    @Autowired ApplicationRepository applicationRepository;
 
     @BeforeEach
     void userDatabaseSetup() {
+        applicationRepository.deleteAll();
         userController.deleteAllUsers();
         userController.addUser("Kim-Seonghyeon");
         userController.addUser("Kim-Jeonghyun");

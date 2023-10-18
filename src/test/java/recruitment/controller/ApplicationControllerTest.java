@@ -13,14 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import recruitment.domain.ApplicationDto;
-import recruitment.domain.Company;
-import recruitment.domain.JobSimpleDto;
-import recruitment.domain.User;
+import recruitment.domain.*;
 import recruitment.repository.ApplicationRepository;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @SpringBootTest
 @Transactional
@@ -70,6 +68,7 @@ public class ApplicationControllerTest {
 
     @BeforeEach
     void jobControllerTestSetup() {
+        applicationRepository.deleteAll();
         userController.deleteAllUsers();
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
@@ -96,6 +95,18 @@ public class ApplicationControllerTest {
 
         ReflectionEquals re = new ReflectionEquals(foundApplicationDto);
         Assertions.assertThat(re.matches(expectedApplicationDto)).isTrue();
+    }
+
+    @Test
+    @DisplayName("유저 ID와 채용공고 ID를 통한 지원내역 상세 조회 기능 테스트")
+    void findDetailedApplicationByUserIdAndJobId() throws JsonProcessingException {
+        applicationController.addApplication(user.getId(), jobForNaver.getId());
+        ApplicationDetailedDto foundApplicationDto = applicationController.findDetailedApplicationByUserIdAndJobId(
+                user.getId(),
+                jobForNaver.getId()
+        );
+        String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationDto);
+        System.out.println(foundApplicationDtoInJson);
     }
 
     @Test
