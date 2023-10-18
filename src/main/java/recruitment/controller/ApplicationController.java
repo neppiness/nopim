@@ -31,11 +31,11 @@ public class ApplicationController {
             @PathVariable Long userId,
             @PathVariable Long jobId
     ) {
-        Optional<Application> mayBeApplicationFound = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
-        if (mayBeApplicationFound.isEmpty()) {
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        if (mayBeFoundApplication.isEmpty()) {
             throw new NoSuchElementException();
         }
-        return mayBeApplicationFound.get().convertToDto();
+        return mayBeFoundApplication.get().convertToDto();
     }
 
     @GetMapping(path="/{userId}/detail/{jobId}")
@@ -43,11 +43,11 @@ public class ApplicationController {
             @PathVariable Long userId,
             @PathVariable Long jobId
     ) {
-        Optional<Application> mayBeApplicationFound = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
-        if (mayBeApplicationFound.isEmpty()) {
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        if (mayBeFoundApplication.isEmpty()) {
             throw new NoSuchElementException();
         }
-        return mayBeApplicationFound.get().convertToDetailedDto();
+        return mayBeFoundApplication.get().convertToDetailedDto();
     }
 
     @PostMapping(path="/{userId}/add")
@@ -87,11 +87,11 @@ public class ApplicationController {
             @PathVariable Long userId,
             @PathVariable Long jobId
     ) {
-        Optional<Application> mayBeApplicationFound = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
-        if (mayBeApplicationFound.isEmpty()) {
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        if (mayBeFoundApplication.isEmpty()) {
             throw new NoSuchElementException();
         }
-        applicationRepository.delete(mayBeApplicationFound.get());
+        applicationRepository.delete(mayBeFoundApplication.get());
         return "The application data is deleted (userId: " + userId + ", jobId: " + jobId + ")";
     }
 
@@ -100,8 +100,8 @@ public class ApplicationController {
     public @ResponseBody String deleteAllApplicationsByUserId(
             @PathVariable Long userId
     ) {
-        Optional<User> mayBeUserFound = userRepository.findById(userId);
-        if (mayBeUserFound.isEmpty()) {
+        Optional<User> mayBeFoundUser = userRepository.findById(userId);
+        if (mayBeFoundUser.isEmpty()) {
             throw new NoSuchElementException();
         }
         applicationRepository.deleteApplicationsByUserId(userId);

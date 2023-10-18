@@ -38,11 +38,11 @@ class UserControllerTest {
     @DisplayName(value = "유저 등록 및 유저 ID로 유저 검색 테스트")
     void addUserAndFindUserByIDTest() {
         User addedUser = userController.addUser("KJH");
-        Optional<User> mayBeUserFound = userRepository.findById(addedUser.getId());
-        if (mayBeUserFound.isEmpty()) {
+        Optional<User> mayBeFoundUser = userRepository.findById(addedUser.getId());
+        if (mayBeFoundUser.isEmpty()) {
             throw new NoSuchElementException();
         }
-        User foundUser = mayBeUserFound.get();
+        User foundUser = mayBeFoundUser.get();
         Assertions.assertThat(addedUser).isEqualTo(foundUser);
     }
 
