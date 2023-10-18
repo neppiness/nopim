@@ -52,14 +52,25 @@
 * 테이블 이름: application
 * 필드(열 이름)
     - 지원내역_id(id): 숫자, 기본 키
-    - 채용공고_id(jobId): 숫자
-    - 사용자_id(userId): 숫자
+    - 사용자(user): 사용자(User) 클래스, 외래 키
+    - 채용공고(job): 채용공고(Job) 클래스, 외래 키
+* 메소드
+    - `convertToDto()`: 사용자(user)와 채용공고(job)에서 각각 id를 추출하여 ApplicationDto 인스턴스에 할당함
+    - `convertToDetailedDto()`
+        + 사용자(user)를 ApplicationDetailedDto에 할당
+        + 채용공고(job)는 SimpleDto로 변환 후 할당
 
 ### 지원내역 데이터 전송 객체 | ApplicationDto
 * 필드
-    - 채용공고_id(jobId): 숫자
     - 사용자_id(userId): 숫자
+    - 채용공고_id(jobId): 숫자
 
+### 상세 지원내역 데이터 전송 객체 | ApplicationDetailedDto
+* 필드
+  - 사용자(user): 사용자(User) 클래스
+  - 간단한 채용공고 데이터 전달 객체(jobSimpleDto): JobSimpleDto 클래스 
+  - 게터(getter)를 설정해, 응답 객체에 해당 정보가 전달되도록 구현
+   
 <br>
 
 ## 컨트롤러
@@ -113,7 +124,7 @@
     - 모든 채용공고를 삭제
 
 ### 지원내역(/application)
-* 지원내역 검색(GET, /{userId}/{jobId})
+* 지원내역 검색(GET, /{userId}/find/{jobId})
     - 경로 변수로 전달된 사용자 ID와 채용공고 ID에 대한 지원내역을 검색
 * 지원내역 등록(POST, /{userId}/add)
     - 지원내역 생성 시도
@@ -127,6 +138,6 @@
 * 특정 지원내역 삭제(DELETE, /{userId}/delete/{jobId}) 
     - 저장소에서 userId와 jobId를 인자로 해당하는 지원내역을 검색
     - 지원내역이 있는 경우 해당 내역을 삭제
-* 유저의 모든 지원내역 삭제(DELETE, /{userId}/delete/all)
-    - 전달받은 유저 ID로 유저의 존재여부를 확인
-    - 유저가 존재하면 유저의 모든 지원내역을 삭제
+* 사용자의 모든 지원내역 삭제(DELETE, /{userId}/delete/all)
+    - 전달받은 사용자 ID로 사용자의 존재여부를 확인
+    - 사용자가 존재하면 사용자의 모든 지원내역을 삭제

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Setter
 public class User {

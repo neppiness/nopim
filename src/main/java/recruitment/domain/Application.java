@@ -12,9 +12,13 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
-    private long jobId;
+    @ManyToOne
+    @JoinColumn(name = "job_id", referencedColumnName = "id")
+    private Job job;
 
     @JsonProperty("지원내역_id")
     public long getId() {
@@ -22,19 +26,26 @@ public class Application {
     }
 
     @JsonProperty("사용자_id")
-    public long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     @JsonProperty("채용공고_id")
-    public long getJobId() {
-        return jobId;
+    public Job getJobId() {
+        return job;
     }
 
     public ApplicationDto convertToDto() {
         ApplicationDto dto = new ApplicationDto();
-        dto.setJobId(this.jobId);
-        dto.setUserId(this.userId);
+        dto.setUserId(this.user.getId());
+        dto.setJobId(this.job.getId());
         return dto;
+    }
+
+    public ApplicationDetailedDto convertToDetailedDto() {
+        ApplicationDetailedDto detailedDto = new ApplicationDetailedDto();
+        detailedDto.setUser(this.user);
+        detailedDto.setJobSimpleDto(this.job.convertToJobSimpleDto());
+        return detailedDto;
     }
 }
