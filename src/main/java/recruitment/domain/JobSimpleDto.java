@@ -9,11 +9,15 @@ public class JobSimpleDto {
     private long id;
 
     private String companyName;
+
     private String country;
+
     private String region;
 
     private String position;
+
     private long bounty;
+
     private String stack;
 
     @JsonProperty("채용공고_id")
@@ -50,4 +54,5 @@ public class JobSimpleDto {
     public String getStack() {
         return stack;
     }
+
 }

@@ -12,16 +12,14 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Controller
-@RequestMapping(path="/user")
+@RequestMapping(path = "/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserRepository userRepository;
 
-    @PostMapping(path="/add")
-    public ResponseEntity<User> addUser(
-            @RequestParam String name
-    ) {
+    @PostMapping(path = "/add")
+    public ResponseEntity<User> addUser(@RequestParam String name) {
         User user = new User();
         user.setName(name);
         userRepository.save(user);
@@ -30,10 +28,8 @@ public class UserController {
                 .body(user);
     }
 
-    @GetMapping(path="/{userId}")
-    public ResponseEntity<User> findUserById(
-            @PathVariable long userId
-    ) {
+    @GetMapping(path = "/{userId}")
+    public ResponseEntity<User> findUserById(@PathVariable long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
             throw new NoSuchElementException();
@@ -43,17 +39,15 @@ public class UserController {
                 .body(mayBeFoundUser.get());
     }
 
-    @GetMapping(path="/all")
+    @GetMapping(path = "/all")
     public ResponseEntity<Iterable<User>> getAllUsers() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userRepository.findAll());
     }
 
-    @DeleteMapping(path="/{userId}")
-    public ResponseEntity<String> deleteUserById(
-            @PathVariable Long userId
-    ) {
+    @DeleteMapping(path = "/{userId}")
+    public ResponseEntity<String> deleteUserById(@PathVariable Long userId) {
         Optional<User> foundUser = userRepository.findById(userId);
         if (foundUser.isEmpty()) {
             throw new NoSuchElementException();
@@ -65,7 +59,7 @@ public class UserController {
                 .body(message);
     }
 
-    @DeleteMapping(path="/all")
+    @DeleteMapping(path = "/all")
     public ResponseEntity<String> deleteAllUsers() {
         userRepository.deleteAll();
         String message = "All user data deleted";
@@ -73,4 +67,5 @@ public class UserController {
                 .status(HttpStatus.NO_CONTENT)
                 .body(message);
     }
+
 }

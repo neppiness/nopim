@@ -47,4 +47,5 @@ public class Company {
     public Set<Job> getJobs() {
         return jobs;
     }
+
 }

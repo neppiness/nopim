@@ -21,14 +21,23 @@ import static org.assertj.core.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 public class CompanyControllerTest {
 
-    @Autowired CompanyController companyController;
-    @Autowired JobController jobController;
-    @Autowired ApplicationRepository applicationRepository;
-    @Autowired UserController userController;
-
     final static String senvexName = "센벡스";
+
     final static String senvexCountry = "한국";
+
     final static String senvexRegion = "서울 당산";
+
+    @Autowired
+    CompanyController companyController;
+
+    @Autowired
+    JobController jobController;
+
+    @Autowired
+    ApplicationRepository applicationRepository;
+
+    @Autowired
+    UserController userController;
 
     @BeforeEach
     void companyTestSetup() {
@@ -89,4 +98,5 @@ public class CompanyControllerTest {
         allCompanies.forEach(company -> count.getAndIncrement());
         assertThat(count.intValue()).isEqualTo(0);
     }
+
 }

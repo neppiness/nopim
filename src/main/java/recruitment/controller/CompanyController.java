@@ -11,18 +11,15 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path="/company")
+@RequestMapping(path = "/company")
 @RequiredArgsConstructor
 public class CompanyController {
 
     private final CompanyRepository companyRepository;
 
-    @PostMapping(path="/add")
-    public ResponseEntity<Company> addCompany(
-            @RequestParam String name,
-            @RequestParam String country,
-            @RequestParam String region
-    ) {
+    @PostMapping(path = "/add")
+    public ResponseEntity<Company> addCompany(@RequestParam String name, @RequestParam String country,
+                                              @RequestParam String region) {
         Company company = new Company();
         company.setName(name);
         company.setCountry(country);
@@ -33,10 +30,8 @@ public class CompanyController {
                 .body(company);
     }
 
-    @GetMapping(path="/{companyId}")
-    public ResponseEntity<Company> findCompanyById(
-            @PathVariable long companyId
-    ) {
+    @GetMapping(path = "/{companyId}")
+    public ResponseEntity<Company> findCompanyById(@PathVariable long companyId) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
         if (foundCompany.isEmpty()) {
             throw new NoSuchElementException();
@@ -46,17 +41,15 @@ public class CompanyController {
                 .body(foundCompany.get());
     }
 
-    @GetMapping(path="/all")
+    @GetMapping(path = "/all")
     public ResponseEntity<Iterable<Company>> getAllCompanies() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(companyRepository.findAll());
     }
 
-    @DeleteMapping(path="/{companyId}")
-    public ResponseEntity<String> deleteCompanyById(
-            @PathVariable long companyId
-    ) {
+    @DeleteMapping(path = "/{companyId}")
+    public ResponseEntity<String> deleteCompanyById(@PathVariable long companyId) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
         if (foundCompany.isEmpty()) {
             throw new NoSuchElementException();
@@ -68,7 +61,7 @@ public class CompanyController {
                 .body(message);
     }
 
-    @DeleteMapping(path="/all")
+    @DeleteMapping(path = "/all")
     public ResponseEntity<String> deleteAllCompanies() {
         companyRepository.deleteAll();
         String message = "All company data deleted";
@@ -76,4 +69,5 @@ public class CompanyController {
                 .status(HttpStatus.NO_CONTENT)
                 .body(message);
     }
+
 }

@@ -14,7 +14,7 @@ import recruitment.repository.UserRepository;
 import java.util.*;
 
 @RestController
-@RequestMapping(path="/application")
+@RequestMapping(path = "/application")
 @RequiredArgsConstructor
 public class ApplicationController {
 
@@ -24,12 +24,11 @@ public class ApplicationController {
 
     private final UserRepository userRepository;
 
-    @GetMapping(path="/{userId}/find/{jobId}")
-    public ResponseEntity<ApplicationDto> findApplicationByUserIdAndJobId(
-            @PathVariable Long userId,
-            @PathVariable Long jobId
-    ) {
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+    @GetMapping(path = "/{userId}/find/{jobId}")
+    public ResponseEntity<ApplicationDto> findApplicationByUserIdAndJobId(@PathVariable Long userId,
+                                                                          @PathVariable Long jobId) {
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
         if (mayBeFoundApplication.isEmpty()) {
             throw new NoSuchElementException();
         }
@@ -39,12 +38,13 @@ public class ApplicationController {
                 .body(foundApplicationDto);
     }
 
-    @GetMapping(path="/{userId}/detail/{jobId}")
+    @GetMapping(path = "/{userId}/detail/{jobId}")
     public ResponseEntity<ApplicationDetailedDto> findDetailedApplicationByUserIdAndJobId(
             @PathVariable Long userId,
             @PathVariable Long jobId
     ) {
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
         if (mayBeFoundApplication.isEmpty()) {
             throw new NoSuchElementException();
         }
@@ -54,16 +54,14 @@ public class ApplicationController {
                 .body(foundDetailedDto);
     }
 
-    @PostMapping(path="/{userId}/add")
-    public ResponseEntity<ApplicationDto> addApplication(
-            @PathVariable Long userId,
-            @RequestParam Long jobId
-    ) {
+    @PostMapping(path = "/{userId}/add")
+    public ResponseEntity<ApplicationDto> addApplication(@PathVariable Long userId, @RequestParam Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
             throw new NoSuchElementException();
         }
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
         if (mayBeFoundApplication.isPresent()) {
             throw new DuplicateRequestException();
         }
@@ -81,10 +79,8 @@ public class ApplicationController {
                 .body(application.convertToDto());
     }
 
-    @GetMapping(path="/{userId}/all")
-    public ResponseEntity<Collection<ApplicationDto>> findApplicationsByUserId(
-            @PathVariable Long userId
-    ) {
+    @GetMapping(path = "/{userId}/all")
+    public ResponseEntity<Collection<ApplicationDto>> findApplicationsByUserId(@PathVariable Long userId) {
         Collection<Application> foundApplications = applicationRepository.findApplicationsByUserId(userId);
         List<ApplicationDto> foundApplicationDtoList = foundApplications.stream()
                 .map(Application::convertToDto)
@@ -94,12 +90,11 @@ public class ApplicationController {
                 .body(foundApplicationDtoList);
     }
 
-    @DeleteMapping(path="/{userId}/delete/{jobId}")
-    public ResponseEntity<String> deleteApplicationByUserIdAndJobId(
-            @PathVariable Long userId,
-            @PathVariable Long jobId
-    ) {
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+    @DeleteMapping(path = "/{userId}/delete/{jobId}")
+    public ResponseEntity<String> deleteApplicationByUserIdAndJobId(@PathVariable Long userId,
+                                                                    @PathVariable Long jobId) {
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
         if (mayBeFoundApplication.isEmpty()) {
             throw new NoSuchElementException();
         }
@@ -111,18 +106,17 @@ public class ApplicationController {
     }
 
     @Transactional
-    @DeleteMapping(path="/{userId}/delete/all")
-    public ResponseEntity<String> deleteAllApplicationsByUserId(
-            @PathVariable Long userId
-    ) {
+    @DeleteMapping(path = "/{userId}/delete/all")
+    public ResponseEntity<String> deleteAllApplicationsByUserId(@PathVariable Long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
             throw new NoSuchElementException();
         }
         applicationRepository.deleteApplicationsByUserId(userId);
-        String message = "All application data of the user is deleted (userId : "+ userId + ")";
+        String message = "All application data of the user is deleted (userId : " + userId + ")";
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .body(message);
     }
+
 }

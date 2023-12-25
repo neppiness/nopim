@@ -27,13 +27,23 @@ public class JobControllerTest {
 
     static final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
-    @Autowired private WebApplicationContext webApplicationContext;
-    @Autowired ApplicationRepository applicationRepository;
-    @Autowired JobController jobController;
-    @Autowired CompanyController companyController;
-    @Autowired UserController userController;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    ApplicationRepository applicationRepository;
+
+    @Autowired
+    JobController jobController;
+
+    @Autowired
+    CompanyController companyController;
+
+    @Autowired
+    UserController userController;
 
     Company wanted;
+
     Company naver;
 
     @BeforeEach
@@ -47,7 +57,7 @@ public class JobControllerTest {
         naver = companyController.addCompany("네이버", "한국", "분당").getBody();
         jobController.addJob(
                 wanted.getId(),
-               "백엔드 주니어 개발자",
+                "백엔드 주니어 개발자",
                 500_000L,
                 "Django",
                 "원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자."
@@ -112,7 +122,9 @@ public class JobControllerTest {
         System.out.println(json);
 
         int count = 0;
-        for (JobSimpleDto jobSimpleDto : foundJobs) { count++; }
+        for (JobSimpleDto jobSimpleDto : foundJobs) {
+            count++;
+        }
         assertThat(count).isEqualTo(2);
     }
 
@@ -164,4 +176,5 @@ public class JobControllerTest {
         }
         assertThat(count).isEqualTo(0);
     }
+
 }

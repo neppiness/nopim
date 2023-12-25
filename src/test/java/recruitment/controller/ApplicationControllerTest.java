@@ -26,17 +26,29 @@ public class ApplicationControllerTest {
 
     static final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
-    @Autowired ApplicationController applicationController;
-    @Autowired ApplicationRepository applicationRepository;
-    @Autowired UserController userController;
-    @Autowired JobController jobController;
-    @Autowired CompanyController companyController;
+    @Autowired
+    ApplicationController applicationController;
+
+    @Autowired
+    ApplicationRepository applicationRepository;
+
+    @Autowired
+    UserController userController;
+
+    @Autowired
+    JobController jobController;
+
+    @Autowired
+    CompanyController companyController;
 
     Company wanted;
+
     Company naver;
+
     User user;
 
     JobSimpleDto jobForWanted;
+
     JobSimpleDto jobForNaver;
 
     void userSetup() {
@@ -114,7 +126,8 @@ public class ApplicationControllerTest {
         applicationController.addApplication(user.getId(), jobForNaver.getId());
         applicationController.addApplication(user.getId(), jobForWanted.getId());
 
-        Collection<ApplicationDto> foundApplicationDtos = applicationController.findApplicationsByUserId(user.getId()).getBody();
+        Collection<ApplicationDto> foundApplicationDtos = applicationController.findApplicationsByUserId(user.getId())
+                .getBody();
         String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationDtos);
         System.out.println(foundApplicationDtoInJson);
         Assertions.assertThat(foundApplicationDtos.size()).isEqualTo(2);
@@ -123,7 +136,8 @@ public class ApplicationControllerTest {
     @Test
     @DisplayName("유저 ID와 채용공고 ID를 통해 지원내역을 삭제하는 기능 테스트")
     void deleteApplicationByUserIdAndJobIdTest() {
-        ApplicationDto wantedApplicationDto = applicationController.addApplication(user.getId(), jobForWanted.getId()).getBody();
+        ApplicationDto wantedApplicationDto = applicationController.addApplication(user.getId(), jobForWanted.getId())
+                .getBody();
         applicationController.deleteApplicationByUserIdAndJobId(user.getId(), jobForWanted.getId());
 
         Assertions.assertThatThrownBy(() -> {
@@ -138,9 +152,11 @@ public class ApplicationControllerTest {
         applicationController.addApplication(user.getId(), jobForWanted.getId());
         applicationController.deleteAllApplicationsByUserId(user.getId());
 
-        Collection<ApplicationDto> foundApplicationDtos = applicationController.findApplicationsByUserId(user.getId()).getBody();
+        Collection<ApplicationDto> foundApplicationDtos = applicationController.findApplicationsByUserId(user.getId())
+                .getBody();
         String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationDtos);
         System.out.println(foundApplicationDtoInJson);
         Assertions.assertThat(foundApplicationDtos.size()).isEqualTo(0);
     }
+
 }

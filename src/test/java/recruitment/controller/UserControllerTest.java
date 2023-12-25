@@ -22,9 +22,14 @@ import java.util.Optional;
 @Transactional
 class UserControllerTest {
 
-    @Autowired UserRepository userRepository;
-    @Autowired UserController userController;
-    @Autowired ApplicationRepository applicationRepository;
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    UserController userController;
+
+    @Autowired
+    ApplicationRepository applicationRepository;
 
     @BeforeEach
     void userDatabaseSetup() {
@@ -68,4 +73,5 @@ class UserControllerTest {
         Iterable<User> allUsers = userController.getAllUsers().getBody();
         Assertions.assertThat(allUsers).isEmpty();
     }
+
 }

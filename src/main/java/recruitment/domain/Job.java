@@ -110,4 +110,5 @@ public class Job {
         jobSimpleDto.setStack(this.stack);
         return jobSimpleDto;
     }
+
 }

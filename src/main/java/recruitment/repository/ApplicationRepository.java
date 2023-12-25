@@ -27,4 +27,5 @@ public interface ApplicationRepository extends CrudRepository<Application, Long>
     void deleteApplicationsByUserId(
             @Param("userId") Long userId
     );
+
 }
