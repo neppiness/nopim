@@ -1,8 +1,8 @@
 package recruitment.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
@@ -13,7 +13,7 @@ import recruitment.repository.JobRepository;
 
 import java.util.*;
 
-@Controller
+@RestController
 @RequestMapping(path="/job")
 @RequiredArgsConstructor
 public class JobController {
@@ -23,7 +23,7 @@ public class JobController {
     private final CompanyRepository companyRepository;
 
     @PostMapping(path="/add")
-    public @ResponseBody JobSimpleDto addJob (
+    public ResponseEntity<JobSimpleDto> addJob (
             @RequestParam Long companyId,
             @RequestParam String position,
             @RequestParam Long bounty,
@@ -43,11 +43,13 @@ public class JobController {
         job.setDescription(description);
 
         jobRepository.save(job);
-        return job.convertToJobSimpleDto();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(job.convertToJobSimpleDto());
     }
 
     @GetMapping(path="/search")
-    public @ResponseBody Iterable<JobSimpleDto> searchJob(
+    public ResponseEntity<Iterable<JobSimpleDto>> searchJob(
             @RequestParam String keyword
     ) {
         Iterable<Job> allJobs = jobRepository.findAll();
@@ -58,32 +60,38 @@ public class JobController {
                 foundJobs.add(job.convertToJobSimpleDto());
             }
         });
-        return foundJobs;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(foundJobs);
     }
 
     @GetMapping(path="/detail/{jobId}")
-    public @ResponseBody JobDto getJobDetail(
+    public ResponseEntity<JobDto> getJobDetail(
             @PathVariable Long jobId
     ) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
             throw new NoSuchElementException();
         }
-        return mayBeFoundJob.get().convertToJobDto();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(mayBeFoundJob.get().convertToJobDto());
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<JobSimpleDto> findAllJobs() {
+    public ResponseEntity<Iterable<JobSimpleDto>> findAllJobs() {
         Iterable<Job> allJobs = jobRepository.findAll();
         List<JobSimpleDto> jobs = new ArrayList<>();
         for (Job job : allJobs) {
             jobs.add(job.convertToJobSimpleDto());
         }
-        return jobs;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(jobs);
     }
 
     @PutMapping(path="/update/{jobId}")
-    public @ResponseBody JobSimpleDto updateJob(
+    public ResponseEntity<JobSimpleDto> updateJob(
             @PathVariable Long jobId,
             @RequestParam(required = false) String position,
             @RequestParam(required = false) Long bounty,
@@ -99,11 +107,13 @@ public class JobController {
         if (bounty != null) foundJob.setBounty(bounty);
         if (description != null) foundJob.setDescription(description);
         if (stack != null) foundJob.setStack(stack);
-        return foundJob.convertToJobSimpleDto();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(foundJob.convertToJobSimpleDto());
     }
 
     @DeleteMapping(path="/delete/{jobId}")
-    public @ResponseBody String deleteJobById(
+    public ResponseEntity<String> deleteJobById(
             @PathVariable Long jobId
     ) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
@@ -111,12 +121,18 @@ public class JobController {
             throw new NoSuchElementException();
         }
         jobRepository.deleteById(jobId);
-        return "The job is deleted (jobId: " + jobId + ")";
+        String message = "The job is deleted (jobId: " + jobId + ")";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
 
     @DeleteMapping(path="/delete/all")
-    public @ResponseBody String deleteAllJobs() {
+    public ResponseEntity<String> deleteAllJobs() {
         jobRepository.deleteAll();
-        return "All job data deleted";
+        String message = "All job data deleted";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
 }

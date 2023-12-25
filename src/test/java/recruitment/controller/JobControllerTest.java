@@ -43,8 +43,8 @@ public class JobControllerTest {
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
 
-        wanted = companyController.addCompany("원티드", "한국", "서울");
-        naver = companyController.addCompany("네이버", "한국", "분당");
+        wanted = companyController.addCompany("원티드", "한국", "서울").getBody();
+        naver = companyController.addCompany("네이버", "한국", "분당").getBody();
         jobController.addJob(
                 wanted.getId(),
                "백엔드 주니어 개발자",
@@ -64,7 +64,7 @@ public class JobControllerTest {
     @Test
     @DisplayName("모든 채용공고 조회 기능 테스트")
     void findAllJobsTest() throws JsonProcessingException {
-        Iterable<JobSimpleDto> allJobs = jobController.findAllJobs();
+        Iterable<JobSimpleDto> allJobs = jobController.findAllJobs().getBody();
         int count = 0;
         for (JobSimpleDto job : allJobs) {
             count++;
@@ -83,11 +83,11 @@ public class JobControllerTest {
                 500_000L,
                 "tensorflow",
                 "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        );
+        ).getBody();
 
         ReflectionEquals re = new ReflectionEquals(addedJobInSimpleDto);
         Iterable<JobSimpleDto> foundJobs = jobController
-                .searchJob("tensorflow");
+                .searchJob("tensorflow").getBody();
         for (JobSimpleDto jobSimpleDto : foundJobs) {
             String json = ow.writeValueAsString(jobSimpleDto);
             System.out.println(json);
@@ -104,10 +104,10 @@ public class JobControllerTest {
                 500_000L,
                 "tensorflow",
                 "네이버에서 딥러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        );
+        ).getBody();
 
         Iterable<JobSimpleDto> foundJobs = jobController
-                .searchJob("네이버");
+                .searchJob("네이버").getBody();
         String json = ow.writeValueAsString(foundJobs);
         System.out.println(json);
 
@@ -125,9 +125,9 @@ public class JobControllerTest {
                 500_000L,
                 "tensorflow",
                 "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        );
+        ).getBody();
         long jobId = addedJobInSimpleDto.getId();
-        JobDto jobDetail = jobController.getJobDetail(jobId);
+        JobDto jobDetail = jobController.getJobDetail(jobId).getBody();
         String jobDetailInJson = ow.writeValueAsString(jobDetail);
         System.out.println(jobDetailInJson);
     }
@@ -141,10 +141,10 @@ public class JobControllerTest {
                 500_000L,
                 "tensorflow",
                 "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        );
+        ).getBody();
         long jobId = addedJobInSimpleDto.getId();
         jobController.deleteJobById(jobId);
-        Iterable<JobSimpleDto> foundJobs = jobController.searchJob(String.valueOf(jobId));
+        Iterable<JobSimpleDto> foundJobs = jobController.searchJob(String.valueOf(jobId)).getBody();
         int count = 0;
         for (JobSimpleDto foundJob : foundJobs) {
             count++;
@@ -155,9 +155,9 @@ public class JobControllerTest {
     @Test
     @DisplayName("모든 채용공고 삭제 기능 테스트")
     void deleteAllJobsTest() {
-        Iterable<JobSimpleDto> allJobs = jobController.findAllJobs();
+        Iterable<JobSimpleDto> allJobs = jobController.findAllJobs().getBody();
         jobController.deleteAllJobs();
-        Iterable<JobSimpleDto> allRemainingJobs = jobController.findAllJobs();
+        Iterable<JobSimpleDto> allRemainingJobs = jobController.findAllJobs().getBody();
         int count = 0;
         for (JobSimpleDto foundJob : allRemainingJobs) {
             count++;

@@ -60,12 +60,12 @@ class RecruitmentApplicationTests {
 		jobController.deleteAllJobs();
 		companyController.deleteAllCompanies();
 
-		user = userController.addUser("김정현");
+		user = userController.addUser("김정현").getBody();
 
-		wantedLab = companyController.addCompany("원티드랩", "한국", "서울");
-		wanted = companyController.addCompany("원티드코리아", "한국", "부산");
-		naver = companyController.addCompany("네이버", "한국", "판교");
-		kakao = companyController.addCompany("카카오", "한국", "판교");
+		wantedLab = companyController.addCompany("원티드랩", "한국", "서울").getBody();
+		wanted = companyController.addCompany("원티드코리아", "한국", "부산").getBody();
+		naver = companyController.addCompany("네이버", "한국", "판교").getBody();
+		kakao = companyController.addCompany("카카오", "한국", "판교").getBody();
 
 		jobOfNaver = jobController.addJob(
 				naver.getId(),
@@ -73,21 +73,21 @@ class RecruitmentApplicationTests {
 				1_000_000L,
 				"Django",
 				"네이버에서 백엔드 개발자를 채용합니다."
-		);
+		).getBody();
 		jobOfWanted = jobController.addJob(
 				wanted.getId(),
 				"프론트엔드 개발자",
 				500_000L,
 				"javascript",
 				"원티드코리아에서 프론트엔드 개발자를 채용합니다. 자격요건은.."
-		);
+		).getBody();
 		jobOfKakao = jobController.addJob(
 				kakao.getId(),
 				"Django 백엔드 개발자",
 				500_000L,
 				"python",
 				"카카오에서 Django 백엔드 개발자를 채용합니다. 자격요건은.."
-		);
+		).getBody();
 	}
 
 	@Test

@@ -37,7 +37,7 @@ class UserControllerTest {
     @Test
     @DisplayName(value = "유저 등록 및 유저 ID로 유저 검색 테스트")
     void addUserAndFindUserByIDTest() {
-        User addedUser = userController.addUser("KJH");
+        User addedUser = userController.addUser("KJH").getBody();
         Optional<User> mayBeFoundUser = userRepository.findById(addedUser.getId());
         if (mayBeFoundUser.isEmpty()) {
             throw new NoSuchElementException();
@@ -49,7 +49,7 @@ class UserControllerTest {
     @Test
     @DisplayName(value = "모든 사용자 조회 테스트")
     void getAllUsersTest() {
-        Iterable<User> allUsers = userController.getAllUsers();
+        Iterable<User> allUsers = userController.getAllUsers().getBody();
         HashMap<String, Boolean> userNameCheck = new HashMap<>();
         userNameCheck.put("Kim-Seonghyeon", false);
         userNameCheck.put("Kim-Jeonghyun", false);
@@ -63,9 +63,9 @@ class UserControllerTest {
     @Test
     @DisplayName(value = "모든 사용자 제거 테스트")
     void deleteAllUsersTest() {
-        String log = userController.deleteAllUsers();
+        String log = userController.deleteAllUsers().getBody();
         System.out.println("log = " + log);
-        Iterable<User> allUsers = userController.getAllUsers();
+        Iterable<User> allUsers = userController.getAllUsers().getBody();
         Assertions.assertThat(allUsers).isEmpty();
     }
 }

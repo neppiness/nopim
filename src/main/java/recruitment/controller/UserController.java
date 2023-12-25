@@ -1,7 +1,8 @@
 package recruitment.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.User;
@@ -18,33 +19,39 @@ public class UserController {
     private final UserRepository userRepository;
 
     @PostMapping(path="/add")
-    public @ResponseBody User addUser(
+    public ResponseEntity<User> addUser(
             @RequestParam String name
     ) {
         User user = new User();
         user.setName(name);
         userRepository.save(user);
-        return user;
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(user);
     }
 
     @GetMapping(path="/{userId}")
-    public @ResponseBody User findUserById(
+    public ResponseEntity<User> findUserById(
             @PathVariable long userId
     ) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
             throw new NoSuchElementException();
         }
-        return mayBeFoundUser.get();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(mayBeFoundUser.get());
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<Iterable<User>> getAllUsers() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userRepository.findAll());
     }
 
     @DeleteMapping(path="/{userId}")
-    public @ResponseBody String deleteUserById(
+    public ResponseEntity<String> deleteUserById(
             @PathVariable Long userId
     ) {
         Optional<User> foundUser = userRepository.findById(userId);
@@ -52,12 +59,18 @@ public class UserController {
             throw new NoSuchElementException();
         }
         userRepository.deleteById(userId);
-        return "The user is deleted (userId: " + userId + ")";
+        String message = "The user is deleted (userId: " + userId + ")";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
 
     @DeleteMapping(path="/all")
-    public @ResponseBody String deleteAllUsers() {
+    public ResponseEntity<String> deleteAllUsers() {
         userRepository.deleteAll();
-        return "All user data deleted";
+        String message = "All user data deleted";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
 }
