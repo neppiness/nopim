@@ -1,7 +1,7 @@
 package recruitment.controller;
 
 import com.sun.jdi.request.DuplicateRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +15,14 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(path="/application")
+@RequiredArgsConstructor
 public class ApplicationController {
 
-    @Autowired
-    ApplicationRepository applicationRepository;
+    private final ApplicationRepository applicationRepository;
 
-    @Autowired
-    JobRepository jobRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @GetMapping(path="/{userId}/find/{jobId}")
     public @ResponseBody ApplicationDto findApplicationByUserIdAndJobId(

@@ -1,5 +1,6 @@
 package recruitment.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,12 @@ import java.util.*;
 
 @Controller
 @RequestMapping(path="/job")
+@RequiredArgsConstructor
 public class JobController {
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    private CompanyRepository companyRepository;
+    private final CompanyRepository companyRepository;
 
     @PostMapping(path="/add")
     public @ResponseBody JobSimpleDto addJob (
