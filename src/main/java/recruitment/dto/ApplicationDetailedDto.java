@@ -1,7 +1,9 @@
-package recruitment.domain;
+package recruitment.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import recruitment.domain.User;
+import recruitment.dto.JobSimpleDto;
 
 public class ApplicationDetailedDto {
 

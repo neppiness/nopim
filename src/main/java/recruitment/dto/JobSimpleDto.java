@@ -1,4 +1,4 @@
-package recruitment.domain;
+package recruitment.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

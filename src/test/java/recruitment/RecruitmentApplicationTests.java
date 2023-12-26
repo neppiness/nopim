@@ -18,7 +18,7 @@ import recruitment.controller.CompanyController;
 import recruitment.controller.JobController;
 import recruitment.controller.UserController;
 import recruitment.domain.Company;
-import recruitment.domain.JobSimpleDto;
+import recruitment.dto.JobSimpleDto;
 import recruitment.domain.User;
 import recruitment.repository.ApplicationRepository;
 

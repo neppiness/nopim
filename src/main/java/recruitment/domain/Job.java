@@ -8,6 +8,8 @@ import lombok.Getter;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.NoArgsConstructor;
+import recruitment.dto.JobDto;
+import recruitment.dto.JobSimpleDto;
 
 @Getter
 @NoArgsConstructor

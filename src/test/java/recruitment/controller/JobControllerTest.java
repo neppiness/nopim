@@ -14,8 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import recruitment.domain.Company;
-import recruitment.domain.JobDto;
-import recruitment.domain.JobSimpleDto;
+import recruitment.dto.JobDto;
+import recruitment.dto.JobSimpleDto;
 import recruitment.repository.ApplicationRepository;
 
 import static org.assertj.core.api.Assertions.*;

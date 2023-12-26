@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import recruitment.dto.ApplicationDetailedDto;
+import recruitment.dto.ApplicationDto;
 
 @Getter
 @NoArgsConstructor
