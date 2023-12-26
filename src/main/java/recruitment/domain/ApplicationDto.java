@@ -1,14 +1,19 @@
 package recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Setter;
+import lombok.Builder;
 
-@Setter
 public class ApplicationDto {
 
-    private long userId;
+    private final Long userId;
 
-    private long jobId;
+    private final Long jobId;
+
+    @Builder
+    public ApplicationDto(long userId, long jobId) {
+        this.userId = userId;
+        this.jobId = jobId;
+    }
 
     @JsonProperty("사용자_id")
     public long getUserId() {

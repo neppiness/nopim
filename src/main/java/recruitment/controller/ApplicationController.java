@@ -70,9 +70,10 @@ public class ApplicationController {
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
-        Application application = new Application();
-        application.setUser(mayBeFoundUser.get());
-        application.setJob(mayBeFoundJob.get());
+        Application application = Application.builder()
+                .user(mayBeFoundUser.get())
+                .job(mayBeFoundJob.get())
+                .build();
         application = applicationRepository.save(application);
 
         return ResponseEntity

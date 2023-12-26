@@ -18,7 +18,6 @@ import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 
 import java.util.Collection;
-import java.util.NoSuchElementException;
 
 @SpringBootTest
 @Transactional
@@ -101,9 +100,10 @@ public class ApplicationControllerTest {
         String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationDto);
         System.out.println(foundApplicationDtoInJson);
 
-        ApplicationDto expectedApplicationDto = new ApplicationDto();
-        expectedApplicationDto.setUserId(user.getId());
-        expectedApplicationDto.setJobId(jobForNaver.getId());
+        ApplicationDto expectedApplicationDto = ApplicationDto.builder()
+                .userId(user.getId())
+                .jobId(jobForNaver.getId())
+                .build();
 
         ReflectionEquals re = new ReflectionEquals(foundApplicationDto);
         Assertions.assertThat(re.matches(expectedApplicationDto)).isTrue();

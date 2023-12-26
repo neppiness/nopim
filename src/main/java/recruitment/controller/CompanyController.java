@@ -20,10 +20,11 @@ public class CompanyController {
     @PostMapping(path = "/add")
     public ResponseEntity<Company> addCompany(@RequestParam String name, @RequestParam String country,
                                               @RequestParam String region) {
-        Company company = new Company();
-        company.setName(name);
-        company.setCountry(country);
-        company.setRegion(region);
+        Company company = Company.builder()
+                .name(name)
+                .country(country)
+                .region(region)
+                .build();
         companyRepository.save(company);
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -27,17 +27,17 @@ public class JobController {
     public ResponseEntity<JobSimpleDto> addJob(@RequestParam Long companyId, @RequestParam String position,
                                                @RequestParam Long bounty, @RequestParam String stack,
                                                @RequestParam String description) {
-        Job job = new Job();
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
         if (mayBeFoundCompany.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
-        job.setCompany(mayBeFoundCompany.get());
-        job.setPosition(position);
-        job.setBounty(bounty);
-        job.setStack(stack);
-        job.setDescription(description);
-
+        Job job = Job.builder()
+                .company(mayBeFoundCompany.get())
+                .position(position)
+                .bounty(bounty)
+                .stack(stack)
+                .description(description)
+                .build();
         jobRepository.save(job);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -92,22 +92,33 @@ public class JobController {
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
+
         Job foundJob = mayBeFoundJob.get();
-        if (position != null) {
-            foundJob.setPosition(position);
+        if (position == null) {
+            position = foundJob.getPosition();
         }
-        if (bounty != null) {
-            foundJob.setBounty(bounty);
+        if (bounty == null) {
+            bounty = foundJob.getBounty();
         }
-        if (description != null) {
-            foundJob.setDescription(description);
+        if (description == null) {
+            description = foundJob.getDescription();
         }
-        if (stack != null) {
-            foundJob.setStack(stack);
+        if (stack == null) {
+            stack = foundJob.getStack();
         }
+
+        Job jobToBeUpdated = Job.builder()
+                .id(foundJob.getId())
+                .company(foundJob.getCompany())
+                .position(position)
+                .bounty(bounty)
+                .description(description)
+                .stack(stack)
+                .build();
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(foundJob.convertToJobSimpleDto());
+                .body(jobRepository.save(jobToBeUpdated).convertToJobSimpleDto());
     }
 
     @DeleteMapping(path = "/delete/{jobId}")

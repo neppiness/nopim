@@ -2,51 +2,49 @@ package recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
-@Setter
 public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty("지원내역_id")
     private long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonProperty("사용자_id")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "job_id", referencedColumnName = "id")
+    @JsonProperty("채용공고_id")
     private Job job;
 
-    @JsonProperty("지원내역_id")
-    public long getId() {
-        return id;
-    }
-
-    @JsonProperty("사용자_id")
-    public User getUser() {
-        return user;
-    }
-
-    @JsonProperty("채용공고_id")
-    public Job getJobId() {
-        return job;
+    @Builder
+    public Application(final long id, final User user, final Job job) {
+        this.id = id;
+        this.user = user;
+        this.job = job;
     }
 
     public ApplicationDto convertToDto() {
-        ApplicationDto dto = new ApplicationDto();
-        dto.setUserId(this.user.getId());
-        dto.setJobId(this.job.getId());
-        return dto;
+        return ApplicationDto.builder()
+                .userId(this.user.getId())
+                .jobId(this.job.getId())
+                .build();
     }
 
     public ApplicationDetailedDto convertToDetailedDto() {
-        ApplicationDetailedDto detailedDto = new ApplicationDetailedDto();
-        detailedDto.setUser(this.user);
-        detailedDto.setJobSimpleDto(this.job.convertToJobSimpleDto());
-        return detailedDto;
+        return ApplicationDetailedDto.builder()
+                .user(this.user)
+                .jobSimpleDto(this.job.convertToJobSimpleDto())
+                .build();
     }
 
 }
