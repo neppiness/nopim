@@ -2,113 +2,107 @@ package recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
-@Setter
 public class Job {
 
-    @Id
+    @JsonProperty("채용공고_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private long id;
 
+    @JsonProperty("회사_id")
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 
+    @JsonProperty("채용포지션")
     private String position;
 
+    @JsonProperty("채용보상금")
     private long bounty;
 
+    @JsonProperty("사용기술")
     private String stack;
 
+    @JsonProperty("채용내용")
     private String description;
 
-    @JsonProperty("채용공고_id")
-    public long getId() {
-        return id;
-    }
-
-    @JsonProperty("채용포지션")
-    public String getPosition() {
-        return position;
-    }
-
-    @JsonProperty("채용보상금")
-    public long getBounty() {
-        return bounty;
-    }
-
-    @JsonProperty("사용기술")
-    public String getStack() {
-        return stack;
-    }
-
-    @JsonProperty("채용내용")
-    public String getDescription() {
-        return description;
-    }
-
-    public String getCompanyName() {
-        return company.getName();
-    }
-
-    public Long getCompanyId() {
-        return company.getId();
+    @Builder
+    public Job(final long id, final Company company, final String position, final long bounty, final String stack,
+               final String description) {
+        this.id = id;
+        this.company = company;
+        this.position = position;
+        this.bounty = bounty;
+        this.stack = stack;
+        this.description = description;
     }
 
     public boolean hasKeywordInAttributes(String keyword) {
-        if (String.valueOf(this.id).contains(keyword)) return true;
-        if (this.position.contains(keyword)) return true;
-        if (this.stack.contains(keyword)) return true;
-        if (this.description.contains(keyword)) return true;
-        if (this.getCompanyName().contains(keyword)) return true;
+        if (String.valueOf(this.id).contains(keyword)) {
+            return true;
+        }
+        if (this.position.contains(keyword)) {
+            return true;
+        }
+        if (this.stack.contains(keyword)) {
+            return true;
+        }
+        if (this.description.contains(keyword)) {
+            return true;
+        }
+        if (this.getCompany().getName().contains(keyword)) {
+            return true;
+        }
         return false;
     }
 
     public JobDto convertToJobDto() {
-        JobDto jobDto = new JobDto();
-        jobDto.setId(this.id);
-
-        jobDto.setCompanyName(this.company.getName());
-        jobDto.setCountry(this.company.getCountry());
-        jobDto.setRegion(this.company.getRegion());
-
-        jobDto.setPosition(this.position);
-        jobDto.setBounty(this.bounty);
-        jobDto.setStack(this.stack);
-
-        jobDto.setDescription(this.description);
-
         Set<Long> jobIdList = new HashSet<>();
-        if (this.company.getJobs() == null) {
-            jobDto.setOtherJobIdsOfCompany(jobIdList);
-            return jobDto;
+        Set<Job> companyJobs = this.company.getJobs();
+        if (companyJobs == null) {
+            companyJobs = new HashSet<>();
         }
-        this.company.getJobs().forEach(job -> {
+        companyJobs.forEach(job -> {
             long jobId = job.getId();
-            if (jobId == this.id) return;
+            if (jobId == this.id) {
+                return;
+            }
             jobIdList.add(job.getId());
         });
-        jobDto.setOtherJobIdsOfCompany(jobIdList);
-        return jobDto;
+
+        return JobDto.builder()
+                .id(this.id)
+                .companyName(this.company.getName())
+                .country(this.company.getCountry())
+                .region(this.company.getRegion())
+                .position(this.position)
+                .bounty(this.bounty)
+                .stack(this.stack)
+                .description(this.description)
+                .otherJobIdsOfCompany(jobIdList)
+                .build();
     }
 
     public JobSimpleDto convertToJobSimpleDto() {
-        JobSimpleDto jobSimpleDto = new JobSimpleDto();
-        jobSimpleDto.setId(this.id);
-
-        jobSimpleDto.setCompanyName(this.company.getName());
-        jobSimpleDto.setCountry(this.company.getCountry());
-        jobSimpleDto.setRegion(this.company.getRegion());
-
-        jobSimpleDto.setPosition(this.position);
-        jobSimpleDto.setBounty(this.bounty);
-        jobSimpleDto.setStack(this.stack);
-        return jobSimpleDto;
+        return JobSimpleDto.builder()
+                .id(this.id)
+                .companyName(this.company.getName())
+                .country(this.company.getCountry())
+                .region(this.company.getRegion())
+                .position(this.position)
+                .bounty(this.bounty)
+                .stack(this.stack)
+                .build();
     }
 
 }

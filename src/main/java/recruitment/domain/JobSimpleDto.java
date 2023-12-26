@@ -1,58 +1,43 @@
 package recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Getter;
 
-@Setter
+@Getter
 public class JobSimpleDto {
 
-    private long id;
-
-    private String companyName;
-
-    private String country;
-
-    private String region;
-
-    private String position;
-
-    private long bounty;
-
-    private String stack;
-
     @JsonProperty("채용공고_id")
-    public long getId() {
-        return id;
-    }
+    private final long id;
 
     @JsonProperty("회사명")
-    public String getCompanyName() {
-        return companyName;
-    }
+    private final String companyName;
 
     @JsonProperty("국가")
-    public String getCountry() {
-        return country;
-    }
+    private final String country;
 
     @JsonProperty("지역")
-    public String getRegion() {
-        return region;
-    }
+    private final String region;
 
     @JsonProperty("채용포지션")
-    public String getPosition() {
-        return position;
-    }
+    private final String position;
 
     @JsonProperty("채용보상금")
-    public long getBounty() {
-        return bounty;
-    }
+    private final long bounty;
 
     @JsonProperty("사용기술")
-    public String getStack() {
-        return stack;
+    private final String stack;
+
+    @Builder
+    public JobSimpleDto(final long id, final String companyName, final String country, final String region,
+                        final String position, final long bounty, final String stack) {
+        this.id = id;
+        this.companyName = companyName;
+        this.country = country;
+        this.region = region;
+        this.position = position;
+        this.bounty = bounty;
+        this.stack = stack;
     }
 
 }

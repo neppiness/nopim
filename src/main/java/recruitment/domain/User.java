@@ -2,26 +2,27 @@ package recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
-@Setter
 public class User {
 
-    @Id
+    @JsonProperty("사용자_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private long id;
 
+    @JsonProperty("사용자_이름")
     private String name;
 
-    @JsonProperty("사용자_id")
-    public long getId() {
-        return id;
-    }
-
-    @JsonProperty("사용자_이름")
-    public String getName() {
-        return name;
+    @Builder
+    public User(final long id, final String name) {
+        this.id = id;
+        this.name = name;
     }
 
 }

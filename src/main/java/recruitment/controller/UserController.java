@@ -20,8 +20,9 @@ public class UserController {
 
     @PostMapping(path = "/add")
     public ResponseEntity<User> addUser(@RequestParam String name) {
-        User user = new User();
-        user.setName(name);
+        User user = User.builder()
+                .name(name)
+                .build();
         userRepository.save(user);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
