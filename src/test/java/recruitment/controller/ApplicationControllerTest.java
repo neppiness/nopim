@@ -14,9 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.*;
-import recruitment.dto.ApplicationDetailedDto;
-import recruitment.dto.ApplicationDto;
-import recruitment.dto.JobSimpleDto;
+import recruitment.dto.ApplicationDetailResponse;
+import recruitment.dto.ApplicationResponse;
+import recruitment.dto.JobSimpleResponse;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 
@@ -50,9 +50,9 @@ public class ApplicationControllerTest {
 
     User user;
 
-    JobSimpleDto jobForWanted;
+    JobSimpleResponse jobForWanted;
 
-    JobSimpleDto jobForNaver;
+    JobSimpleResponse jobForNaver;
 
     void userSetup() {
         user = userController.addUser("Kim-Jeonghyun").getBody();
@@ -95,28 +95,28 @@ public class ApplicationControllerTest {
     @DisplayName("유저 ID와 채용공고 ID로 지원내역을 검색하는 기능 테스트")
     void findApplicationByUserIdAndJobIdTest() throws JsonProcessingException {
         applicationController.addApplication(user.getId(), jobForNaver.getId());
-        ApplicationDto foundApplicationDto = applicationController.findApplicationByUserIdAndJobId(
+        ApplicationResponse foundApplicationResponse = applicationController.findApplicationByUserIdAndJobId(
                 user.getId(),
                 jobForNaver.getId()
         ).getBody();
 
-        String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationDto);
+        String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationResponse);
         System.out.println(foundApplicationDtoInJson);
 
-        ApplicationDto expectedApplicationDto = ApplicationDto.builder()
+        ApplicationResponse expectedApplicationResponse = ApplicationResponse.builder()
                 .userId(user.getId())
                 .jobId(jobForNaver.getId())
                 .build();
 
-        ReflectionEquals re = new ReflectionEquals(foundApplicationDto);
-        Assertions.assertThat(re.matches(expectedApplicationDto)).isTrue();
+        ReflectionEquals re = new ReflectionEquals(foundApplicationResponse);
+        Assertions.assertThat(re.matches(expectedApplicationResponse)).isTrue();
     }
 
     @Test
     @DisplayName("유저 ID와 채용공고 ID를 통한 지원내역 상세 조회 기능 테스트")
     void findDetailedApplicationByUserIdAndJobId() throws JsonProcessingException {
         applicationController.addApplication(user.getId(), jobForNaver.getId());
-        ApplicationDetailedDto foundApplicationDto = applicationController.findDetailedApplicationByUserIdAndJobId(
+        ApplicationDetailResponse foundApplicationDto = applicationController.findDetailedApplicationByUserIdAndJobId(
                 user.getId(),
                 jobForNaver.getId()
         ).getBody();
@@ -130,17 +130,17 @@ public class ApplicationControllerTest {
         applicationController.addApplication(user.getId(), jobForNaver.getId());
         applicationController.addApplication(user.getId(), jobForWanted.getId());
 
-        Collection<ApplicationDto> foundApplicationDtos = applicationController.findApplicationsByUserId(user.getId())
+        Collection<ApplicationResponse> foundApplicationResponses = applicationController.findApplicationsByUserId(user.getId())
                 .getBody();
-        String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationDtos);
+        String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationResponses);
         System.out.println(foundApplicationDtoInJson);
-        Assertions.assertThat(foundApplicationDtos.size()).isEqualTo(2);
+        Assertions.assertThat(foundApplicationResponses.size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("유저 ID와 채용공고 ID를 통해 지원내역을 삭제하는 기능 테스트")
     void deleteApplicationByUserIdAndJobIdTest() {
-        ApplicationDto wantedApplicationDto = applicationController.addApplication(user.getId(), jobForWanted.getId())
+        ApplicationResponse wantedApplicationResponse = applicationController.addApplication(user.getId(), jobForWanted.getId())
                 .getBody();
         applicationController.deleteApplicationByUserIdAndJobId(user.getId(), jobForWanted.getId());
 
@@ -156,11 +156,11 @@ public class ApplicationControllerTest {
         applicationController.addApplication(user.getId(), jobForWanted.getId());
         applicationController.deleteAllApplicationsByUserId(user.getId());
 
-        Collection<ApplicationDto> foundApplicationDtos = applicationController.findApplicationsByUserId(user.getId())
+        Collection<ApplicationResponse> foundApplicationResponses = applicationController.findApplicationsByUserId(user.getId())
                 .getBody();
-        String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationDtos);
+        String foundApplicationDtoInJson = ow.writeValueAsString(foundApplicationResponses);
         System.out.println(foundApplicationDtoInJson);
-        Assertions.assertThat(foundApplicationDtos.size()).isEqualTo(0);
+        Assertions.assertThat(foundApplicationResponses.size()).isEqualTo(0);
     }
 
 }

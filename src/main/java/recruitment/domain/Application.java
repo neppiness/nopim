@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import recruitment.dto.ApplicationDetailedDto;
-import recruitment.dto.ApplicationDto;
+import recruitment.dto.ApplicationDetailResponse;
+import recruitment.dto.ApplicationResponse;
 
 @Getter
 @NoArgsConstructor
@@ -35,17 +35,17 @@ public class Application {
         this.job = job;
     }
 
-    public ApplicationDto convertToDto() {
-        return ApplicationDto.builder()
+    public ApplicationResponse convertToDto() {
+        return ApplicationResponse.builder()
                 .userId(this.user.getId())
                 .jobId(this.job.getId())
                 .build();
     }
 
-    public ApplicationDetailedDto convertToDetailedDto() {
-        return ApplicationDetailedDto.builder()
+    public ApplicationDetailResponse convertToDetailedDto() {
+        return ApplicationDetailResponse.builder()
                 .user(this.user)
-                .jobSimpleDto(this.job.convertToJobSimpleDto())
+                .jobSimpleResponse(this.job.convertToJobSimpleResponse())
                 .build();
     }
 
