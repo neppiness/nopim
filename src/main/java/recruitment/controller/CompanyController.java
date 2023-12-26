@@ -1,66 +1,73 @@
 package recruitment.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Company;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.CompanyRepository;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@Controller
-@RequestMapping(path="/company")
+@RestController
+@RequestMapping(path = "/company")
+@RequiredArgsConstructor
 public class CompanyController {
 
-    @Autowired
-    private CompanyRepository companyRepository;
+    private final CompanyRepository companyRepository;
 
-    @PostMapping(path="/add")
-    public @ResponseBody Company addCompany(
-            @RequestParam String name,
-            @RequestParam String country,
-            @RequestParam String region
-    ) {
+    @PostMapping(path = "/add")
+    public ResponseEntity<Company> addCompany(@RequestParam String name, @RequestParam String country,
+                                              @RequestParam String region) {
         Company company = new Company();
         company.setName(name);
         company.setCountry(country);
         company.setRegion(region);
         companyRepository.save(company);
-        return company;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(company);
     }
 
-    @GetMapping(path="/{companyId}")
-    public @ResponseBody Company findCompanyById(
-            @PathVariable long companyId
-    ) {
+    @GetMapping(path = "/{companyId}")
+    public ResponseEntity<Company> findCompanyById(@PathVariable long companyId) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
         if (foundCompany.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
-        return foundCompany.get();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(foundCompany.get());
     }
 
-    @GetMapping(path="/all")
-    public @ResponseBody Iterable<Company> getAllCompanies() {
-        return companyRepository.findAll();
+    @GetMapping(path = "/all")
+    public ResponseEntity<Iterable<Company>> getAllCompanies() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(companyRepository.findAll());
     }
 
-    @DeleteMapping(path="/{companyId}")
-    public @ResponseBody String deleteCompanyById(
-            @PathVariable long companyId
-    ) {
+    @DeleteMapping(path = "/{companyId}")
+    public ResponseEntity<String> deleteCompanyById(@PathVariable long companyId) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
         if (foundCompany.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
         companyRepository.deleteById(companyId);
-        return "The company is deleted (companyId: " + companyId + ")";
+        String message = "The company is deleted (companyId: " + companyId + ")";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
 
-    @DeleteMapping(path="/all")
-    public @ResponseBody String deleteAllCompanies() {
+    @DeleteMapping(path = "/all")
+    public ResponseEntity<String> deleteAllCompanies() {
         companyRepository.deleteAll();
-        return "All company data deleted";
+        String message = "All company data deleted";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
+
 }

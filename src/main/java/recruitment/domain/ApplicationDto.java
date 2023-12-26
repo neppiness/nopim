@@ -19,4 +19,5 @@ public class ApplicationDto {
     public long getJobId() {
         return jobId;
     }
+
 }

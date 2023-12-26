@@ -1,110 +1,123 @@
 package recruitment.controller;
 
-import com.sun.jdi.request.DuplicateRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.*;
+import recruitment.exception.ResourceAlreadyExist;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping(path="/application")
+@RestController
+@RequestMapping(path = "/application")
+@RequiredArgsConstructor
 public class ApplicationController {
 
-    @Autowired
-    ApplicationRepository applicationRepository;
+    private final ApplicationRepository applicationRepository;
 
-    @Autowired
-    JobRepository jobRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @GetMapping(path="/{userId}/find/{jobId}")
-    public @ResponseBody ApplicationDto findApplicationByUserIdAndJobId(
+    @GetMapping(path = "/{userId}/find/{jobId}")
+    public ResponseEntity<ApplicationDto> findApplicationByUserIdAndJobId(@PathVariable Long userId,
+                                                                          @PathVariable Long jobId) {
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
+        if (mayBeFoundApplication.isEmpty()) {
+            throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
+        }
+        ApplicationDto foundApplicationDto = mayBeFoundApplication.get().convertToDto();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(foundApplicationDto);
+    }
+
+    @GetMapping(path = "/{userId}/detail/{jobId}")
+    public ResponseEntity<ApplicationDetailedDto> findDetailedApplicationByUserIdAndJobId(
             @PathVariable Long userId,
             @PathVariable Long jobId
     ) {
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
         if (mayBeFoundApplication.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
         }
-        return mayBeFoundApplication.get().convertToDto();
+        ApplicationDetailedDto foundDetailedDto = mayBeFoundApplication.get().convertToDetailedDto();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(foundDetailedDto);
     }
 
-    @GetMapping(path="/{userId}/detail/{jobId}")
-    public @ResponseBody ApplicationDetailedDto findDetailedApplicationByUserIdAndJobId(
-            @PathVariable Long userId,
-            @PathVariable Long jobId
-    ) {
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
-        if (mayBeFoundApplication.isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        return mayBeFoundApplication.get().convertToDetailedDto();
-    }
-
-    @PostMapping(path="/{userId}/add")
-    public @ResponseBody ApplicationDto addApplication(
-            @PathVariable Long userId,
-            @RequestParam Long jobId
-    ) {
+    @PostMapping(path = "/{userId}/add")
+    public ResponseEntity<ApplicationDto> addApplication(@PathVariable Long userId, @RequestParam Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
         if (mayBeFoundApplication.isPresent()) {
-            throw new DuplicateRequestException();
+            throw new ResourceAlreadyExist(ResourceAlreadyExist.APPLICATION_ALREADY_EXIST);
         }
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
         Application application = new Application();
         application.setUser(mayBeFoundUser.get());
         application.setJob(mayBeFoundJob.get());
-        applicationRepository.save(application);
-        return application.convertToDto();
+        application = applicationRepository.save(application);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(application.convertToDto());
     }
 
-    @GetMapping(path="/{userId}/all")
-    public @ResponseBody Collection<ApplicationDto> findApplicationsByUserId(
-            @PathVariable Long userId
-    ) {
+    @GetMapping(path = "/{userId}/all")
+    public ResponseEntity<Collection<ApplicationDto>> findApplicationsByUserId(@PathVariable Long userId) {
         Collection<Application> foundApplications = applicationRepository.findApplicationsByUserId(userId);
-        return foundApplications.stream().map(Application::convertToDto).collect(Collectors.toList());
+        List<ApplicationDto> foundApplicationDtoList = foundApplications.stream()
+                .map(Application::convertToDto)
+                .toList();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(foundApplicationDtoList);
     }
 
-    @DeleteMapping(path="/{userId}/delete/{jobId}")
-    public @ResponseBody String deleteApplicationByUserIdAndJobId(
-            @PathVariable Long userId,
-            @PathVariable Long jobId
-    ) {
-        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId, jobId);
+    @DeleteMapping(path = "/{userId}/delete/{jobId}")
+    public ResponseEntity<String> deleteApplicationByUserIdAndJobId(@PathVariable Long userId,
+                                                                    @PathVariable Long jobId) {
+        Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
+                jobId);
         if (mayBeFoundApplication.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
         }
         applicationRepository.delete(mayBeFoundApplication.get());
-        return "The application data is deleted (userId: " + userId + ", jobId: " + jobId + ")";
+        String message = "The application data is deleted (userId: " + userId + ", jobId: " + jobId + ")";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
 
     @Transactional
-    @DeleteMapping(path="/{userId}/delete/all")
-    public @ResponseBody String deleteAllApplicationsByUserId(
-            @PathVariable Long userId
-    ) {
+    @DeleteMapping(path = "/{userId}/delete/all")
+    public ResponseEntity<String> deleteAllApplicationsByUserId(@PathVariable Long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
         applicationRepository.deleteApplicationsByUserId(userId);
-        return "All application data of the user is deleted (userId : "+ userId + ")";
+        String message = "All application data of the user is deleted (userId : " + userId + ")";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
+
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 public class ApplicationDetailedDto {
 
     private User user;
+
     private JobSimpleDto jobSimpleDto;
 
     @JsonProperty("사용자_id")
@@ -53,4 +54,5 @@ public class ApplicationDetailedDto {
     public String getStack() {
         return jobSimpleDto.getStack();
     }
+
 }

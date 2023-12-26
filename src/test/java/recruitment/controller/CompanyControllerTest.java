@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Company;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 
 import java.util.NoSuchElementException;
@@ -21,14 +22,23 @@ import static org.assertj.core.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 public class CompanyControllerTest {
 
-    @Autowired CompanyController companyController;
-    @Autowired JobController jobController;
-    @Autowired ApplicationRepository applicationRepository;
-    @Autowired UserController userController;
-
     final static String senvexName = "센벡스";
+
     final static String senvexCountry = "한국";
+
     final static String senvexRegion = "서울 당산";
+
+    @Autowired
+    CompanyController companyController;
+
+    @Autowired
+    JobController jobController;
+
+    @Autowired
+    ApplicationRepository applicationRepository;
+
+    @Autowired
+    UserController userController;
 
     @BeforeEach
     void companyTestSetup() {
@@ -45,10 +55,10 @@ public class CompanyControllerTest {
 
     @Test
     @DisplayName("회사 추가 및 회사 ID로 회사 검색 기능 테스트")
-    void addCompanyAndFindCompanyByIdTest() throws Exception {
-        Company company = companyController.addCompany(senvexName, senvexCountry, senvexRegion);
+    void addCompanyAndFindCompanyByIdTest() {
+        Company company = companyController.addCompany(senvexName, senvexCountry, senvexRegion).getBody();
         long companyId = company.getId();
-        Company foundCompany = companyController.findCompanyById(companyId);
+        Company foundCompany = companyController.findCompanyById(companyId).getBody();
         assertThat(company).isEqualTo(foundCompany);
     }
 
@@ -56,7 +66,7 @@ public class CompanyControllerTest {
     @DisplayName("등록된 모든 회사 조회 기능 테스트")
     void getAllCompaniesTest() {
         AtomicInteger count = new AtomicInteger();
-        Iterable<Company> allCompanies = companyController.getAllCompanies();
+        Iterable<Company> allCompanies = companyController.getAllCompanies().getBody();
         allCompanies.forEach(company -> {
             StringBuilder sb = new StringBuilder();
             count.getAndIncrement();
@@ -72,12 +82,12 @@ public class CompanyControllerTest {
     @Test
     @DisplayName("회사 ID로 객체 삭제 기능 테스트")
     void deleteByCompanyIdTest() {
-        Company company = companyController.addCompany(senvexName, senvexCountry, senvexRegion);
+        Company company = companyController.addCompany(senvexName, senvexCountry, senvexRegion).getBody();
         long id = company.getId();
         companyController.deleteCompanyById(id);
         assertThatThrownBy(() -> {
             companyController.findCompanyById(id);
-        }).isInstanceOf(NoSuchElementException.class);
+        }).isInstanceOf(ResourceNotFound.class);
     }
 
     @Test
@@ -85,8 +95,9 @@ public class CompanyControllerTest {
     void deleteAllCompaniesTest() {
         System.out.println(companyController.deleteAllCompanies());
         AtomicInteger count = new AtomicInteger();
-        Iterable<Company> allCompanies = companyController.getAllCompanies();
+        Iterable<Company> allCompanies = companyController.getAllCompanies().getBody();
         allCompanies.forEach(company -> count.getAndIncrement());
         assertThat(count.intValue()).isEqualTo(0);
     }
+
 }

@@ -9,14 +9,21 @@ import java.util.Set;
 public class JobDto {
 
     private long id;
+
     private String companyName;
+
     private String country;
+
     private String region;
+
     private String position;
+
     private long bounty;
+
     private String stack;
 
     private String description;
+
     private Set<Long> otherJobIdsOfCompany;
 
     @JsonProperty("채용공고_id")
@@ -63,4 +70,5 @@ public class JobDto {
     public Set<Long> getOtherJobIdsOfCompany() {
         return otherJobIdsOfCompany;
     }
+
 }

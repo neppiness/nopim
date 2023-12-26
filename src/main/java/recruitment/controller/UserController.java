@@ -1,62 +1,71 @@
 package recruitment.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.User;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.UserRepository;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Controller
-@RequestMapping(path="/user")
+@RequestMapping(path = "/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @PostMapping(path="/add")
-    public @ResponseBody User addUser(
-            @RequestParam String name
-    ) {
+    @PostMapping(path = "/add")
+    public ResponseEntity<User> addUser(@RequestParam String name) {
         User user = new User();
         user.setName(name);
         userRepository.save(user);
-        return user;
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(user);
     }
 
-    @GetMapping(path="/{userId}")
-    public @ResponseBody User findUserById(
-            @PathVariable long userId
-    ) {
+    @GetMapping(path = "/{userId}")
+    public ResponseEntity<User> findUserById(@PathVariable long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
-        return mayBeFoundUser.get();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(mayBeFoundUser.get());
     }
 
-    @GetMapping(path="/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
-        return userRepository.findAll();
+    @GetMapping(path = "/all")
+    public ResponseEntity<Iterable<User>> getAllUsers() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userRepository.findAll());
     }
 
-    @DeleteMapping(path="/{userId}")
-    public @ResponseBody String deleteUserById(
-            @PathVariable Long userId
-    ) {
-        Optional<User> foundUser = userRepository.findById(userId);
-        if (foundUser.isEmpty()) {
-            throw new NoSuchElementException();
+    @DeleteMapping(path = "/{userId}")
+    public ResponseEntity<String> deleteUserById(@PathVariable Long userId) {
+        Optional<User> mayBeFoundUser = userRepository.findById(userId);
+        if (mayBeFoundUser.isEmpty()) {
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
         userRepository.deleteById(userId);
-        return "The user is deleted (userId: " + userId + ")";
+        String message = "The user is deleted (userId: " + userId + ")";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
 
-    @DeleteMapping(path="/all")
-    public @ResponseBody String deleteAllUsers() {
+    @DeleteMapping(path = "/all")
+    public ResponseEntity<String> deleteAllUsers() {
         userRepository.deleteAll();
-        return "All user data deleted";
+        String message = "All user data deleted";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(message);
     }
+
 }

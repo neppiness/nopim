@@ -48,4 +48,5 @@ public class Application {
         detailedDto.setJobSimpleDto(this.job.convertToJobSimpleDto());
         return detailedDto;
     }
+
 }
