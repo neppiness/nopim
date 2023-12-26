@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.*;
+import recruitment.dto.ApplicationDetailResponse;
+import recruitment.dto.ApplicationResponse;
+import recruitment.domain.Job;
 import recruitment.exception.ResourceAlreadyExist;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
@@ -26,21 +29,21 @@ public class ApplicationController {
     private final UserRepository userRepository;
 
     @GetMapping(path = "/{userId}/find/{jobId}")
-    public ResponseEntity<ApplicationDto> findApplicationByUserIdAndJobId(@PathVariable Long userId,
-                                                                          @PathVariable Long jobId) {
+    public ResponseEntity<ApplicationResponse> findApplicationByUserIdAndJobId(@PathVariable Long userId,
+                                                                               @PathVariable Long jobId) {
         Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
                 jobId);
         if (mayBeFoundApplication.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
         }
-        ApplicationDto foundApplicationDto = mayBeFoundApplication.get().convertToDto();
+        ApplicationResponse foundApplicationResponse = mayBeFoundApplication.get().convertToDto();
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(foundApplicationDto);
+                .body(foundApplicationResponse);
     }
 
     @GetMapping(path = "/{userId}/detail/{jobId}")
-    public ResponseEntity<ApplicationDetailedDto> findDetailedApplicationByUserIdAndJobId(
+    public ResponseEntity<ApplicationDetailResponse> findDetailedApplicationByUserIdAndJobId(
             @PathVariable Long userId,
             @PathVariable Long jobId
     ) {
@@ -49,14 +52,14 @@ public class ApplicationController {
         if (mayBeFoundApplication.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
         }
-        ApplicationDetailedDto foundDetailedDto = mayBeFoundApplication.get().convertToDetailedDto();
+        ApplicationDetailResponse foundDetailedDto = mayBeFoundApplication.get().convertToDetailedDto();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(foundDetailedDto);
     }
 
     @PostMapping(path = "/{userId}/add")
-    public ResponseEntity<ApplicationDto> addApplication(@PathVariable Long userId, @RequestParam Long jobId) {
+    public ResponseEntity<ApplicationResponse> addApplication(@PathVariable Long userId, @RequestParam Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
@@ -82,14 +85,14 @@ public class ApplicationController {
     }
 
     @GetMapping(path = "/{userId}/all")
-    public ResponseEntity<Collection<ApplicationDto>> findApplicationsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<Collection<ApplicationResponse>> findApplicationsByUserId(@PathVariable Long userId) {
         Collection<Application> foundApplications = applicationRepository.findApplicationsByUserId(userId);
-        List<ApplicationDto> foundApplicationDtoList = foundApplications.stream()
+        List<ApplicationResponse> foundApplicationResponseList = foundApplications.stream()
                 .map(Application::convertToDto)
                 .toList();
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(foundApplicationDtoList);
+                .body(foundApplicationResponseList);
     }
 
     @DeleteMapping(path = "/{userId}/delete/{jobId}")

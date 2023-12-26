@@ -18,7 +18,7 @@ import recruitment.controller.CompanyController;
 import recruitment.controller.JobController;
 import recruitment.controller.UserController;
 import recruitment.domain.Company;
-import recruitment.domain.JobSimpleDto;
+import recruitment.dto.JobSimpleResponse;
 import recruitment.domain.User;
 import recruitment.repository.ApplicationRepository;
 
@@ -58,13 +58,13 @@ class RecruitmentApplicationTests {
 
     private Company kakao;
 
-    private JobSimpleDto jobOfWantedLab;
+    private JobSimpleResponse jobOfWantedLab;
 
-    private JobSimpleDto jobOfWanted;
+    private JobSimpleResponse jobOfWanted;
 
-    private JobSimpleDto jobOfNaver;
+    private JobSimpleResponse jobOfNaver;
 
-    private JobSimpleDto jobOfKakao;
+    private JobSimpleResponse jobOfKakao;
 
     @BeforeEach
     void testSetup() {

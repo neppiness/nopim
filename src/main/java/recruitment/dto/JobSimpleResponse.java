@@ -1,11 +1,11 @@
-package recruitment.domain;
+package recruitment.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class JobSimpleDto {
+public class JobSimpleResponse {
 
     @JsonProperty("채용공고_id")
     private final long id;
@@ -29,8 +29,8 @@ public class JobSimpleDto {
     private final String stack;
 
     @Builder
-    public JobSimpleDto(final long id, final String companyName, final String country, final String region,
-                        final String position, final long bounty, final String stack) {
+    public JobSimpleResponse(final long id, final String companyName, final String country, final String region,
+                             final String position, final long bounty, final String stack) {
         this.id = id;
         this.companyName = companyName;
         this.country = country;

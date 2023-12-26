@@ -8,6 +8,8 @@ import lombok.Getter;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.NoArgsConstructor;
+import recruitment.dto.JobResponse;
+import recruitment.dto.JobSimpleResponse;
 
 @Getter
 @NoArgsConstructor
@@ -66,7 +68,7 @@ public class Job {
         return false;
     }
 
-    public JobDto convertToJobDto() {
+    public JobResponse convertToJobResponse() {
         Set<Long> jobIdList = new HashSet<>();
         Set<Job> companyJobs = this.company.getJobs();
         if (companyJobs == null) {
@@ -80,7 +82,7 @@ public class Job {
             jobIdList.add(job.getId());
         });
 
-        return JobDto.builder()
+        return JobResponse.builder()
                 .id(this.id)
                 .companyName(this.company.getName())
                 .country(this.company.getCountry())
@@ -93,8 +95,8 @@ public class Job {
                 .build();
     }
 
-    public JobSimpleDto convertToJobSimpleDto() {
-        return JobSimpleDto.builder()
+    public JobSimpleResponse convertToJobSimpleResponse() {
+        return JobSimpleResponse.builder()
                 .id(this.id)
                 .companyName(this.company.getName())
                 .country(this.company.getCountry())
