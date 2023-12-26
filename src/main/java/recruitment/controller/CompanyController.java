@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Company;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.CompanyRepository;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -34,7 +34,7 @@ public class CompanyController {
     public ResponseEntity<Company> findCompanyById(@PathVariable long companyId) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
         if (foundCompany.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -52,7 +52,7 @@ public class CompanyController {
     public ResponseEntity<String> deleteCompanyById(@PathVariable long companyId) {
         Optional<Company> foundCompany = companyRepository.findById(companyId);
         if (foundCompany.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
         companyRepository.deleteById(companyId);
         String message = "The company is deleted (companyId: " + companyId + ")";

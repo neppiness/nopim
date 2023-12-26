@@ -1,12 +1,13 @@
 package recruitment.controller;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.*;
+import recruitment.exception.ResourceAlreadyExist;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
@@ -30,7 +31,7 @@ public class ApplicationController {
         Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
                 jobId);
         if (mayBeFoundApplication.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
         }
         ApplicationDto foundApplicationDto = mayBeFoundApplication.get().convertToDto();
         return ResponseEntity
@@ -46,7 +47,7 @@ public class ApplicationController {
         Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
                 jobId);
         if (mayBeFoundApplication.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
         }
         ApplicationDetailedDto foundDetailedDto = mayBeFoundApplication.get().convertToDetailedDto();
         return ResponseEntity
@@ -58,16 +59,16 @@ public class ApplicationController {
     public ResponseEntity<ApplicationDto> addApplication(@PathVariable Long userId, @RequestParam Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
         Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
                 jobId);
         if (mayBeFoundApplication.isPresent()) {
-            throw new DuplicateRequestException();
+            throw new ResourceAlreadyExist(ResourceAlreadyExist.APPLICATION_ALREADY_EXIST);
         }
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
         Application application = new Application();
         application.setUser(mayBeFoundUser.get());
@@ -96,7 +97,7 @@ public class ApplicationController {
         Optional<Application> mayBeFoundApplication = applicationRepository.findApplicationByUserIdAndJobId(userId,
                 jobId);
         if (mayBeFoundApplication.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.APPLICATION_NOT_FOUND);
         }
         applicationRepository.delete(mayBeFoundApplication.get());
         String message = "The application data is deleted (userId: " + userId + ", jobId: " + jobId + ")";
@@ -110,7 +111,7 @@ public class ApplicationController {
     public ResponseEntity<String> deleteAllApplicationsByUserId(@PathVariable Long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
         applicationRepository.deleteApplicationsByUserId(userId);
         String message = "All application data of the user is deleted (userId : " + userId + ")";

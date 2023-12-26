@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.*;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 
 import java.util.Collection;
@@ -142,7 +143,7 @@ public class ApplicationControllerTest {
 
         Assertions.assertThatThrownBy(() -> {
             applicationController.findApplicationByUserIdAndJobId(user.getId(), jobForWanted.getId());
-        }).isInstanceOf(NoSuchElementException.class);
+        }).isInstanceOf(ResourceNotFound.class);
     }
 
     @Test

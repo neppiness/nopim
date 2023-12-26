@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.User;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.UserRepository;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Controller
@@ -32,7 +32,7 @@ public class UserController {
     public ResponseEntity<User> findUserById(@PathVariable long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -48,9 +48,9 @@ public class UserController {
 
     @DeleteMapping(path = "/{userId}")
     public ResponseEntity<String> deleteUserById(@PathVariable Long userId) {
-        Optional<User> foundUser = userRepository.findById(userId);
-        if (foundUser.isEmpty()) {
-            throw new NoSuchElementException();
+        Optional<User> mayBeFoundUser = userRepository.findById(userId);
+        if (mayBeFoundUser.isEmpty()) {
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
         userRepository.deleteById(userId);
         String message = "The user is deleted (userId: " + userId + ")";

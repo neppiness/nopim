@@ -8,6 +8,7 @@ import recruitment.domain.Company;
 import recruitment.domain.Job;
 import recruitment.domain.JobDto;
 import recruitment.domain.JobSimpleDto;
+import recruitment.exception.ResourceNotFound;
 import recruitment.repository.CompanyRepository;
 import recruitment.repository.JobRepository;
 
@@ -29,8 +30,7 @@ public class JobController {
         Job job = new Job();
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
         if (mayBeFoundCompany.isEmpty()) {
-            String msg = "The company not found (companyId: " + companyId + ")";
-            throw new Error(msg);
+            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
         job.setCompany(mayBeFoundCompany.get());
         job.setPosition(position);
@@ -63,7 +63,7 @@ public class JobController {
     public ResponseEntity<JobDto> getJobDetail(@PathVariable Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -90,7 +90,7 @@ public class JobController {
                                                   @RequestParam(required = false) String stack) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
         Job foundJob = mayBeFoundJob.get();
         if (position != null) {
@@ -114,7 +114,7 @@ public class JobController {
     public ResponseEntity<String> deleteJobById(@PathVariable Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new NoSuchElementException();
+            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
         jobRepository.deleteById(jobId);
         String message = "The job is deleted (jobId: " + jobId + ")";
