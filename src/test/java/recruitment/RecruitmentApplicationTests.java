@@ -23,6 +23,7 @@ import recruitment.domain.User;
 import recruitment.repository.ApplicationRepository;
 
 import java.nio.charset.Charset;
+import recruitment.repository.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -45,6 +46,9 @@ class RecruitmentApplicationTests {
 
     @Autowired
     private ApplicationRepository applicationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private MockMvc mockMvc;
 
@@ -71,11 +75,11 @@ class RecruitmentApplicationTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         applicationRepository.deleteAll();
-        userController.deleteAllUsers();
+        userRepository.deleteAll();
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
 
-        user = userController.addUser("김정현").getBody();
+        user = userController.signUp("김정현", "1234").getBody();
 
         wantedLab = companyController.addCompany("원티드랩", "한국", "서울").getBody();
         wanted = companyController.addCompany("원티드코리아", "한국", "부산").getBody();

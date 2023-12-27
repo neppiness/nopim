@@ -21,6 +21,7 @@ import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 
 import java.util.Collection;
+import recruitment.repository.UserRepository;
 
 @SpringBootTest
 @Transactional
@@ -34,6 +35,9 @@ public class ApplicationControllerTest {
 
     @Autowired
     ApplicationRepository applicationRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     UserController userController;
@@ -55,7 +59,7 @@ public class ApplicationControllerTest {
     JobSimpleResponse jobForNaver;
 
     void userSetup() {
-        user = userController.addUser("Kim-Jeonghyun").getBody();
+        user = userController.signUp("Kim-Jeonghyun", "1234").getBody();
     }
 
     void companySetup() {
@@ -83,7 +87,7 @@ public class ApplicationControllerTest {
     @BeforeEach
     void jobControllerTestSetup() {
         applicationRepository.deleteAll();
-        userController.deleteAllUsers();
+        userRepository.deleteAll();
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
         userSetup();

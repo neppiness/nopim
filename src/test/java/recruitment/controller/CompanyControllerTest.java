@@ -14,6 +14,7 @@ import recruitment.repository.ApplicationRepository;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
+import recruitment.repository.UserRepository;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -38,12 +39,12 @@ public class CompanyControllerTest {
     ApplicationRepository applicationRepository;
 
     @Autowired
-    UserController userController;
+    UserRepository userRepository;
 
     @BeforeEach
     void companyTestSetup() {
         applicationRepository.deleteAll();
-        userController.deleteAllUsers();
+        userRepository.deleteAll();
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
 

@@ -9,12 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import recruitment.domain.Authority;
 import recruitment.domain.User;
 import recruitment.repository.ApplicationRepository;
 import recruitment.repository.UserRepository;
 
-import java.util.HashMap;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -34,44 +33,57 @@ class UserControllerTest {
     @BeforeEach
     void userDatabaseSetup() {
         applicationRepository.deleteAll();
-        userController.deleteAllUsers();
-        userController.addUser("Kim-Seonghyeon");
-        userController.addUser("Kim-Jeonghyun");
+        userRepository.deleteAll();
     }
 
     @Test
-    @DisplayName(value = "유저 등록 및 유저 ID로 유저 검색 테스트")
-    void addUserAndFindUserByIDTest() {
-        User addedUser = userController.addUser("KJH").getBody();
+    @DisplayName(value = "회원가입 테스트")
+    void signUpTest() {
+        String name = "KJH";
+        String password = "4567";
+
+        User addedUser = userController.signUp(name, password).getBody();
+        assert addedUser != null;
+
         Optional<User> mayBeFoundUser = userRepository.findById(addedUser.getId());
-        if (mayBeFoundUser.isEmpty()) {
-            throw new NoSuchElementException();
-        }
+        assert mayBeFoundUser.isPresent();
         User foundUser = mayBeFoundUser.get();
-        Assertions.assertThat(addedUser).isEqualTo(foundUser);
+        Assertions
+                .assertThat(addedUser)
+                .isEqualTo(foundUser);
     }
 
     @Test
-    @DisplayName(value = "모든 사용자 조회 테스트")
-    void getAllUsersTest() {
-        Iterable<User> allUsers = userController.getAllUsers().getBody();
-        HashMap<String, Boolean> userNameCheck = new HashMap<>();
-        userNameCheck.put("Kim-Seonghyeon", false);
-        userNameCheck.put("Kim-Jeonghyun", false);
-        allUsers.forEach(user -> {
-            System.out.println("user.getName() = " + user.getName());
-            userNameCheck.put(user.getName(), true);
-        });
-        Assertions.assertThat(userNameCheck.values()).doesNotContain(false);
+    @DisplayName(value = "로그인 테스트")
+    void loginTest() {
+        String name = "KJH";
+        String password = "4567";
+
+        User addedUser = userController.signUp(name, password).getBody();
+        assert addedUser != null;
+
+        User loginInfo = userController.login(name, password).getBody();
+        Assertions
+                .assertThat(addedUser)
+                .isEqualTo(loginInfo);
     }
 
     @Test
-    @DisplayName(value = "모든 사용자 제거 테스트")
-    void deleteAllUsersTest() {
-        String log = userController.deleteAllUsers().getBody();
-        System.out.println("log = " + log);
-        Iterable<User> allUsers = userController.getAllUsers().getBody();
-        Assertions.assertThat(allUsers).isEmpty();
+    @DisplayName(value = "권한 상승 테스트")
+    void promoteTest() {
+        String name = "KJH";
+        String password = "4567";
+        User addedUser = userController.signUp(name, password).getBody();
+        assert addedUser != null;
+
+        userController.promote(addedUser.getId());
+
+        Optional<User> mayBePromotedUser = userRepository.findById(addedUser.getId());
+        assert mayBePromotedUser.isPresent();
+        User promotedUser = mayBePromotedUser.get();
+        Assertions
+                .assertThat(promotedUser.getAuthority())
+                .isEqualTo(Authority.MANAGER);
     }
 
 }

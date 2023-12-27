@@ -19,10 +19,18 @@ public class User {
     @JsonProperty("사용자_이름")
     private String name;
 
+    @JsonProperty("사용자_비밀번호")
+    private String password;
+
+    @JsonProperty("사용자_비밀번호")
+    private Authority authority;
+
     @Builder
-    public User(final long id, final String name) {
+    public User(final long id, final String name, final String password, final Authority authority) {
         this.id = id;
         this.name = name;
+        this.password = password;
+        this.authority = authority;
     }
 
 }

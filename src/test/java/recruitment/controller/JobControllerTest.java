@@ -17,6 +17,7 @@ import recruitment.domain.Company;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
 import recruitment.repository.ApplicationRepository;
+import recruitment.repository.UserRepository;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -34,6 +35,9 @@ public class JobControllerTest {
     ApplicationRepository applicationRepository;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     JobController jobController;
 
     @Autowired
@@ -49,7 +53,7 @@ public class JobControllerTest {
     @BeforeEach
     void jobControllerTestSetup() {
         applicationRepository.deleteAll();
-        userController.deleteAllUsers();
+        userRepository.deleteAll();
         jobController.deleteAllJobs();
         companyController.deleteAllCompanies();
 
