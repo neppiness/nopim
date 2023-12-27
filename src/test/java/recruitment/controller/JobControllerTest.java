@@ -17,6 +17,7 @@ import recruitment.domain.Company;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
 import recruitment.repository.ApplicationRepository;
+import recruitment.repository.CompanyRepository;
 import recruitment.repository.UserRepository;
 
 import static org.assertj.core.api.Assertions.*;
@@ -44,7 +45,7 @@ public class JobControllerTest {
     CompanyController companyController;
 
     @Autowired
-    UserController userController;
+    CompanyRepository companyRepository;
 
     Company wanted;
 
@@ -55,10 +56,10 @@ public class JobControllerTest {
         applicationRepository.deleteAll();
         userRepository.deleteAll();
         jobController.deleteAllJobs();
-        companyController.deleteAllCompanies();
+        companyRepository.deleteAll();
 
-        wanted = companyController.addCompany("원티드", "한국", "서울").getBody();
-        naver = companyController.addCompany("네이버", "한국", "분당").getBody();
+        wanted = companyController.create("원티드", "한국", "서울").getBody();
+        naver = companyController.create("네이버", "한국", "분당").getBody();
         jobController.addJob(
                 wanted.getId(),
                 "백엔드 주니어 개발자",

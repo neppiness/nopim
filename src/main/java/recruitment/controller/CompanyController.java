@@ -1,5 +1,6 @@
 package recruitment.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,58 +18,35 @@ public class CompanyController {
 
     private final CompanyRepository companyRepository;
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<Company> addCompany(@RequestParam String name, @RequestParam String country,
-                                              @RequestParam String region) {
+    @PostMapping(path = "")
+    public ResponseEntity<Company> create(@RequestParam String name, @RequestParam String country,
+                                          @RequestParam String region) {
         Company company = Company.builder()
                 .name(name)
                 .country(country)
                 .region(region)
                 .build();
-        companyRepository.save(company);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(company);
+                .status(HttpStatus.CREATED)
+                .body(companyRepository.save(company));
     }
 
-    @GetMapping(path = "/{companyId}")
-    public ResponseEntity<Company> findCompanyById(@PathVariable long companyId) {
-        Optional<Company> foundCompany = companyRepository.findById(companyId);
-        if (foundCompany.isEmpty()) {
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<Company>> search(@RequestParam String name, @RequestParam String region, @RequestParam String country) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(companyRepository.findByParameters(name, region, country));
+    }
+
+    @GetMapping(path = "/detail/{companyId}")
+    public ResponseEntity<Company> getDetail(@PathVariable Long companyId) {
+        Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
+        if (mayBeFoundCompany.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(foundCompany.get());
-    }
-
-    @GetMapping(path = "/all")
-    public ResponseEntity<Iterable<Company>> getAllCompanies() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(companyRepository.findAll());
-    }
-
-    @DeleteMapping(path = "/{companyId}")
-    public ResponseEntity<String> deleteCompanyById(@PathVariable long companyId) {
-        Optional<Company> foundCompany = companyRepository.findById(companyId);
-        if (foundCompany.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
-        }
-        companyRepository.deleteById(companyId);
-        String message = "The company is deleted (companyId: " + companyId + ")";
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(message);
-    }
-
-    @DeleteMapping(path = "/all")
-    public ResponseEntity<String> deleteAllCompanies() {
-        companyRepository.deleteAll();
-        String message = "All company data deleted";
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(message);
+                .body(mayBeFoundCompany.get());
     }
 
 }

@@ -23,6 +23,7 @@ import recruitment.domain.User;
 import recruitment.repository.ApplicationRepository;
 
 import java.nio.charset.Charset;
+import recruitment.repository.CompanyRepository;
 import recruitment.repository.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -46,6 +47,9 @@ class RecruitmentApplicationTests {
 
     @Autowired
     private ApplicationRepository applicationRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -77,14 +81,14 @@ class RecruitmentApplicationTests {
         applicationRepository.deleteAll();
         userRepository.deleteAll();
         jobController.deleteAllJobs();
-        companyController.deleteAllCompanies();
+        companyRepository.deleteAll();
 
         user = userController.signUp("김정현", "1234").getBody();
 
-        wantedLab = companyController.addCompany("원티드랩", "한국", "서울").getBody();
-        wanted = companyController.addCompany("원티드코리아", "한국", "부산").getBody();
-        naver = companyController.addCompany("네이버", "한국", "판교").getBody();
-        kakao = companyController.addCompany("카카오", "한국", "판교").getBody();
+        wantedLab = companyController.create("원티드랩", "한국", "서울").getBody();
+        wanted = companyController.create("원티드코리아", "한국", "부산").getBody();
+        naver = companyController.create("네이버", "한국", "판교").getBody();
+        kakao = companyController.create("카카오", "한국", "판교").getBody();
 
         jobOfNaver = jobController.addJob(
                 naver.getId(),
@@ -109,6 +113,7 @@ class RecruitmentApplicationTests {
         ).getBody();
     }
 
+    @DisplayName(value = "컨텍스트 로드 테스트")
     @Test
     void contextLoads() {
     }

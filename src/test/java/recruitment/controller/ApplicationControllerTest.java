@@ -21,6 +21,7 @@ import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 
 import java.util.Collection;
+import recruitment.repository.CompanyRepository;
 import recruitment.repository.UserRepository;
 
 @SpringBootTest
@@ -48,6 +49,9 @@ public class ApplicationControllerTest {
     @Autowired
     CompanyController companyController;
 
+    @Autowired
+    CompanyRepository companyRepository;
+
     Company wanted;
 
     Company naver;
@@ -63,8 +67,8 @@ public class ApplicationControllerTest {
     }
 
     void companySetup() {
-        wanted = companyController.addCompany("원티드", "한국", "서울").getBody();
-        naver = companyController.addCompany("네이버", "한국", "분당").getBody();
+        wanted = companyController.create("원티드", "한국", "서울").getBody();
+        naver = companyController.create("네이버", "한국", "분당").getBody();
     }
 
     void jobSetup() {
@@ -89,7 +93,7 @@ public class ApplicationControllerTest {
         applicationRepository.deleteAll();
         userRepository.deleteAll();
         jobController.deleteAllJobs();
-        companyController.deleteAllCompanies();
+        companyRepository.deleteAll();
         userSetup();
         companySetup();
         jobSetup();
