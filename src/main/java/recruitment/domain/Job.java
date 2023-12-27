@@ -21,7 +21,7 @@ public class Job {
     @Id
     private long id;
 
-    @JsonProperty("회사_id")
+    @JsonProperty("회사")
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;

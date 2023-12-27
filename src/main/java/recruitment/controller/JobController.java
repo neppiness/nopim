@@ -14,7 +14,7 @@ import recruitment.repository.JobRepository;
 
 import java.util.*;
 
-@RequestMapping(path = "/job")
+@RequestMapping(path = "/jobs")
 @RequiredArgsConstructor
 @RestController
 public class JobController {
@@ -23,72 +23,34 @@ public class JobController {
 
     private final CompanyRepository companyRepository;
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<JobSimpleResponse> addJob(@RequestParam Long companyId, @RequestParam String position,
+    @PostMapping(path = "")
+    public ResponseEntity<Job> create(@RequestParam Long companyId, @RequestParam String position,
                                                     @RequestParam Long bounty, @RequestParam String stack,
                                                     @RequestParam String description) {
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
         if (mayBeFoundCompany.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
-        Job job = Job.builder()
+        Job createdJob = Job.builder()
                 .company(mayBeFoundCompany.get())
                 .position(position)
                 .bounty(bounty)
                 .stack(stack)
                 .description(description)
                 .build();
-        jobRepository.save(job);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(job.convertToJobSimpleResponse());
+                .body(jobRepository.save(createdJob));
     }
 
-    @GetMapping(path = "/search")
-    public ResponseEntity<Iterable<JobSimpleResponse>> searchJob(@RequestParam String keyword) {
-        Iterable<Job> allJobs = jobRepository.findAll();
-        List<JobSimpleResponse> foundJobs = new ArrayList<>();
-
-        allJobs.iterator().forEachRemaining(job -> {
-            if (job.hasKeywordInAttributes(keyword)) {
-                foundJobs.add(job.convertToJobSimpleResponse());
-            }
-        });
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(foundJobs);
-    }
-
-    @GetMapping(path = "/detail/{jobId}")
-    public ResponseEntity<JobResponse> getJobDetail(@PathVariable Long jobId) {
-        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
-        if (mayBeFoundJob.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(mayBeFoundJob.get().convertToJobResponse());
-    }
-
-    @GetMapping(path = "/all")
-    public ResponseEntity<Iterable<JobSimpleResponse>> findAllJobs() {
-        Iterable<Job> allJobs = jobRepository.findAll();
-        List<JobSimpleResponse> jobs = new ArrayList<>();
-        for (Job job : allJobs) {
-            jobs.add(job.convertToJobSimpleResponse());
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(jobs);
-    }
-
-    @PutMapping(path = "/update/{jobId}")
-    public ResponseEntity<JobSimpleResponse> updateJob(@PathVariable Long jobId,
-                                                       @RequestParam(required = false) String position,
-                                                       @RequestParam(required = false) Long bounty,
-                                                       @RequestParam(required = false) String description,
-                                                       @RequestParam(required = false) String stack) {
-        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<Job> update(@PathVariable Long id,
+                                                    @RequestParam(required = false) String position,
+                                                    @RequestParam(required = false) Long bounty,
+                                                    @RequestParam(required = false) String description,
+                                                    @RequestParam(required = false) String stack) {
+        Optional<Job> mayBeFoundJob = jobRepository.findById(id);
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
@@ -118,29 +80,50 @@ public class JobController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(jobRepository.save(jobToBeUpdated).convertToJobSimpleResponse());
+                .body(jobRepository.save(jobToBeUpdated));
     }
 
-    @DeleteMapping(path = "/delete/{jobId}")
-    public ResponseEntity<String> deleteJobById(@PathVariable Long jobId) {
-        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        Optional<Job> mayBeFoundJob = jobRepository.findById(id);
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
-        jobRepository.deleteById(jobId);
-        String message = "The job is deleted (jobId: " + jobId + ")";
+        jobRepository.deleteById(id);
+        String message = "The job is deleted (id: " + id + ")";
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .body(message);
     }
 
-    @DeleteMapping(path = "/delete/all")
-    public ResponseEntity<String> deleteAllJobs() {
-        jobRepository.deleteAll();
-        String message = "All job data deleted";
+    @GetMapping(path = "")
+    public ResponseEntity<List<JobSimpleResponse>> getAll() {
+        Iterable<Job> allJobs = jobRepository.findAll();
+        List<JobSimpleResponse> jobSimpleResponseList = new ArrayList<>();
+        for (Job job : allJobs) {
+            jobSimpleResponseList.add(job.convertToJobSimpleResponse());
+        }
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(message);
+                .status(HttpStatus.OK)
+                .body(jobSimpleResponseList);
+    }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<JobSimpleResponse>> search(@RequestParam String keyword) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(jobRepository.findByKeyword(keyword));
+    }
+
+    @GetMapping(path = "/detail/{id}")
+    public ResponseEntity<JobResponse> getDetail(@PathVariable Long id) {
+        Optional<Job> mayBeFoundJob = jobRepository.findById(id);
+        if (mayBeFoundJob.isEmpty()) {
+            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
+        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(mayBeFoundJob.get().convertToJobResponse());
     }
 
 }

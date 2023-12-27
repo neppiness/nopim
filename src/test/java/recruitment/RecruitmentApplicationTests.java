@@ -18,12 +18,13 @@ import recruitment.controller.CompanyController;
 import recruitment.controller.JobController;
 import recruitment.controller.UserController;
 import recruitment.domain.Company;
-import recruitment.dto.JobSimpleResponse;
+import recruitment.domain.Job;
 import recruitment.domain.User;
 import recruitment.repository.ApplicationRepository;
 
 import java.nio.charset.Charset;
 import recruitment.repository.CompanyRepository;
+import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,7 +53,11 @@ class RecruitmentApplicationTests {
     private CompanyRepository companyRepository;
 
     @Autowired
+    private JobRepository jobRepository;
+
+    @Autowired
     private UserRepository userRepository;
+
 
     private MockMvc mockMvc;
 
@@ -66,13 +71,13 @@ class RecruitmentApplicationTests {
 
     private Company kakao;
 
-    private JobSimpleResponse jobOfWantedLab;
+    private Job jobOfWantedLab;
 
-    private JobSimpleResponse jobOfWanted;
+    private Job jobOfWanted;
 
-    private JobSimpleResponse jobOfNaver;
+    private Job jobOfNaver;
 
-    private JobSimpleResponse jobOfKakao;
+    private Job jobOfKakao;
 
     @BeforeEach
     void testSetup() {
@@ -80,7 +85,7 @@ class RecruitmentApplicationTests {
 
         applicationRepository.deleteAll();
         userRepository.deleteAll();
-        jobController.deleteAllJobs();
+        jobRepository.deleteAll();
         companyRepository.deleteAll();
 
         user = userController.signUp("김정현", "1234").getBody();
@@ -90,21 +95,21 @@ class RecruitmentApplicationTests {
         naver = companyController.create("네이버", "한국", "판교").getBody();
         kakao = companyController.create("카카오", "한국", "판교").getBody();
 
-        jobOfNaver = jobController.addJob(
+        jobOfNaver = jobController.create(
                 naver.getId(),
                 "Django 백엔드 개발자",
                 1_000_000L,
                 "Django",
                 "네이버에서 백엔드 개발자를 채용합니다."
         ).getBody();
-        jobOfWanted = jobController.addJob(
+        jobOfWanted = jobController.create(
                 wanted.getId(),
                 "프론트엔드 개발자",
                 500_000L,
                 "javascript",
                 "원티드코리아에서 프론트엔드 개발자를 채용합니다. 자격요건은.."
         ).getBody();
-        jobOfKakao = jobController.addJob(
+        jobOfKakao = jobController.create(
                 kakao.getId(),
                 "Django 백엔드 개발자",
                 500_000L,
@@ -122,7 +127,7 @@ class RecruitmentApplicationTests {
     @DisplayName("1. 채용공고를 등록합니다.")
     void functionalRequirementsTest1() throws Exception {
         MvcResult mvcResult = mockMvc.perform(
-                post("/job/add")
+                post("/jobs")
                         .param("companyId", String.valueOf(wantedLab.getId()))
                         .param("position", "백엔드 주니어 개발자")
                         .param("bounty", "1000000")
@@ -139,7 +144,7 @@ class RecruitmentApplicationTests {
     void functionalRequirementsTest2() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
-                get("/job/search")
+                get("/jobs/search")
                         .param("keyword", String.valueOf(jobOfWanted.getId()))
         ).andReturn();
         String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
@@ -149,7 +154,7 @@ class RecruitmentApplicationTests {
         System.out.println();
 
         mvcResult = mockMvc.perform(
-                put("/job/update/" + jobOfWanted.getId())
+                put("/jobs/" + jobOfWanted.getId())
                         .param("bounty", "1000000")
         ).andReturn();
         rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
@@ -159,7 +164,7 @@ class RecruitmentApplicationTests {
         System.out.println();
 
         mvcResult = mockMvc.perform(
-                put("/job/update/" + jobOfWanted.getId())
+                put("/jobs/" + jobOfWanted.getId())
                         .param("stack", "react")
         ).andReturn();
         rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
@@ -173,7 +178,7 @@ class RecruitmentApplicationTests {
     void functionalRequirementsTest3() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
-                get("/job/search")
+                get("/jobs/search")
                         .param("keyword", String.valueOf(jobOfWanted.getId()))
         ).andReturn();
         String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
@@ -183,14 +188,14 @@ class RecruitmentApplicationTests {
         System.out.println();
 
         mvcResult = mockMvc.perform(
-                delete("/job/delete/" + jobOfWanted.getId())
+                delete("/jobs/" + jobOfWanted.getId())
         ).andReturn();
         System.out.println("삭제 실행");
         System.out.println(mvcResult.getResponse().getContentAsString());
         System.out.println();
 
         mvcResult = mockMvc.perform(
-                get("/job/search")
+                get("/jobs/search")
                         .param("keyword", String.valueOf(jobOfWanted.getId()))
         ).andReturn();
         rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
@@ -204,7 +209,7 @@ class RecruitmentApplicationTests {
     void functionalRequirementsTest4_1() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
-                get("/job/all")
+                get("/jobs")
         ).andReturn();
         String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONArray jsonArray = new JSONArray(rawJsonString);
@@ -218,7 +223,7 @@ class RecruitmentApplicationTests {
         MvcResult mvcResult;
         System.out.println("키워드-원티드로 검색");
         mvcResult = mockMvc.perform(
-                post("/job/add")
+                post("/jobs")
                         .param("companyId", String.valueOf(wantedLab.getId()))
                         .param("position", "백엔드 주니어 개발자")
                         .param("bounty", "1000000")
@@ -233,7 +238,7 @@ class RecruitmentApplicationTests {
         System.out.println();
 
         mvcResult = mockMvc.perform(
-                get("/job/search")
+                get("/jobs/search")
                         .param("keyword", "원티드")
         ).andReturn();
         String rawJsonArrayString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
@@ -247,7 +252,7 @@ class RecruitmentApplicationTests {
     void functionalRequirementsTest5() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
-                get("/job/detail/" + jobOfWanted.getId())
+                get("/jobs/detail/" + jobOfWanted.getId())
         ).andReturn();
         String rawJsonArrayString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONObject jsonObject = new JSONObject(rawJsonArrayString);

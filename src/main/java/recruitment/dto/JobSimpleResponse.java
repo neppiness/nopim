@@ -13,11 +13,11 @@ public class JobSimpleResponse {
     @JsonProperty("회사명")
     private final String companyName;
 
-    @JsonProperty("국가")
-    private final String country;
-
     @JsonProperty("지역")
     private final String region;
+
+    @JsonProperty("국가")
+    private final String country;
 
     @JsonProperty("채용포지션")
     private final String position;

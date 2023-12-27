@@ -16,6 +16,7 @@ import recruitment.domain.Company;
 import recruitment.repository.ApplicationRepository;
 
 import recruitment.repository.CompanyRepository;
+import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
 
 @SpringBootTest
@@ -43,13 +44,16 @@ public class CompanyControllerTest {
     ApplicationRepository applicationRepository;
 
     @Autowired
+    JobRepository jobRepository;
+
+    @Autowired
     UserRepository userRepository;
 
     @BeforeEach
     void companyTestSetup() {
         applicationRepository.deleteAll();
         userRepository.deleteAll();
-        jobController.deleteAllJobs();
+        jobRepository.deleteAll();
         companyRepository.deleteAll();
         companyController.create("원티드", "한국", "서울");
         companyController.create("네이버", "한국", "분당");

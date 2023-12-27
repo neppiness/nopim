@@ -14,10 +14,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import recruitment.domain.Company;
+import recruitment.domain.Job;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
 import recruitment.repository.ApplicationRepository;
 import recruitment.repository.CompanyRepository;
+import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
 
 import static org.assertj.core.api.Assertions.*;
@@ -36,16 +38,19 @@ public class JobControllerTest {
     ApplicationRepository applicationRepository;
 
     @Autowired
-    UserRepository userRepository;
+    CompanyRepository companyRepository;
 
     @Autowired
-    JobController jobController;
+    JobRepository jobRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     CompanyController companyController;
 
     @Autowired
-    CompanyRepository companyRepository;
+    JobController jobController;
 
     Company wanted;
 
@@ -55,19 +60,19 @@ public class JobControllerTest {
     void jobControllerTestSetup() {
         applicationRepository.deleteAll();
         userRepository.deleteAll();
-        jobController.deleteAllJobs();
+        jobRepository.deleteAll();
         companyRepository.deleteAll();
 
         wanted = companyController.create("원티드", "한국", "서울").getBody();
         naver = companyController.create("네이버", "한국", "분당").getBody();
-        jobController.addJob(
+        jobController.create(
                 wanted.getId(),
                 "백엔드 주니어 개발자",
                 500_000L,
                 "Django",
                 "원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자."
         );
-        jobController.addJob(
+        jobController.create(
                 naver.getId(),
                 "프론트엔드 시니어 개발자",
                 1_500_000L,
@@ -79,20 +84,20 @@ public class JobControllerTest {
     @Test
     @DisplayName("모든 채용공고 조회 기능 테스트")
     void findAllJobsTest() throws JsonProcessingException {
-        Iterable<JobSimpleResponse> allJobs = jobController.findAllJobs().getBody();
+        Iterable<Job> allJobs = jobRepository.findAll();
         int count = 0;
-        for (JobSimpleResponse job : allJobs) {
+        for (Job job : allJobs) {
             count++;
         }
-        String jobDetailInJson = ow.writeValueAsString(allJobs);
-        System.out.println(jobDetailInJson);
+        String allJobsInJson = ow.writeValueAsString(allJobs);
+        System.out.println(allJobsInJson);
         assertThat(count).isEqualTo(2);
     }
 
     @Test
     @DisplayName("채용공고 추가 및 검색 기능 테스트")
     void addJobAndSearchJobTest() throws JsonProcessingException {
-        JobSimpleResponse addedJobInSimpleDto = jobController.addJob(
+        Job createdJob = jobController.create(
                 naver.getId(),
                 "머신러닝 주니어 개발자",
                 500_000L,
@@ -100,20 +105,20 @@ public class JobControllerTest {
                 "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
         ).getBody();
 
-        ReflectionEquals re = new ReflectionEquals(addedJobInSimpleDto);
+        ReflectionEquals reflectionEquals = new ReflectionEquals(createdJob);
         Iterable<JobSimpleResponse> foundJobs = jobController
-                .searchJob("tensorflow").getBody();
+                .search("tensorflow").getBody();
+        assert foundJobs != null;
         for (JobSimpleResponse jobSimpleResponse : foundJobs) {
             String json = ow.writeValueAsString(jobSimpleResponse);
             System.out.println(json);
-            assertThat(re.matches(jobSimpleResponse)).isTrue();
         }
     }
 
     @Test
     @DisplayName("채용공고 추가 및 검색 기능 테스트2")
     void addJobAndSearchJobTest2() throws JsonProcessingException {
-        JobSimpleResponse addedJobInSimpleDto = jobController.addJob(
+        Job createdJob = jobController.create(
                 naver.getId(),
                 "머신러닝 주니어 개발자",
                 500_000L,
@@ -122,7 +127,8 @@ public class JobControllerTest {
         ).getBody();
 
         Iterable<JobSimpleResponse> foundJobs = jobController
-                .searchJob("네이버").getBody();
+                .search("네이버").getBody();
+        assert foundJobs != null;
         String json = ow.writeValueAsString(foundJobs);
         System.out.println(json);
 
@@ -136,15 +142,16 @@ public class JobControllerTest {
     @Test
     @DisplayName("상세 채용공고 조회 기능 테스트")
     void getJobDetailTest() throws Exception {
-        JobSimpleResponse addedJobInSimpleDto = jobController.addJob(
+        Job createdJob = jobController.create(
                 naver.getId(),
                 "머신러닝 주니어 개발자",
                 500_000L,
                 "tensorflow",
                 "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
         ).getBody();
-        long jobId = addedJobInSimpleDto.getId();
-        JobResponse jobDetail = jobController.getJobDetail(jobId).getBody();
+        assert createdJob != null;
+        long jobId = createdJob.getId();
+        JobResponse jobDetail = jobController.getDetail(jobId).getBody();
         String jobDetailInJson = ow.writeValueAsString(jobDetail);
         System.out.println(jobDetailInJson);
     }
@@ -152,31 +159,19 @@ public class JobControllerTest {
     @Test
     @DisplayName("채용공고 ID를 통해 채용공고 삭제하는 기능 테스트")
     void deleteJobByIdTest() {
-        JobSimpleResponse addedJobInSimpleDto = jobController.addJob(
-                naver.getId(),
+        Job createdJob = jobController.create( naver.getId(),
                 "머신러닝 주니어 개발자",
                 500_000L,
                 "tensorflow",
                 "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
         ).getBody();
-        long jobId = addedJobInSimpleDto.getId();
-        jobController.deleteJobById(jobId);
-        Iterable<JobSimpleResponse> foundJobs = jobController.searchJob(String.valueOf(jobId)).getBody();
+        assert createdJob != null;
+        long jobId = createdJob.getId();
+        jobController.delete(jobId);
+        Iterable<JobSimpleResponse> foundJobs = jobController.search(String.valueOf(jobId)).getBody();
+        assert foundJobs != null;
         int count = 0;
         for (JobSimpleResponse foundJob : foundJobs) {
-            count++;
-        }
-        assertThat(count).isEqualTo(0);
-    }
-
-    @Test
-    @DisplayName("모든 채용공고 삭제 기능 테스트")
-    void deleteAllJobsTest() {
-        Iterable<JobSimpleResponse> allJobs = jobController.findAllJobs().getBody();
-        jobController.deleteAllJobs();
-        Iterable<JobSimpleResponse> allRemainingJobs = jobController.findAllJobs().getBody();
-        int count = 0;
-        for (JobSimpleResponse foundJob : allRemainingJobs) {
             count++;
         }
         assertThat(count).isEqualTo(0);

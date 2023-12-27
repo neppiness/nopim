@@ -22,6 +22,7 @@ import recruitment.repository.ApplicationRepository;
 
 import java.util.Collection;
 import recruitment.repository.CompanyRepository;
+import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
 
 @SpringBootTest
@@ -47,6 +48,9 @@ public class ApplicationControllerTest {
     JobController jobController;
 
     @Autowired
+    JobRepository jobRepository;
+
+    @Autowired
     CompanyController companyController;
 
     @Autowired
@@ -58,9 +62,9 @@ public class ApplicationControllerTest {
 
     User user;
 
-    JobSimpleResponse jobForWanted;
+    Job jobForWanted;
 
-    JobSimpleResponse jobForNaver;
+    Job jobForNaver;
 
     void userSetup() {
         user = userController.signUp("Kim-Jeonghyun", "1234").getBody();
@@ -72,14 +76,14 @@ public class ApplicationControllerTest {
     }
 
     void jobSetup() {
-        jobForWanted = jobController.addJob(
+        jobForWanted = jobController.create(
                 wanted.getId(),
                 "백엔드 주니어 개발자",
                 500_000L,
                 "Django",
                 "원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자."
         ).getBody();
-        jobForNaver = jobController.addJob(
+        jobForNaver = jobController.create(
                 naver.getId(),
                 "프론트엔드 시니어 개발자",
                 1_500_000L,
@@ -92,7 +96,7 @@ public class ApplicationControllerTest {
     void jobControllerTestSetup() {
         applicationRepository.deleteAll();
         userRepository.deleteAll();
-        jobController.deleteAllJobs();
+        jobRepository.deleteAll();
         companyRepository.deleteAll();
         userSetup();
         companySetup();
