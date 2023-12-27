@@ -4,16 +4,15 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Authority;
 import recruitment.domain.User;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.UserRepository;
 
-@Controller
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
+@RestController
 public class UserController {
 
     private final UserRepository userRepository;

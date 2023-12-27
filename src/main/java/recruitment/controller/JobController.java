@@ -14,9 +14,9 @@ import recruitment.repository.JobRepository;
 
 import java.util.*;
 
-@RestController
 @RequestMapping(path = "/job")
 @RequiredArgsConstructor
+@RestController
 public class JobController {
 
     private final JobRepository jobRepository;

@@ -10,9 +10,9 @@ import recruitment.repository.CompanyRepository;
 
 import java.util.Optional;
 
-@RestController
-@RequestMapping(path = "/company")
+@RequestMapping(path = "/companies")
 @RequiredArgsConstructor
+@RestController
 public class CompanyController {
 
     private final CompanyRepository companyRepository;

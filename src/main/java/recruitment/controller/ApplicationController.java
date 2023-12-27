@@ -17,9 +17,9 @@ import recruitment.repository.UserRepository;
 
 import java.util.*;
 
-@RestController
 @RequestMapping(path = "/application")
 @RequiredArgsConstructor
+@RestController
 public class ApplicationController {
 
     private final ApplicationRepository applicationRepository;
