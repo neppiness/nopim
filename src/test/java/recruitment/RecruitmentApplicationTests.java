@@ -20,6 +20,7 @@ import recruitment.controller.UserController;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
 import recruitment.domain.User;
+import recruitment.dto.JobRequest;
 import recruitment.repository.ApplicationRepository;
 
 import java.nio.charset.Charset;
@@ -95,27 +96,32 @@ class RecruitmentApplicationTests {
         naver = companyController.create("네이버", "한국", "판교").getBody();
         kakao = companyController.create("카카오", "한국", "판교").getBody();
 
-        jobOfNaver = jobController.create(
-                naver.getId(),
-                "Django 백엔드 개발자",
-                1_000_000L,
-                "Django",
-                "네이버에서 백엔드 개발자를 채용합니다."
-        ).getBody();
-        jobOfWanted = jobController.create(
-                wanted.getId(),
-                "프론트엔드 개발자",
-                500_000L,
-                "javascript",
-                "원티드코리아에서 프론트엔드 개발자를 채용합니다. 자격요건은.."
-        ).getBody();
-        jobOfKakao = jobController.create(
-                kakao.getId(),
-                "Django 백엔드 개발자",
-                500_000L,
-                "python",
-                "카카오에서 Django 백엔드 개발자를 채용합니다. 자격요건은.."
-        ).getBody();
+        JobRequest jobRequestForNaver = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("Django 백엔드 개발자")
+                .bounty(1_000_000L)
+                .stack("Django")
+                .description("네이버에서 백엔드 개발자를 채용합니다.")
+                .build();
+        jobOfNaver = jobController.create(jobRequestForNaver).getBody();
+
+        JobRequest jobRequestForWanted = JobRequest.builder()
+                .companyId(wanted.getId())
+                .position("프론트엔드 개발자")
+                .bounty(500_000L)
+                .stack("javascript")
+                .description("원티드코리아에서 프론트엔드 개발자를 채용합니다. 자격요건은..")
+                .build();
+        jobOfWanted = jobController.create(jobRequestForWanted).getBody();
+
+        JobRequest jobRequestForKakao = JobRequest.builder()
+                .companyId(kakao.getId())
+                .position("Django 백엔드 개발자")
+                .bounty(500_000L)
+                .stack("python")
+                .description("카카오에서 Django 백엔드 개발자를 채용합니다. 자격요건은..")
+                .build();
+        jobOfKakao = jobController.create(jobRequestForKakao).getBody();
     }
 
     @DisplayName(value = "컨텍스트 로드 테스트")
@@ -128,7 +134,7 @@ class RecruitmentApplicationTests {
     void functionalRequirementsTest1() throws Exception {
         MvcResult mvcResult = mockMvc.perform(
                 post("/jobs")
-                        .param("companyId", String.valueOf(wantedLab.getId()))
+                        .param("company-id", String.valueOf(wantedLab.getId()))
                         .param("position", "백엔드 주니어 개발자")
                         .param("bounty", "1000000")
                         .param("stack", "Python")
@@ -224,7 +230,7 @@ class RecruitmentApplicationTests {
         System.out.println("키워드-원티드로 검색");
         mvcResult = mockMvc.perform(
                 post("/jobs")
-                        .param("companyId", String.valueOf(wantedLab.getId()))
+                        .param("company-id", String.valueOf(wantedLab.getId()))
                         .param("position", "백엔드 주니어 개발자")
                         .param("bounty", "1000000")
                         .param("stack", "Python")

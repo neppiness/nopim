@@ -1,10 +1,9 @@
 package recruitment.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.Set;
 
 @Getter
 public class JobResponse {
@@ -34,12 +33,12 @@ public class JobResponse {
     private final String description;
 
     @JsonProperty("회사가_올린_다른_채용공고")
-    private final Set<Long> otherJobIdsOfCompany;
+    private final List<Long> otherJobIdsOfCompany;
 
     @Builder
     public JobResponse(final long id, final String companyName, final String country, final String region,
                        final String position, final long bounty, final String stack, String description,
-                       Set<Long> otherJobIdsOfCompany) {
+                       List<Long> otherJobIdsOfCompany) {
         this.id = id;
         this.companyName = companyName;
         this.country = country;
