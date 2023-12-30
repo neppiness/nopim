@@ -15,6 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.*;
 import recruitment.dto.ApplicationResponse;
+import recruitment.dto.CompanyRequest;
+import recruitment.dto.JobRequest;
+import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
 
 import recruitment.repository.CompanyRepository;
@@ -79,29 +82,46 @@ public class ApplicationControllerTest {
     }
 
     void userSetup() {
-        user = userController.signUp("Kim-Jeonghyun", "1234").getBody();
+        UserRequest userRequest = UserRequest.builder()
+                .name("Kim-Jeonghyun")
+                .password("1234")
+                .build();
+        user = userController.signUp(userRequest).getBody();
     }
 
     void companySetup() {
-        wanted = companyController.create("원티드", "한국", "서울").getBody();
-        naver = companyController.create("네이버", "한국", "분당").getBody();
+        CompanyRequest companyRequestForWanted = CompanyRequest.builder()
+                .name("원티드")
+                .country("한국")
+                .region("서울")
+                .build();
+        wanted = companyController.create(companyRequestForWanted).getBody();
+
+        CompanyRequest companyRequestForNaver = CompanyRequest.builder()
+                .name("네이버")
+                .country("한국")
+                .region("분당")
+                .build();
+        naver = companyController.create(companyRequestForNaver).getBody();
     }
 
     void jobSetup() {
-        jobForWanted = jobController.create(
-                wanted.getId(),
-                "백엔드 주니어 개발자",
-                500_000L,
-                "Django",
-                "원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자."
-        ).getBody();
-        jobForNaver = jobController.create(
-                naver.getId(),
-                "프론트엔드 시니어 개발자",
-                1_500_000L,
-                "react",
-                "네이버에서 프론트엔드 시니어 개발자를 채용합니다. 필수사항 - react 활용 개발 경력 5년 이상"
-        ).getBody();
+        JobRequest jobRequestForWanted = JobRequest.builder()
+                .companyId(wanted.getId())
+                .position("백엔드 주니어 개발자")
+                .bounty(500_000L)
+                .stack("Django")
+                .description("원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자.")
+                .build();
+        jobForWanted = jobController.create(jobRequestForWanted).getBody();
+        JobRequest jobRequestForNaver = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("프론트엔드 시니어 개발자")
+                .bounty(1_500_000L)
+                .stack("react")
+                .description("네이버에서 프론트엔드 시니어 개발자를 채용합니다. 필수사항 - react 활용 개발 경력 5년 이상")
+                .build();
+        jobForNaver = jobController.create(jobRequestForNaver).getBody();
     }
 
     @Test

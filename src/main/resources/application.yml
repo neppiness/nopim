@@ -1,0 +1,17 @@
+spring:
+  config:
+    import: env.properties
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/${DB_DATABASE_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver

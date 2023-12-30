@@ -21,6 +21,8 @@ import recruitment.domain.Job;
 import recruitment.domain.Status;
 import recruitment.domain.User;
 import recruitment.dto.ApplicationResponse;
+import recruitment.dto.CompanyRequest;
+import recruitment.dto.JobRequest;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
 import recruitment.repository.ApplicationRepository;
@@ -69,22 +71,36 @@ public class JobControllerTest {
         jobRepository.deleteAll();
         companyRepository.deleteAll();
 
-        wanted = companyController.create("원티드", "한국", "서울").getBody();
-        naver = companyController.create("네이버", "한국", "분당").getBody();
-        jobController.create(
-                wanted.getId(),
-                "백엔드 주니어 개발자",
-                500_000L,
-                "Django",
-                "원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자."
-        );
-        jobController.create(
-                naver.getId(),
-                "프론트엔드 시니어 개발자",
-                1_500_000L,
-                "react",
-                "네이버에서 프론트엔드 시니어 개발자를 채용합니다. 필수사항 - react 활용 개발 경력 5년 이상"
-        );
+        CompanyRequest companyRequestForWanted = CompanyRequest.builder()
+                .name("원티드")
+                .region("서울")
+                .country("한국")
+                .build();
+        wanted = companyController.create(companyRequestForWanted).getBody();
+
+        CompanyRequest companyRequestForNaver = CompanyRequest.builder()
+                .name("네이버")
+                .region("분당")
+                .country("한국")
+                .build();
+        naver = companyController.create(companyRequestForNaver).getBody();
+
+        JobRequest jobRequestForWanted = JobRequest.builder()
+                .companyId(wanted.getId())
+                .position("백엔드 주니어 개발자")
+                .bounty(500_000L)
+                .stack("Django")
+                .description("원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자.")
+                .build();
+        jobController.create(jobRequestForWanted).getBody();
+        JobRequest jobRequestForNaver = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("프론트엔드 시니어 개발자")
+                .bounty(1_500_000L)
+                .stack("react")
+                .description("네이버에서 프론트엔드 시니어 개발자를 채용합니다. 필수사항 - react 활용 개발 경력 5년 이상")
+                .build();
+        jobController.create(jobRequestForNaver).getBody();
     }
 
     @Test
@@ -95,23 +111,23 @@ public class JobControllerTest {
         for (Job job : allJobs) {
             count++;
         }
-        String allJobsInJson = ow.writeValueAsString(allJobs);
-        System.out.println(allJobsInJson);
-        assertThat(count).isEqualTo(2);
+        Assertions
+                .assertThat(count)
+                .isEqualTo(2);
     }
 
     @Test
     @DisplayName("채용공고 추가 및 검색 기능 테스트")
     void addJobAndSearchJobTest() throws JsonProcessingException {
-        Job createdJob = jobController.create(
-                naver.getId(),
-                "머신러닝 주니어 개발자",
-                500_000L,
-                "tensorflow",
-                "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        ).getBody();
+        JobRequest jobRequest = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("머신러닝 주니어 개발자")
+                .bounty(500_000L)
+                .stack("tensorflow")
+                .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
+                .build();
+        Job createdJob = jobController.create(jobRequest).getBody();
 
-        ReflectionEquals reflectionEquals = new ReflectionEquals(createdJob);
         Iterable<JobSimpleResponse> foundJobs = jobController
                 .search("tensorflow").getBody();
         assert foundJobs != null;
@@ -124,13 +140,14 @@ public class JobControllerTest {
     @Test
     @DisplayName("채용공고 추가 및 검색 기능 테스트2")
     void addJobAndSearchJobTest2() throws JsonProcessingException {
-        Job createdJob = jobController.create(
-                naver.getId(),
-                "머신러닝 주니어 개발자",
-                500_000L,
-                "tensorflow",
-                "네이버에서 딥러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        ).getBody();
+        JobRequest jobRequest = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("머신러닝 주니어 개발자")
+                .bounty(500_000L)
+                .stack("tensorflow")
+                .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
+                .build();
+        Job createdJob = jobController.create(jobRequest).getBody();
 
         Iterable<JobSimpleResponse> foundJobs = jobController
                 .search("네이버").getBody();
@@ -148,13 +165,14 @@ public class JobControllerTest {
     @Test
     @DisplayName("상세 채용공고 조회 기능 테스트")
     void getJobDetailTest() throws Exception {
-        Job createdJob = jobController.create(
-                naver.getId(),
-                "머신러닝 주니어 개발자",
-                500_000L,
-                "tensorflow",
-                "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        ).getBody();
+        JobRequest jobRequestForNaver = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("머신러닝 주니어 개발자")
+                .bounty(500_000L)
+                .stack("tensorflow")
+                .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
+                .build();
+        Job createdJob = jobController.create(jobRequestForNaver).getBody();
         assert createdJob != null;
         long jobId = createdJob.getId();
         JobResponse jobDetail = jobController.getDetail(jobId).getBody();
@@ -165,13 +183,14 @@ public class JobControllerTest {
     @Test
     @DisplayName("채용공고 ID를 통해 채용공고 삭제하는 기능 테스트")
     void deleteJobByIdTest() {
-        Job createdJob = jobController.create(
-                naver.getId(),
-                "머신러닝 주니어 개발자",
-                500_000L,
-                "tensorflow",
-                "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        ).getBody();
+        JobRequest jobRequestForNaver = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("머신러닝 주니어 개발자")
+                .bounty(500_000L)
+                .stack("tensorflow")
+                .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
+                .build();
+        Job createdJob = jobController.create(jobRequestForNaver).getBody();
         assert createdJob != null;
         long jobId = createdJob.getId();
         jobController.softDelete(jobId);
@@ -194,13 +213,14 @@ public class JobControllerTest {
                 .build();
         User createdUser = userRepository.save(user);
 
-        Job createdJob = jobController.create(
-                naver.getId(),
-                "머신러닝 주니어 개발자",
-                500_000L,
-                "tensorflow",
-                "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
-        ).getBody();
+        JobRequest jobRequestForNaver = JobRequest.builder()
+                .companyId(naver.getId())
+                .position("머신러닝 주니어 개발자")
+                .bounty(500_000L)
+                .stack("tensorflow")
+                .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
+                .build();
+        Job createdJob = jobController.create(jobRequestForNaver).getBody();
         assert createdJob != null;
         ApplicationResponse createdApplication = jobController
                 .apply(createdJob.getId(), "Kim-jeonghyun")

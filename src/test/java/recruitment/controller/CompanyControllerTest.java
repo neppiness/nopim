@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Company;
+import recruitment.dto.CompanyRequest;
 import recruitment.repository.ApplicationRepository;
 
 import recruitment.repository.CompanyRepository;
@@ -55,14 +56,30 @@ public class CompanyControllerTest {
         userRepository.deleteAll();
         jobRepository.deleteAll();
         companyRepository.deleteAll();
-        companyController.create("원티드", "한국", "서울");
-        companyController.create("네이버", "한국", "분당");
+        CompanyRequest companyRequestForWanted = CompanyRequest.builder()
+                .name("원티드")
+                .region("서울")
+                .country("한국")
+                .build();
+        companyController.create(companyRequestForWanted);
+
+        CompanyRequest companyRequestForNaver = CompanyRequest.builder()
+                .name("네이버")
+                .region("분")
+                .country("한국")
+                .build();
+        companyController.create(companyRequestForNaver);
     }
 
     @DisplayName(value = "회사 등록 테스트")
     @Test
     void addCompanyTest() {
-        Company company = companyController.create(senvexName, senvexCountry, senvexRegion).getBody();
+        CompanyRequest companyRequestForSenvex = CompanyRequest.builder()
+                .name(senvexName)
+                .region(senvexRegion)
+                .country(senvexCountry)
+                .build();
+        Company company = companyController.create(companyRequestForSenvex).getBody();
         assert company != null;
         long companyId = company.getId();
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
@@ -96,7 +113,11 @@ public class CompanyControllerTest {
 
         String givenRegion = "판교";
         String givenCountry = "대한민국";
-        List<Company> foundCompanyList = companyController.search(null, givenRegion, givenCountry).getBody();
+        CompanyRequest companySearchRequest = CompanyRequest.builder()
+                .region(givenRegion)
+                .country(givenCountry)
+                .build();
+        List<Company> foundCompanyList = companyController.search(companySearchRequest).getBody();
         assert foundCompanyList != null;
 
         for (Company foundCompany : foundCompanyList) {

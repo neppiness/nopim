@@ -1,8 +1,8 @@
 package recruitment.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -76,10 +76,10 @@ public class Job {
     }
 
     public JobResponse convertToJobResponse() {
-        Set<Long> jobIdList = new HashSet<>();
-        Set<Job> companyJobs = this.company.getJobs();
+        List<Long> jobIdList = new ArrayList<>();
+        List<Job> companyJobs = this.company.getJobs();
         if (companyJobs == null) {
-            companyJobs = new HashSet<>();
+            companyJobs = new ArrayList<>();
         }
         companyJobs.forEach(job -> {
             long jobId = job.getId();

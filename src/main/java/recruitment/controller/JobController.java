@@ -13,6 +13,7 @@ import recruitment.domain.User;
 import recruitment.dto.ApplicationResponse;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
+import recruitment.dto.JobRequest;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 import recruitment.repository.CompanyRepository;
@@ -36,49 +37,50 @@ public class JobController {
 
     @Transactional
     @PostMapping(path = "")
-    public ResponseEntity<Job> create(@RequestParam Long companyId, @RequestParam String position,
-                                                    @RequestParam Long bounty, @RequestParam String stack,
-                                                    @RequestParam String description) {
+    public ResponseEntity<Job> create(@ModelAttribute JobRequest jobRequest) {
+        Long companyId = jobRequest.getCompanyId();
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
         if (mayBeFoundCompany.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
         }
+        Company foundCompany = mayBeFoundCompany.get();
         Job createdJob = Job.builder()
-                .company(mayBeFoundCompany.get())
-                .position(position)
-                .bounty(bounty)
-                .stack(stack)
-                .description(description)
+                .company(foundCompany)
+                .position(jobRequest.getPosition())
+                .bounty(jobRequest.getBounty())
+                .stack(jobRequest.getStack())
+                .description(jobRequest.getDescription())
                 .status(Status.OPEN)
                 .build();
-
+        Job savedJob = jobRepository.save(createdJob);
+        foundCompany.getJobs().add(savedJob);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(jobRepository.save(createdJob));
+                .body(savedJob);
     }
 
     @Transactional
     @PutMapping(path = "/{id}")
-    public ResponseEntity<Job> update(@PathVariable Long id,
-                                                    @RequestParam(required = false) String position,
-                                                    @RequestParam(required = false) Long bounty,
-                                                    @RequestParam(required = false) String description,
-                                                    @RequestParam(required = false) String stack) {
+    public ResponseEntity<Job> update(@PathVariable Long id, @ModelAttribute JobRequest jobRequest) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(id);
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
-
         Job foundJob = mayBeFoundJob.get();
+
+        String position = jobRequest.getPosition();
         if (position == null) {
             position = foundJob.getPosition();
         }
+        Long bounty = jobRequest.getBounty();
         if (bounty == null) {
             bounty = foundJob.getBounty();
         }
+        String description = jobRequest.getDescription();
         if (description == null) {
             description = foundJob.getDescription();
         }
+        String stack = jobRequest.getStack();
         if (stack == null) {
             stack = foundJob.getStack();
         }
@@ -91,10 +93,14 @@ public class JobController {
                 .description(description)
                 .stack(stack)
                 .build();
+        Job uploadedJob = jobRepository.save(jobToBeUpdated);
+        Company companyToBeUploaded = uploadedJob.getCompany();
+        companyToBeUploaded.getJobs().add(uploadedJob);
+        companyRepository.save(companyToBeUploaded);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(jobRepository.save(jobToBeUpdated));
+                .body(uploadedJob);
     }
 
     @Transactional
@@ -114,9 +120,14 @@ public class JobController {
                 .description(foundJob.getDescription())
                 .status(Status.CLOSE)
                 .build();
+        Job uploadedJob = jobRepository.save(jobToBeUpdated);
+        Company companyToBeUploaded = uploadedJob.getCompany();
+        companyToBeUploaded.getJobs().add(uploadedJob);
+        companyRepository.save(companyToBeUploaded);
+
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(jobRepository.save(jobToBeUpdated));
+                .status(HttpStatus.OK)
+                .body(uploadedJob);
     }
 
     @GetMapping(path = "")
@@ -156,17 +167,25 @@ public class JobController {
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
+        Job foundJob = mayBeFoundJob.get();
+
         Optional<User> mayBeFoundUser = userRepository.findByName(name);
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
         }
+        User foundUser = mayBeFoundUser.get();
+
         Application createdApplication = Application.builder()
-                .job(mayBeFoundJob.get())
-                .user(mayBeFoundUser.get())
+                .job(foundJob)
+                .user(foundUser)
                 .build();
+        Application savedApplication = applicationRepository.save(createdApplication);
+        foundUser.getApplications().add(savedApplication);
+        userRepository.save(foundUser);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(applicationRepository.save(createdApplication).convertToResponse());
+                .body(savedApplication.convertToResponse());
     }
 
 }

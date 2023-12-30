@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Company;
+import recruitment.dto.CompanyRequest;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.CompanyRepository;
 
@@ -21,12 +22,11 @@ public class CompanyController {
 
     @Transactional
     @PostMapping(path = "")
-    public ResponseEntity<Company> create(@RequestParam String name, @RequestParam String country,
-                                          @RequestParam String region) {
+    public ResponseEntity<Company> create(@ModelAttribute CompanyRequest companyRequest) {
         Company company = Company.builder()
-                .name(name)
-                .country(country)
-                .region(region)
+                .name(companyRequest.getName())
+                .country(companyRequest.getCountry())
+                .region(companyRequest.getRegion())
                 .build();
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -34,7 +34,10 @@ public class CompanyController {
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<Company>> search(@RequestParam String name, @RequestParam String region, @RequestParam String country) {
+    public ResponseEntity<List<Company>> search(@ModelAttribute CompanyRequest companyRequest) {
+        String name = companyRequest.getName();
+        String region = companyRequest.getRegion();
+        String country = companyRequest.getCountry();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(companyRepository.findByParameters(name, region, country));
