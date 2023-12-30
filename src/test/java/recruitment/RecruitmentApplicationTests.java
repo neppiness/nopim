@@ -20,6 +20,7 @@ import recruitment.controller.UserController;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
 import recruitment.domain.User;
+import recruitment.dto.CompanyRequest;
 import recruitment.dto.JobRequest;
 import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
@@ -96,10 +97,34 @@ class RecruitmentApplicationTests {
                 .build();
         user = userController.signUp(userRequest).getBody();
 
-        wantedLab = companyController.create("원티드랩", "한국", "서울").getBody();
-        wanted = companyController.create("원티드코리아", "한국", "부산").getBody();
-        naver = companyController.create("네이버", "한국", "판교").getBody();
-        kakao = companyController.create("카카오", "한국", "판교").getBody();
+        CompanyRequest companyRequestForWantedLab = CompanyRequest.builder()
+                .name("원티드랩")
+                .region("서울")
+                .country("한국")
+                .build();
+        wantedLab = companyController.create(companyRequestForWantedLab).getBody();
+
+
+        CompanyRequest companyRequestForWantedKorea = CompanyRequest.builder()
+                .name("원티드코리아")
+                .region("부산")
+                .country("한국")
+                .build();
+        wanted = companyController.create(companyRequestForWantedKorea).getBody();
+
+        CompanyRequest companyRequestForNaver = CompanyRequest.builder()
+                .name("네이버")
+                .region("판교")
+                .country("한국")
+                .build();
+        naver = companyController.create(companyRequestForNaver).getBody();
+
+        CompanyRequest companyRequestForKakao = CompanyRequest.builder()
+                .name("카카오")
+                .region("판교")
+                .country("한국")
+                .build();
+        kakao = companyController.create(companyRequestForKakao).getBody();
 
         JobRequest jobRequestForNaver = JobRequest.builder()
                 .companyId(naver.getId())

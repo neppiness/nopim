@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.*;
 import recruitment.dto.ApplicationResponse;
+import recruitment.dto.CompanyRequest;
 import recruitment.dto.JobRequest;
 import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
@@ -89,8 +90,19 @@ public class ApplicationControllerTest {
     }
 
     void companySetup() {
-        wanted = companyController.create("원티드", "한국", "서울").getBody();
-        naver = companyController.create("네이버", "한국", "분당").getBody();
+        CompanyRequest companyRequestForWanted = CompanyRequest.builder()
+                .name("원티드")
+                .country("한국")
+                .region("서울")
+                .build();
+        wanted = companyController.create(companyRequestForWanted).getBody();
+
+        CompanyRequest companyRequestForNaver = CompanyRequest.builder()
+                .name("네이버")
+                .country("한국")
+                .region("분당")
+                .build();
+        naver = companyController.create(companyRequestForNaver).getBody();
     }
 
     void jobSetup() {

@@ -21,6 +21,7 @@ import recruitment.domain.Job;
 import recruitment.domain.Status;
 import recruitment.domain.User;
 import recruitment.dto.ApplicationResponse;
+import recruitment.dto.CompanyRequest;
 import recruitment.dto.JobRequest;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
@@ -70,8 +71,19 @@ public class JobControllerTest {
         jobRepository.deleteAll();
         companyRepository.deleteAll();
 
-        wanted = companyController.create("원티드", "한국", "서울").getBody();
-        naver = companyController.create("네이버", "한국", "분당").getBody();
+        CompanyRequest companyRequestForWanted = CompanyRequest.builder()
+                .name("원티드")
+                .region("서울")
+                .country("한국")
+                .build();
+        wanted = companyController.create(companyRequestForWanted).getBody();
+
+        CompanyRequest companyRequestForNaver = CompanyRequest.builder()
+                .name("네이버")
+                .region("분당")
+                .country("한국")
+                .build();
+        naver = companyController.create(companyRequestForNaver).getBody();
 
         JobRequest jobRequestForWanted = JobRequest.builder()
                 .companyId(wanted.getId())
