@@ -21,6 +21,7 @@ import recruitment.domain.Company;
 import recruitment.domain.Job;
 import recruitment.domain.User;
 import recruitment.dto.JobRequest;
+import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
 
 import java.nio.charset.Charset;
@@ -89,7 +90,11 @@ class RecruitmentApplicationTests {
         jobRepository.deleteAll();
         companyRepository.deleteAll();
 
-        user = userController.signUp("김정현", "1234").getBody();
+        UserRequest userRequest = UserRequest.builder()
+                .name("김정현")
+                .password("1234")
+                .build();
+        user = userController.signUp(userRequest).getBody();
 
         wantedLab = companyController.create("원티드랩", "한국", "서울").getBody();
         wanted = companyController.create("원티드코리아", "한국", "부산").getBody();

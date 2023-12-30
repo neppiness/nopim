@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.*;
 import recruitment.dto.ApplicationResponse;
 import recruitment.dto.JobRequest;
+import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
 
 import recruitment.repository.CompanyRepository;
@@ -80,7 +81,11 @@ public class ApplicationControllerTest {
     }
 
     void userSetup() {
-        user = userController.signUp("Kim-Jeonghyun", "1234").getBody();
+        UserRequest userRequest = UserRequest.builder()
+                .name("Kim-Jeonghyun")
+                .password("1234")
+                .build();
+        user = userController.signUp(userRequest).getBody();
     }
 
     void companySetup() {

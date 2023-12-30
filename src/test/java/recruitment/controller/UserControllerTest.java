@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Authority;
 import recruitment.domain.User;
+import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
 import recruitment.repository.UserRepository;
 
@@ -41,8 +42,11 @@ class UserControllerTest {
     void signUpTest() {
         String name = "KJH";
         String password = "4567";
-
-        User addedUser = userController.signUp(name, password).getBody();
+        UserRequest userRequest = UserRequest.builder()
+                .name(name)
+                .password(password)
+                .build();
+        User addedUser = userController.signUp(userRequest).getBody();
         assert addedUser != null;
 
         Optional<User> mayBeFoundUser = userRepository.findById(addedUser.getId());
@@ -58,11 +62,15 @@ class UserControllerTest {
     void loginTest() {
         String name = "KJH";
         String password = "4567";
+        UserRequest userRequest = UserRequest.builder()
+                .name(name)
+                .password(password)
+                .build();
 
-        User addedUser = userController.signUp(name, password).getBody();
+        User addedUser = userController.signUp(userRequest).getBody();
         assert addedUser != null;
 
-        User loginInfo = userController.login(name, password).getBody();
+        User loginInfo = userController.login(userRequest).getBody();
         Assertions
                 .assertThat(addedUser)
                 .isEqualTo(loginInfo);
@@ -73,7 +81,11 @@ class UserControllerTest {
     void promoteTest() {
         String name = "KJH";
         String password = "4567";
-        User addedUser = userController.signUp(name, password).getBody();
+        UserRequest userRequest = UserRequest.builder()
+                .name(name)
+                .password(password)
+                .build();
+        User addedUser = userController.signUp(userRequest).getBody();
         assert addedUser != null;
 
         userController.promote(addedUser.getId());

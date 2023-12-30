@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Authority;
 import recruitment.domain.User;
+import recruitment.dto.UserRequest;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.UserRepository;
 
@@ -20,11 +21,11 @@ public class UserController {
 
     @Transactional
     @PostMapping(path = "")
-    public ResponseEntity<User> signUp(@RequestParam String name, @RequestParam String password) {
+    public ResponseEntity<User> signUp(@ModelAttribute UserRequest userRequest) {
         // TODO: 중복되는 이름을 갖는 경우를 배제
         User user = User.builder()
-                .name(name)
-                .password(password)
+                .name(userRequest.getName())
+                .password(userRequest.getPassword())
                 .authority(Authority.MEMBER)
                 .build();
         return ResponseEntity
@@ -33,7 +34,9 @@ public class UserController {
     }
 
     @GetMapping(path = "")
-    public ResponseEntity<User> login(@RequestParam String name, @RequestParam String password) {
+    public ResponseEntity<User> login(@ModelAttribute UserRequest userRequest) {
+        String name = userRequest.getName();
+        String password = userRequest.getPassword();
         Optional<User> mayBeFoundUser = userRepository.findByNameAndPassword(name, password);
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);

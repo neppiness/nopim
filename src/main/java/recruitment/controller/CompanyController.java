@@ -34,7 +34,8 @@ public class CompanyController {
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<Company>> search(@RequestParam String name, @RequestParam String region, @RequestParam String country) {
+    public ResponseEntity<List<Company>> search(@RequestParam String name, @RequestParam String region,
+                                                @RequestParam String country) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(companyRepository.findByParameters(name, region, country));
