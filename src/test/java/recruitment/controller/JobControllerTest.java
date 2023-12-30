@@ -3,6 +3,7 @@ package recruitment.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import recruitment.domain.Authority;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
+import recruitment.domain.User;
+import recruitment.dto.ApplicationResponse;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
 import recruitment.repository.ApplicationRepository;
@@ -159,7 +163,8 @@ public class JobControllerTest {
     @Test
     @DisplayName("채용공고 ID를 통해 채용공고 삭제하는 기능 테스트")
     void deleteJobByIdTest() {
-        Job createdJob = jobController.create( naver.getId(),
+        Job createdJob = jobController.create(
+                naver.getId(),
                 "머신러닝 주니어 개발자",
                 500_000L,
                 "tensorflow",
@@ -175,6 +180,39 @@ public class JobControllerTest {
             count++;
         }
         assertThat(count).isEqualTo(0);
+    }
+
+    @DisplayName(value = "채용공고에 지원하는 기능 테스트")
+    @Test
+    void applyTest() {
+        User user = User.builder()
+                .name("Kim-jeonghyun")
+                .password("1234")
+                .authority(Authority.MEMBER)
+                .build();
+        User createdUser = userRepository.save(user);
+
+        Job createdJob = jobController.create(
+                naver.getId(),
+                "머신러닝 주니어 개발자",
+                500_000L,
+                "tensorflow",
+                "네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우"
+        ).getBody();
+        assert createdJob != null;
+        ApplicationResponse createdApplication = jobController
+                .apply(createdJob.getId(), "Kim-jeonghyun")
+                .getBody();
+        assert createdApplication != null;
+
+        Long createdUserId = createdUser.getId();
+        Long createdJobId = createdJob.getId();
+        Assertions
+                .assertThat(createdApplication.getUserId())
+                .isEqualTo(createdUserId);
+        Assertions
+                .assertThat(createdApplication.getJobId())
+                .isEqualTo(createdJobId);
     }
 
 }

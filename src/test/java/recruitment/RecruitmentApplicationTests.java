@@ -264,8 +264,8 @@ class RecruitmentApplicationTests {
     void functionalRequirementsTest6() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
-                post("/application/" + user.getId() + "/add")
-                        .param("jobId", String.valueOf(jobOfWanted.getId()))
+                post("/jobs/apply/" + jobOfWanted.getId())
+                        .param("name", "김정현")
         ).andReturn();
         String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONObject jsonObject = new JSONObject(rawJsonString);

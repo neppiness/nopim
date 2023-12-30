@@ -3,26 +3,37 @@ package recruitment.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import recruitment.domain.Application;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
+import recruitment.domain.User;
+import recruitment.dto.ApplicationResponse;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
 import recruitment.exception.ResourceNotFound;
+import recruitment.repository.ApplicationRepository;
 import recruitment.repository.CompanyRepository;
 import recruitment.repository.JobRepository;
 
 import java.util.*;
+import recruitment.repository.UserRepository;
 
 @RequestMapping(path = "/jobs")
 @RequiredArgsConstructor
 @RestController
 public class JobController {
 
-    private final JobRepository jobRepository;
+    private final ApplicationRepository applicationRepository;
 
     private final CompanyRepository companyRepository;
 
+    private final JobRepository jobRepository;
+
+    private final UserRepository userRepository;
+
+    @Transactional
     @PostMapping(path = "")
     public ResponseEntity<Job> create(@RequestParam Long companyId, @RequestParam String position,
                                                     @RequestParam Long bounty, @RequestParam String stack,
@@ -44,6 +55,7 @@ public class JobController {
                 .body(jobRepository.save(createdJob));
     }
 
+    @Transactional
     @PutMapping(path = "/{id}")
     public ResponseEntity<Job> update(@PathVariable Long id,
                                                     @RequestParam(required = false) String position,
@@ -83,6 +95,7 @@ public class JobController {
                 .body(jobRepository.save(jobToBeUpdated));
     }
 
+    @Transactional
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(id);
@@ -124,6 +137,26 @@ public class JobController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(mayBeFoundJob.get().convertToJobResponse());
+    }
+
+    @Transactional
+    @PostMapping(path = "/apply/{id}")
+    public ResponseEntity<ApplicationResponse> apply(@PathVariable Long id, @RequestParam String name) {
+        Optional<Job> mayBeFoundJob = jobRepository.findById(id);
+        if (mayBeFoundJob.isEmpty()) {
+            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
+        }
+        Optional<User> mayBeFoundUser = userRepository.findByName(name);
+        if (mayBeFoundUser.isEmpty()) {
+            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
+        }
+        Application createdApplication = Application.builder()
+                .job(mayBeFoundJob.get())
+                .user(mayBeFoundUser.get())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(applicationRepository.save(createdApplication).convertToResponse());
     }
 
 }

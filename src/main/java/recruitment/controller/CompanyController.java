@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Company;
 import recruitment.exception.ResourceNotFound;
@@ -18,6 +19,7 @@ public class CompanyController {
 
     private final CompanyRepository companyRepository;
 
+    @Transactional
     @PostMapping(path = "")
     public ResponseEntity<Company> create(@RequestParam String name, @RequestParam String country,
                                           @RequestParam String region) {
