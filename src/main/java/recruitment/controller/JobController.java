@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import recruitment.domain.Application;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
+import recruitment.domain.Status;
 import recruitment.domain.User;
 import recruitment.dto.ApplicationResponse;
 import recruitment.dto.JobResponse;
@@ -48,6 +49,7 @@ public class JobController {
                 .bounty(bounty)
                 .stack(stack)
                 .description(description)
+                .status(Status.OPEN)
                 .build();
 
         return ResponseEntity
@@ -96,17 +98,25 @@ public class JobController {
     }
 
     @Transactional
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    @PostMapping(path = "/{id}")
+    public ResponseEntity<Job> softDelete(@PathVariable Long id) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(id);
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
         }
-        jobRepository.deleteById(id);
-        String message = "The job is deleted (id: " + id + ")";
+        Job foundJob = mayBeFoundJob.get();
+        Job jobToBeUpdated = Job.builder()
+                .id(foundJob.getId())
+                .company(foundJob.getCompany())
+                .position(foundJob.getPosition())
+                .bounty(foundJob.getBounty())
+                .stack(foundJob.getStack())
+                .description(foundJob.getDescription())
+                .status(Status.CLOSE)
+                .build();
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
-                .body(message);
+                .body(jobRepository.save(jobToBeUpdated));
     }
 
     @GetMapping(path = "")

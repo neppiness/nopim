@@ -3,6 +3,7 @@ package recruitment.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import recruitment.domain.Authority;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
+import recruitment.domain.Status;
 import recruitment.domain.User;
 import recruitment.dto.ApplicationResponse;
 import recruitment.dto.JobResponse;
@@ -172,14 +174,14 @@ public class JobControllerTest {
         ).getBody();
         assert createdJob != null;
         long jobId = createdJob.getId();
-        jobController.delete(jobId);
-        Iterable<JobSimpleResponse> foundJobs = jobController.search(String.valueOf(jobId)).getBody();
+        jobController.softDelete(jobId);
+        Iterable<JobSimpleResponse> foundJobs = jobController.search("tensorflow").getBody();
         assert foundJobs != null;
-        int count = 0;
         for (JobSimpleResponse foundJob : foundJobs) {
-            count++;
+            Assertions
+                    .assertThat(foundJob.getStatus())
+                    .isEqualTo(Status.CLOSE);
         }
-        assertThat(count).isEqualTo(0);
     }
 
     @DisplayName(value = "채용공고에 지원하는 기능 테스트")

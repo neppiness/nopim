@@ -40,15 +40,20 @@ public class Job {
     @JsonProperty("채용내용")
     private String description;
 
+    @JsonProperty("상태")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @Builder
     public Job(final long id, final Company company, final String position, final long bounty, final String stack,
-               final String description) {
+               final String description, final Status status) {
         this.id = id;
         this.company = company;
         this.position = position;
         this.bounty = bounty;
         this.stack = stack;
         this.description = description;
+        this.status = status;
     }
 
     public boolean hasKeywordInAttributes(String keyword) {

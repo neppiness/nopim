@@ -3,6 +3,7 @@ package recruitment.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
+import recruitment.domain.Status;
 
 @Getter
 public class JobSimpleResponse {
@@ -28,9 +29,12 @@ public class JobSimpleResponse {
     @JsonProperty("사용기술")
     private final String stack;
 
+    @JsonProperty("상태")
+    private final Status status;
+
     @Builder
     public JobSimpleResponse(final long id, final String companyName, final String country, final String region,
-                             final String position, final long bounty, final String stack) {
+                             final String position, final long bounty, final String stack, final Status status) {
         this.id = id;
         this.companyName = companyName;
         this.country = country;
@@ -38,6 +42,7 @@ public class JobSimpleResponse {
         this.position = position;
         this.bounty = bounty;
         this.stack = stack;
+        this.status = status;
     }
 
 }

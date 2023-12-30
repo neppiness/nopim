@@ -30,7 +30,7 @@ public class JobCustomRepositoryImpl implements JobCustomRepository {
 
         query.select(builder.construct(JobSimpleResponse.class, job.get("id"), job.get("company").get("name"),
                 job.get("company").get("region"), job.get("company").get("country"), job.get("position"),
-                job.get("bounty"), job.get("stack")));
+                job.get("bounty"), job.get("stack"), job.get("status")));
         query.where(builder.or(companyNameLikeKeyword, companyRegionLikeKeyword, companyCountryLikeKeyword,
                 positionLikeKeyword, stackLikeKeyword));
 
