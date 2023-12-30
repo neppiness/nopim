@@ -1,32 +1,35 @@
 package recruitment.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import java.util.List;
+import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Company;
-import recruitment.exception.ResourceNotFound;
 import recruitment.repository.ApplicationRepository;
 
-import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.*;
+import recruitment.repository.CompanyRepository;
+import recruitment.repository.JobRepository;
+import recruitment.repository.UserRepository;
 
 @SpringBootTest
 @Transactional
-@ExtendWith(SpringExtension.class)
 public class CompanyControllerTest {
 
-    final static String senvexName = "센벡스";
+    private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
-    final static String senvexCountry = "한국";
+    private final static String senvexName = "센벡스";
 
-    final static String senvexRegion = "서울 당산";
+    private final static String senvexCountry = "대한민국";
+
+    private final static String senvexRegion = "당산";
 
     @Autowired
     CompanyController companyController;
@@ -35,69 +38,94 @@ public class CompanyControllerTest {
     JobController jobController;
 
     @Autowired
+    CompanyRepository companyRepository;
+
+    @Autowired
     ApplicationRepository applicationRepository;
 
     @Autowired
-    UserController userController;
+    JobRepository jobRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @BeforeEach
     void companyTestSetup() {
         applicationRepository.deleteAll();
-        userController.deleteAllUsers();
-        jobController.deleteAllJobs();
-        companyController.deleteAllCompanies();
-
-        jobController.deleteAllJobs();
-        companyController.deleteAllCompanies();
-        companyController.addCompany("원티드", "한국", "서울");
-        companyController.addCompany("네이버", "한국", "분당");
+        userRepository.deleteAll();
+        jobRepository.deleteAll();
+        companyRepository.deleteAll();
+        companyController.create("원티드", "한국", "서울");
+        companyController.create("네이버", "한국", "분당");
     }
 
+    @DisplayName(value = "회사 등록 테스트")
     @Test
-    @DisplayName("회사 추가 및 회사 ID로 회사 검색 기능 테스트")
-    void addCompanyAndFindCompanyByIdTest() {
-        Company company = companyController.addCompany(senvexName, senvexCountry, senvexRegion).getBody();
+    void addCompanyTest() {
+        Company company = companyController.create(senvexName, senvexCountry, senvexRegion).getBody();
+        assert company != null;
         long companyId = company.getId();
-        Company foundCompany = companyController.findCompanyById(companyId).getBody();
-        assertThat(company).isEqualTo(foundCompany);
+        Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
+        assert mayBeFoundCompany.isPresent();
+        Assertions
+                .assertThat(company)
+                .isEqualTo(mayBeFoundCompany.get());
     }
 
+    @DisplayName(value = "회사 검색 테스트")
     @Test
-    @DisplayName("등록된 모든 회사 조회 기능 테스트")
-    void getAllCompaniesTest() {
-        AtomicInteger count = new AtomicInteger();
-        Iterable<Company> allCompanies = companyController.getAllCompanies().getBody();
-        allCompanies.forEach(company -> {
-            StringBuilder sb = new StringBuilder();
-            count.getAndIncrement();
-            sb.append("company.getId()      = ").append(company.getId()).append('\n');
-            sb.append("company.getName()    = ").append(company.getName()).append('\n');
-            sb.append("company.getCountry() = ").append(company.getCountry()).append('\n');
-            sb.append("company.getRegion()  = ").append(company.getRegion()).append('\n');
-            System.out.println(sb);
-        });
-        assertThat(count.intValue()).isEqualTo(2);
+    void searchTest() throws JsonProcessingException {
+        Company company1 = Company.builder()
+                .name("네이버클라우드 판교오피스")
+                .region("판교")
+                .country("대한민국")
+                .build();
+        companyRepository.save(company1);
+        Company company2 = Company.builder()
+                .name("스노우")
+                .region("판교")
+                .country("대한민국")
+                .build();
+        companyRepository.save(company2);
+        Company company3 = Company.builder()
+                .name(senvexName)
+                .region(senvexRegion)
+                .country(senvexCountry)
+                .build();
+        companyRepository.save(company3);
+
+        String givenRegion = "판교";
+        String givenCountry = "대한민국";
+        List<Company> foundCompanyList = companyController.search(null, givenRegion, givenCountry).getBody();
+        assert foundCompanyList != null;
+
+        for (Company foundCompany : foundCompanyList) {
+            String foundCompanyAsString = objectWriter.writeValueAsString(foundCompany);
+            System.out.println(foundCompanyAsString);
+        }
+        Assertions
+                .assertThat(foundCompanyList.size())
+                .isEqualTo(2);
     }
 
+    @DisplayName(value = "회사 상세 정보 조회 테스트")
     @Test
-    @DisplayName("회사 ID로 객체 삭제 기능 테스트")
-    void deleteByCompanyIdTest() {
-        Company company = companyController.addCompany(senvexName, senvexCountry, senvexRegion).getBody();
-        long id = company.getId();
-        companyController.deleteCompanyById(id);
-        assertThatThrownBy(() -> {
-            companyController.findCompanyById(id);
-        }).isInstanceOf(ResourceNotFound.class);
-    }
+    void getDetailTest() throws JsonProcessingException {
+        Company senvex = Company.builder()
+                .name(senvexName)
+                .region(senvexRegion)
+                .country(senvexCountry)
+                .build();
 
-    @Test
-    @DisplayName("등록된 모든 회사 삭제 기능 테스트")
-    void deleteAllCompaniesTest() {
-        System.out.println(companyController.deleteAllCompanies());
-        AtomicInteger count = new AtomicInteger();
-        Iterable<Company> allCompanies = companyController.getAllCompanies().getBody();
-        allCompanies.forEach(company -> count.getAndIncrement());
-        assertThat(count.intValue()).isEqualTo(0);
+        Company savedCompany = companyRepository.save(senvex);
+        long savedCompanyId = savedCompany.getId();
+        Company foundCompanyDetail = companyController.getDetail(savedCompanyId).getBody();
+
+        String foundCompanyDetailAsString = objectWriter.writeValueAsString(foundCompanyDetail);
+        System.out.println(foundCompanyDetailAsString);
+        Assertions
+                .assertThat(savedCompany)
+                .isEqualTo(foundCompanyDetail);
     }
 
 }

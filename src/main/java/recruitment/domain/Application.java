@@ -1,5 +1,6 @@
 package recruitment.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -18,14 +19,14 @@ public class Application {
     @JsonProperty("지원내역_id")
     private long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonProperty("사용자_id")
+    @JsonProperty("사용자")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @JsonProperty("채용공고_id")
+    @JsonProperty("채용공고")
     private Job job;
 
     @Builder
@@ -35,14 +36,14 @@ public class Application {
         this.job = job;
     }
 
-    public ApplicationResponse convertToDto() {
+    public ApplicationResponse convertToResponse() {
         return ApplicationResponse.builder()
                 .userId(this.user.getId())
                 .jobId(this.job.getId())
                 .build();
     }
 
-    public ApplicationDetailResponse convertToDetailedDto() {
+    public ApplicationDetailResponse convertToDetailedResponse() {
         return ApplicationDetailResponse.builder()
                 .user(this.user)
                 .jobSimpleResponse(this.job.convertToJobSimpleResponse())

@@ -1,7 +1,9 @@
 package recruitment.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,7 +23,7 @@ public class Job {
     @Id
     private long id;
 
-    @JsonProperty("회사_id")
+    @JsonProperty("회사")
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
@@ -38,15 +40,20 @@ public class Job {
     @JsonProperty("채용내용")
     private String description;
 
+    @JsonProperty("상태")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @Builder
     public Job(final long id, final Company company, final String position, final long bounty, final String stack,
-               final String description) {
+               final String description, final Status status) {
         this.id = id;
         this.company = company;
         this.position = position;
         this.bounty = bounty;
         this.stack = stack;
         this.description = description;
+        this.status = status;
     }
 
     public boolean hasKeywordInAttributes(String keyword) {

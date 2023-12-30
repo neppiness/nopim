@@ -21,11 +21,11 @@ public class Company {
     @JsonProperty("회사명")
     private String name;
 
-    @JsonProperty("국가")
-    private String country;
-
     @JsonProperty("지역")
     private String region;
+
+    @JsonProperty("국가")
+    private String country;
 
     @JsonProperty("회사가_올린_채용공고")
     @OneToMany(mappedBy = "company")
