@@ -1,20 +1,17 @@
-package recruitment.controller;
+package recruitment.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import recruitment.domain.Authority;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
@@ -30,39 +27,33 @@ import recruitment.repository.CompanyRepository;
 import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
 
-import static org.assertj.core.api.Assertions.*;
-
-@SpringBootTest
 @Transactional
-@ExtendWith(SpringExtension.class)
-public class JobControllerTest {
+@SpringBootTest
+class JobServiceTest {
 
-    static final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+    private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     @Autowired
-    ApplicationRepository applicationRepository;
+    private JobService jobService;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private CompanyService companyService;
 
     @Autowired
-    JobRepository jobRepository;
+    private ApplicationRepository applicationRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    CompanyController companyController;
+    private JobRepository jobRepository;
 
     @Autowired
-    JobController jobController;
+    private UserRepository userRepository;
 
-    Company wanted;
+    private Company wanted;
 
-    Company naver;
+    private Company naver;
 
     @BeforeEach
     void jobControllerTestSetup() {
@@ -76,14 +67,14 @@ public class JobControllerTest {
                 .region("서울")
                 .country("한국")
                 .build();
-        wanted = companyController.create(companyRequestForWanted).getBody();
+        wanted = companyService.create(companyRequestForWanted);
 
         CompanyRequest companyRequestForNaver = CompanyRequest.builder()
                 .name("네이버")
                 .region("분당")
                 .country("한국")
                 .build();
-        naver = companyController.create(companyRequestForNaver).getBody();
+        naver = companyService.create(companyRequestForNaver);
 
         JobRequest jobRequestForWanted = JobRequest.builder()
                 .companyId(wanted.getId())
@@ -92,7 +83,8 @@ public class JobControllerTest {
                 .stack("Django")
                 .description("원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자.")
                 .build();
-        jobController.create(jobRequestForWanted).getBody();
+        jobService.create(jobRequestForWanted);
+
         JobRequest jobRequestForNaver = JobRequest.builder()
                 .companyId(naver.getId())
                 .position("프론트엔드 시니어 개발자")
@@ -100,24 +92,24 @@ public class JobControllerTest {
                 .stack("react")
                 .description("네이버에서 프론트엔드 시니어 개발자를 채용합니다. 필수사항 - react 활용 개발 경력 5년 이상")
                 .build();
-        jobController.create(jobRequestForNaver).getBody();
+        jobService.create(jobRequestForNaver);
     }
 
-    @Test
     @DisplayName("모든 채용공고 조회 기능 테스트")
+    @Test
     void findAllJobsTest() throws JsonProcessingException {
-        Iterable<Job> allJobs = jobRepository.findAll();
-        int count = 0;
-        for (Job job : allJobs) {
-            count++;
+        List<JobSimpleResponse> allJobSimpleResponses = jobService.getAll();
+        for (JobSimpleResponse jobSimpleResponse : allJobSimpleResponses) {
+            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobSimpleResponse);
+            System.out.println(jobSimpleResponseAsString);
         }
         Assertions
-                .assertThat(count)
+                .assertThat(allJobSimpleResponses.size())
                 .isEqualTo(2);
     }
 
-    @Test
     @DisplayName("채용공고 추가 및 검색 기능 테스트")
+    @Test
     void addJobAndSearchJobTest() throws JsonProcessingException {
         JobRequest jobRequest = JobRequest.builder()
                 .companyId(naver.getId())
@@ -126,19 +118,17 @@ public class JobControllerTest {
                 .stack("tensorflow")
                 .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
                 .build();
-        Job createdJob = jobController.create(jobRequest).getBody();
+        jobService.create(jobRequest);
 
-        Iterable<JobSimpleResponse> foundJobs = jobController
-                .search("tensorflow").getBody();
-        assert foundJobs != null;
+        List<JobSimpleResponse> foundJobs = jobService.search("tensorflow");
         for (JobSimpleResponse jobSimpleResponse : foundJobs) {
-            String json = ow.writeValueAsString(jobSimpleResponse);
-            System.out.println(json);
+            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobSimpleResponse);
+            System.out.println(jobSimpleResponseAsString);
         }
     }
 
-    @Test
     @DisplayName("채용공고 추가 및 검색 기능 테스트2")
+    @Test
     void addJobAndSearchJobTest2() throws JsonProcessingException {
         JobRequest jobRequest = JobRequest.builder()
                 .companyId(naver.getId())
@@ -147,24 +137,20 @@ public class JobControllerTest {
                 .stack("tensorflow")
                 .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
                 .build();
-        Job createdJob = jobController.create(jobRequest).getBody();
+        jobService.create(jobRequest);
 
-        Iterable<JobSimpleResponse> foundJobs = jobController
-                .search("네이버").getBody();
-        assert foundJobs != null;
-        String json = ow.writeValueAsString(foundJobs);
-        System.out.println(json);
+        List<JobSimpleResponse> foundJobs = jobService.search("네이버");
+        String foundJobsAsString = objectWriter.writeValueAsString(foundJobs);
+        System.out.println(foundJobsAsString);
 
-        int count = 0;
-        for (JobSimpleResponse jobSimpleResponse : foundJobs) {
-            count++;
-        }
-        assertThat(count).isEqualTo(2);
+        Assertions
+                .assertThat(foundJobs.size())
+                .isEqualTo(2);
     }
 
-    @Test
     @DisplayName("상세 채용공고 조회 기능 테스트")
-    void getJobDetailTest() throws Exception {
+    @Test
+    void getJobDetailTest() throws JsonProcessingException {
         JobRequest jobRequestForNaver = JobRequest.builder()
                 .companyId(naver.getId())
                 .position("머신러닝 주니어 개발자")
@@ -172,16 +158,16 @@ public class JobControllerTest {
                 .stack("tensorflow")
                 .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
                 .build();
-        Job createdJob = jobController.create(jobRequestForNaver).getBody();
-        assert createdJob != null;
+        Job createdJob = jobService.create(jobRequestForNaver);
+
         long jobId = createdJob.getId();
-        JobResponse jobDetail = jobController.getDetail(jobId).getBody();
-        String jobDetailInJson = ow.writeValueAsString(jobDetail);
-        System.out.println(jobDetailInJson);
+        JobResponse jobDetail = jobService.getDetail(jobId);
+        String jobDetailAsString = objectWriter.writeValueAsString(jobDetail);
+        System.out.println(jobDetailAsString);
     }
 
-    @Test
     @DisplayName("채용공고 ID를 통해 채용공고 삭제하는 기능 테스트")
+    @Test
     void deleteJobByIdTest() {
         JobRequest jobRequestForNaver = JobRequest.builder()
                 .companyId(naver.getId())
@@ -190,17 +176,17 @@ public class JobControllerTest {
                 .stack("tensorflow")
                 .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
                 .build();
-        Job createdJob = jobController.create(jobRequestForNaver).getBody();
-        assert createdJob != null;
+        Job createdJob = jobService.create(jobRequestForNaver);
+
         long jobId = createdJob.getId();
-        jobController.softDelete(jobId);
-        Iterable<JobSimpleResponse> foundJobs = jobController.search("tensorflow").getBody();
-        assert foundJobs != null;
-        for (JobSimpleResponse foundJob : foundJobs) {
-            Assertions
-                    .assertThat(foundJob.getStatus())
-                    .isEqualTo(Status.CLOSE);
-        }
+        jobService.softDelete(jobId);
+
+        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
+        assert mayBeFoundJob.isPresent();
+        Job foundJob = mayBeFoundJob.get();
+        Assertions
+                .assertThat(foundJob.getStatus())
+                .isEqualTo(Status.CLOSE);
     }
 
     @DisplayName(value = "채용공고에 지원하는 기능 테스트")
@@ -220,12 +206,8 @@ public class JobControllerTest {
                 .stack("tensorflow")
                 .description("네이버에서 머신러닝 주니어 개발자를 채용합니다. 필수사항 - 텐서플로우")
                 .build();
-        Job createdJob = jobController.create(jobRequestForNaver).getBody();
-        assert createdJob != null;
-        ApplicationResponse createdApplication = jobController
-                .apply(createdJob.getId(), "Kim-jeonghyun")
-                .getBody();
-        assert createdApplication != null;
+        Job createdJob = jobService.create(jobRequestForNaver);
+        ApplicationResponse createdApplication = jobService.apply(createdJob.getId(), "Kim-jeonghyun");
 
         Long createdUserId = createdUser.getId();
         Long createdJobId = createdJob.getId();
