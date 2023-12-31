@@ -1,77 +1,71 @@
-package recruitment.controller;
+package recruitment.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import recruitment.domain.*;
+import recruitment.domain.Application;
+import recruitment.domain.Company;
+import recruitment.domain.Job;
+import recruitment.domain.User;
 import recruitment.dto.ApplicationResponse;
 import recruitment.dto.CompanyRequest;
 import recruitment.dto.JobRequest;
 import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
-
 import recruitment.repository.CompanyRepository;
 import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
 
 @Transactional
 @SpringBootTest
-public class ApplicationControllerTest {
+class ApplicationServiceTest {
 
     private static final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     @Autowired
-    SessionFactory sessionFactory;
+    private ApplicationService applicationService;
 
     @Autowired
-    EntityManagerFactory entityManagerFactory;
+    private CompanyService companyService;
 
     @Autowired
-    ApplicationController applicationController;
+    private JobService jobService;
 
     @Autowired
-    CompanyController companyController;
+    private UserService userService;
 
     @Autowired
-    JobController jobController;
+    private ApplicationRepository applicationRepository;
 
     @Autowired
-    UserController userController;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    ApplicationRepository applicationRepository;
+    private JobRepository jobRepository;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private UserRepository userRepository;
 
-    @Autowired
-    JobRepository jobRepository;
+    private Company wanted;
 
-    @Autowired
-    UserRepository userRepository;
+    private Company naver;
 
-    Company wanted;
+    private User user;
 
-    Company naver;
+    private Job jobForWanted;
 
-    User user;
-
-    Job jobForWanted;
-
-    Job jobForNaver;
+    private Job jobForNaver;
 
     @BeforeEach
-    void jobControllerTestSetup() {
+    void jobServiceTestSetup() {
         applicationRepository.deleteAll();
         userRepository.deleteAll();
         jobRepository.deleteAll();
@@ -86,7 +80,7 @@ public class ApplicationControllerTest {
                 .name("Kim-Jeonghyun")
                 .password("1234")
                 .build();
-        user = userController.signUp(userRequest).getBody();
+        user = userService.signUp(userRequest);
     }
 
     void companySetup() {
@@ -95,14 +89,14 @@ public class ApplicationControllerTest {
                 .country("한국")
                 .region("서울")
                 .build();
-        wanted = companyController.create(companyRequestForWanted).getBody();
+        wanted = companyService.create(companyRequestForWanted);
 
         CompanyRequest companyRequestForNaver = CompanyRequest.builder()
                 .name("네이버")
                 .country("한국")
                 .region("분당")
                 .build();
-        naver = companyController.create(companyRequestForNaver).getBody();
+        naver = companyService.create(companyRequestForNaver);
     }
 
     void jobSetup() {
@@ -113,7 +107,8 @@ public class ApplicationControllerTest {
                 .stack("Django")
                 .description("원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자.")
                 .build();
-        jobForWanted = jobController.create(jobRequestForWanted).getBody();
+        jobForWanted = jobService.create(jobRequestForWanted);
+
         JobRequest jobRequestForNaver = JobRequest.builder()
                 .companyId(naver.getId())
                 .position("프론트엔드 시니어 개발자")
@@ -121,29 +116,16 @@ public class ApplicationControllerTest {
                 .stack("react")
                 .description("네이버에서 프론트엔드 시니어 개발자를 채용합니다. 필수사항 - react 활용 개발 경력 5년 이상")
                 .build();
-        jobForNaver = jobController.create(jobRequestForNaver).getBody();
+        jobForNaver = jobService.create(jobRequestForNaver);
     }
 
-    @Test
     @DisplayName("유저 ID로 지원내역을 검색하는 기능 테스트")
+    @Test
     void findApplicationsByUserIdTest() throws JsonProcessingException {
-        Application applicationForWanted = Application.builder()
-                .user(user)
-                .job(jobForWanted)
-                .build();
-        applicationRepository.save(applicationForWanted);
-        user.getApplications().add(applicationForWanted);
+        jobService.apply(jobForWanted.getId(), user.getName());
+        jobService.apply(jobForNaver.getId(), user.getName());
 
-        Application applicationForNaver = Application.builder()
-                .user(user)
-                .job(jobForNaver)
-                .build();
-        applicationRepository.save(applicationForNaver);
-        user.getApplications().add(applicationForNaver);
-
-        List<ApplicationResponse> foundApplicationResponses = applicationController
-                .getByUsername(user.getName())
-                .getBody();
+        List<ApplicationResponse> foundApplicationResponses = applicationService.getByUsername(user.getName());
         assert foundApplicationResponses != null;
 
         String foundApplicationDtoInJson = objectWriter.writeValueAsString(foundApplicationResponses);
