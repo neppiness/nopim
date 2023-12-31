@@ -1,44 +1,29 @@
-package recruitment.controller;
+package recruitment.service;
 
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Authority;
 import recruitment.domain.User;
 import recruitment.dto.UserRequest;
-import recruitment.repository.ApplicationRepository;
 import recruitment.repository.UserRepository;
 
-import java.util.Optional;
-
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
 @Transactional
-class UserControllerTest {
+@SpringBootTest
+class UserServiceTest {
 
     @Autowired
-    UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    UserController userController;
+    private UserRepository userRepository;
 
-    @Autowired
-    ApplicationRepository applicationRepository;
-
-    @BeforeEach
-    void userDatabaseSetup() {
-        applicationRepository.deleteAll();
-        userRepository.deleteAll();
-    }
-
-    @Test
     @DisplayName(value = "회원가입 테스트")
+    @Test
     void signUpTest() {
         String name = "KJH";
         String password = "4567";
@@ -46,19 +31,18 @@ class UserControllerTest {
                 .name(name)
                 .password(password)
                 .build();
-        User addedUser = userController.signUp(userRequest).getBody();
-        assert addedUser != null;
+        User createdUser = userService.signUp(userRequest);
 
-        Optional<User> mayBeFoundUser = userRepository.findById(addedUser.getId());
+        Optional<User> mayBeFoundUser = userRepository.findById(createdUser.getId());
         assert mayBeFoundUser.isPresent();
         User foundUser = mayBeFoundUser.get();
         Assertions
-                .assertThat(addedUser)
+                .assertThat(createdUser)
                 .isEqualTo(foundUser);
     }
 
-    @Test
     @DisplayName(value = "로그인 테스트")
+    @Test
     void loginTest() {
         String name = "KJH";
         String password = "4567";
@@ -67,17 +51,15 @@ class UserControllerTest {
                 .password(password)
                 .build();
 
-        User addedUser = userController.signUp(userRequest).getBody();
-        assert addedUser != null;
-
-        User loginInfo = userController.login(userRequest).getBody();
+        User createdUser = userService.signUp(userRequest);
+        User loginInfo = userService.login(userRequest);
         Assertions
-                .assertThat(addedUser)
+                .assertThat(createdUser)
                 .isEqualTo(loginInfo);
     }
 
-    @Test
     @DisplayName(value = "권한 상승 테스트")
+    @Test
     void promoteTest() {
         String name = "KJH";
         String password = "4567";
@@ -85,13 +67,12 @@ class UserControllerTest {
                 .name(name)
                 .password(password)
                 .build();
-        User addedUser = userController.signUp(userRequest).getBody();
-        assert addedUser != null;
+        User createdUser = userService.signUp(userRequest);
+        userService.promote(createdUser.getId());
 
-        userController.promote(addedUser.getId());
-
-        Optional<User> mayBePromotedUser = userRepository.findById(addedUser.getId());
+        Optional<User> mayBePromotedUser = userRepository.findById(createdUser.getId());
         assert mayBePromotedUser.isPresent();
+
         User promotedUser = mayBePromotedUser.get();
         Assertions
                 .assertThat(promotedUser.getAuthority())
