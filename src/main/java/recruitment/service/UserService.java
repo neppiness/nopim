@@ -10,6 +10,7 @@ import recruitment.dto.UserRequest;
 import recruitment.exception.ResourceAlreadyExist;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.UserRepository;
+import recruitment.util.PasswordValidator;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class UserService {
 
     @Transactional
     public User signUp(UserRequest userRequest) {
+        PasswordValidator.validatePassword(userRequest.getPassword());
         Optional<User> mayBeFoundUser = userRepository.findByName(userRequest.getName());
         if (mayBeFoundUser.isPresent()) {
             throw new ResourceAlreadyExist(ResourceAlreadyExist.USER_ALREADY_EXIST);
