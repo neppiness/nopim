@@ -20,8 +20,8 @@ import recruitment.dto.JobSimpleResponse;
 import recruitment.service.JobService;
 
 @RequestMapping(path = "/jobs")
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 public class JobController {
 
     private final JobService jobService;

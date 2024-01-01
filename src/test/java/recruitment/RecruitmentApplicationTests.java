@@ -160,8 +160,8 @@ class RecruitmentApplicationTests {
     void contextLoads() {
     }
 
-    @Test
     @DisplayName("1. 채용공고를 등록합니다.")
+    @Test
     void functionalRequirementsTest1() throws Exception {
         MvcResult mvcResult = mockMvc.perform(
                 post("/jobs")
@@ -176,8 +176,8 @@ class RecruitmentApplicationTests {
         System.out.println(json.toString(2));
     }
 
-    @Test
     @DisplayName("2. 채용공고를 수정합니다.")
+    @Test
     void functionalRequirementsTest2() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
@@ -210,8 +210,8 @@ class RecruitmentApplicationTests {
         System.out.println(json.toString(2));
     }
 
-    @Test
     @DisplayName("3. 채용공고를 삭제합니다.")
+    @Test
     void functionalRequirementsTest3() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
@@ -241,8 +241,8 @@ class RecruitmentApplicationTests {
         System.out.println(jsonArray.toString(2));
     }
 
-    @Test
     @DisplayName("4-1. 사용자는 채용공고 목록을 아래와 같이 확인할 수 있습니다.")
+    @Test
     void functionalRequirementsTest4_1() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
@@ -254,8 +254,8 @@ class RecruitmentApplicationTests {
         System.out.println(jsonArray.toString(2));
     }
 
-    @Test
     @DisplayName("4-2. 채용공고 검색 기능 구현")
+    @Test
     void functionalRequirementsTest4_2() throws Exception {
         MvcResult mvcResult;
         System.out.println("키워드-원티드로 검색");
@@ -284,8 +284,8 @@ class RecruitmentApplicationTests {
         System.out.println(jsonArray.toString(2));
     }
 
-    @Test
     @DisplayName("5. 채용 상세 페이지를 가져옵니다.")
+    @Test
     void functionalRequirementsTest5() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
@@ -296,8 +296,8 @@ class RecruitmentApplicationTests {
         System.out.println(jsonObject.toString(2));
     }
 
-    @Test
     @DisplayName("6. 사용자는 채용공고에 지원합니다.")
+    @Test
     void functionalRequirementsTest6() throws Exception {
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(

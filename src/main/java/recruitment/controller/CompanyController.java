@@ -15,8 +15,8 @@ import recruitment.dto.CompanyRequest;
 import recruitment.service.CompanyService;
 
 @RequestMapping(path = "/companies")
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 public class CompanyController {
 
     private final CompanyService companyService;
