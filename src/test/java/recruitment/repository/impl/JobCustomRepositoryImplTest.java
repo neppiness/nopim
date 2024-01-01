@@ -7,16 +7,18 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-import recruitment.domain.Company;
-import recruitment.domain.Job;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import recruitment.dto.JobSimpleResponse;
-import recruitment.repository.CompanyRepository;
 import recruitment.repository.JobRepository;
 
-@Transactional
-@SpringBootTest
+@Sql(value = "classpath:data/reset.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(value = "classpath:data/init.sql")
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@DataJpaTest
 class JobCustomRepositoryImplTest {
 
     private static final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -24,33 +26,20 @@ class JobCustomRepositoryImplTest {
     @Autowired
     private JobRepository jobRepository;
 
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    @DisplayName(value = "검색 기능 테스트")
+    @DisplayName(value = "검색 기능 테스트: 키워드 - 백엔드")
     @Test
-    void searchByKeywordTest() throws JsonProcessingException {
-        Company company = Company.builder()
-                .name("센벡스")
-                .region("당산")
-                .country("대한민국")
-                .build();
-        Company savedCompany = companyRepository.save(company);
-        String position = "백엔드 주니어 개발자";
-        Long bounty = 500_000L;
-        String stack = "Django";
-        String description = "원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자.";
+    void searchByKeywordTest1() throws JsonProcessingException {
+        List<JobSimpleResponse> foundJobSimpleResponseList = jobRepository.findByKeyword("백엔드");
+        for (JobSimpleResponse jobSimpleResponse : foundJobSimpleResponseList) {
+            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobSimpleResponse);
+            System.out.println(jobSimpleResponseAsString);
+        }
+    }
 
-        Job job = Job.builder()
-                .company(savedCompany)
-                .position(position)
-                .bounty(bounty)
-                .stack(stack)
-                .description(description)
-                .build();
-        jobRepository.save(job);
-
-        List<JobSimpleResponse> foundJobSimpleResponseList = jobRepository.findByKeyword("센");
+    @DisplayName(value = "검색 기능 테스트: 키워드 - 개발자")
+    @Test
+    void searchByKeywordTest2() throws JsonProcessingException {
+        List<JobSimpleResponse> foundJobSimpleResponseList = jobRepository.findByKeyword("개발자");
         for (JobSimpleResponse jobSimpleResponse : foundJobSimpleResponseList) {
             String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobSimpleResponse);
             System.out.println(jobSimpleResponseAsString);
