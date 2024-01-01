@@ -77,7 +77,7 @@ class ApplicationServiceTest {
     void userSetup() {
         UserRequest userRequest = UserRequest.builder()
                 .name("Kim-Jeonghyun")
-                .password("1234")
+                .password("Neppiness12!")
                 .build();
         user = userService.signUp(userRequest);
     }

@@ -94,7 +94,7 @@ class RecruitmentApplicationTests {
 
         UserRequest userRequest = UserRequest.builder()
                 .name("김정현")
-                .password("1234")
+                .password("Neppiness12!")
                 .build();
         user = userController.signUp(userRequest).getBody();
 
