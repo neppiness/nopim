@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import recruitment.domain.Application;
 import recruitment.domain.Company;
 import recruitment.domain.Job;
 import recruitment.domain.User;

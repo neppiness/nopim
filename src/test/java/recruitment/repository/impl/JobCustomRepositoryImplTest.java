@@ -37,7 +37,7 @@ class JobCustomRepositoryImplTest {
                 .build();
         Company savedCompany = companyRepository.save(company);
         String position = "백엔드 주니어 개발자";
-        long bounty = 500_000L;
+        Long bounty = 500_000L;
         String stack = "Django";
         String description = "원티드에서 백엔드 주니어 개발자를 채용합니다. 우대사항 - Django 사용 경험자.";
 

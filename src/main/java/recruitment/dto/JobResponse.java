@@ -9,7 +9,7 @@ import lombok.Getter;
 public class JobResponse {
 
     @JsonProperty("채용공고_id")
-    private final long id;
+    private final Long id;
 
     @JsonProperty("회사명")
     private final String companyName;
@@ -36,7 +36,7 @@ public class JobResponse {
     private final List<Long> otherJobIdsOfCompany;
 
     @Builder
-    public JobResponse(final long id, final String companyName, final String country, final String region,
+    public JobResponse(final Long id, final String companyName, final String country, final String region,
                        final String position, final long bounty, final String stack, String description,
                        List<Long> otherJobIdsOfCompany) {
         this.id = id;

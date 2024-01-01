@@ -2,8 +2,11 @@ package recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -18,7 +21,7 @@ public class Company {
     @JsonProperty("회사_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private long id;
+    private Long id;
 
     @JsonProperty("회사명")
     private String name;
@@ -35,7 +38,7 @@ public class Company {
     private List<Job> jobs;
 
     @Builder
-    public Company(final long id, final String name, final String country, final String region, final List<Job> jobs) {
+    public Company(final Long id, final String name, final String country, final String region, final List<Job> jobs) {
         this.id = id;
         this.name = name;
         this.country = country;

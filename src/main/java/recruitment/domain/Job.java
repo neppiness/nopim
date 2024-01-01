@@ -1,14 +1,19 @@
 package recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.HashSet;
-import java.util.Set;
 import lombok.NoArgsConstructor;
 import recruitment.dto.JobResponse;
 import recruitment.dto.JobSimpleResponse;
@@ -21,7 +26,7 @@ public class Job {
     @JsonProperty("채용공고_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private long id;
+    private Long id;
 
     @JsonProperty("회사")
     @ManyToOne
@@ -32,7 +37,7 @@ public class Job {
     private String position;
 
     @JsonProperty("채용보상금")
-    private long bounty;
+    private Long bounty;
 
     @JsonProperty("사용기술")
     private String stack;
@@ -45,7 +50,7 @@ public class Job {
     private Status status;
 
     @Builder
-    public Job(final long id, final Company company, final String position, final long bounty, final String stack,
+    public Job(final Long id, final Company company, final String position, final Long bounty, final String stack,
                final String description, final Status status) {
         this.id = id;
         this.company = company;
@@ -82,8 +87,8 @@ public class Job {
             companyJobs = new ArrayList<>();
         }
         companyJobs.forEach(job -> {
-            long jobId = job.getId();
-            if (jobId == this.id) {
+            Long jobId = job.getId();
+            if (Objects.equals(jobId, this.id)) {
                 return;
             }
             jobIdList.add(job.getId());
