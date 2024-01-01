@@ -27,7 +27,7 @@ class UserServiceTest {
     @Test
     void signUpTest() {
         String name = "KJH";
-        String password = "4567";
+        String password = "Neppiness12!";
         UserRequest userRequest = UserRequest.builder()
                 .name(name)
                 .password(password)
@@ -46,7 +46,7 @@ class UserServiceTest {
     @Test
     void signUpExceptionTest() {
         String name = "KJH";
-        String password = "4567";
+        String password = "Neppiness12!";
         UserRequest userRequest = UserRequest.builder()
                 .name(name)
                 .password(password)
@@ -63,7 +63,7 @@ class UserServiceTest {
     @Test
     void loginTest() {
         String name = "KJH";
-        String password = "4567";
+        String password = "Neppiness12!";
         UserRequest userRequest = UserRequest.builder()
                 .name(name)
                 .password(password)
@@ -80,7 +80,7 @@ class UserServiceTest {
     @Test
     void promoteTest() {
         String name = "KJH";
-        String password = "4567";
+        String password = "Neppiness12!";
         UserRequest userRequest = UserRequest.builder()
                 .name(name)
                 .password(password)
