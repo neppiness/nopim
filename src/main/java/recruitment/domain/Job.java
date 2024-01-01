@@ -24,7 +24,7 @@ import recruitment.dto.JobSimpleResponse;
 public class Job {
 
     @JsonProperty("채용공고_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
