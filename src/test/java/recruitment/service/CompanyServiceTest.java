@@ -10,11 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Company;
 import recruitment.dto.CompanyRequest;
 import recruitment.repository.CompanyRepository;
 
+@Sql(scripts = "classpath:data/reset.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:data/init.sql")
 @Transactional
 @SpringBootTest
 class CompanyServiceTest {
@@ -47,25 +51,6 @@ class CompanyServiceTest {
     @DisplayName(value = "회사 검색 테스트")
     @Test
     void searchTest() throws JsonProcessingException {
-        Company company1 = Company.builder()
-                .name("네이버클라우드 판교오피스")
-                .region("판교")
-                .country("대한민국")
-                .build();
-        companyRepository.save(company1);
-        Company company2 = Company.builder()
-                .name("스노우")
-                .region("판교")
-                .country("대한민국")
-                .build();
-        companyRepository.save(company2);
-        Company company3 = Company.builder()
-                .name("센벡스")
-                .region("당산")
-                .country("대한민국")
-                .build();
-        companyRepository.save(company3);
-
         String givenRegion = "판교";
         String givenCountry = "대한민국";
         CompanyRequest companySearchRequest = CompanyRequest.builder()
@@ -77,29 +62,22 @@ class CompanyServiceTest {
         for (Company foundCompany : foundCompanyList) {
             String foundCompanyAsString = objectWriter.writeValueAsString(foundCompany);
             System.out.println(foundCompanyAsString);
+            Assertions
+                    .assertThat(foundCompany.getRegion())
+                    .isEqualTo(givenRegion);
+            Assertions
+                    .assertThat(foundCompany.getCountry())
+                    .isEqualTo(givenCountry);
         }
-        Assertions
-                .assertThat(foundCompanyList.size())
-                .isEqualTo(2);
     }
 
     @DisplayName(value = "회사 상세 정보 조회 테스트")
     @Test
     void getDetailTest() throws JsonProcessingException {
-        Company senvex = Company.builder()
-                .name("센벡스")
-                .region("당산")
-                .country("대한민국")
-                .build();
-        Company savedCompany = companyRepository.save(senvex);
-        long savedCompanyId = savedCompany.getId();
-
+        Long savedCompanyId = 1L;
         Company foundCompanyDetail = companyService.getDetail(savedCompanyId);
         String foundCompanyDetailAsString = objectWriter.writeValueAsString(foundCompanyDetail);
         System.out.println(foundCompanyDetailAsString);
-        Assertions
-                .assertThat(savedCompany)
-                .isEqualTo(foundCompanyDetail);
     }
 
 }

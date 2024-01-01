@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Authority;
 import recruitment.domain.User;
@@ -13,6 +15,8 @@ import recruitment.dto.UserRequest;
 import recruitment.exception.ResourceAlreadyExist;
 import recruitment.repository.UserRepository;
 
+@Sql(scripts = "classpath:data/reset.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:data/init.sql")
 @Transactional
 @SpringBootTest
 class UserServiceTest {
@@ -45,13 +49,12 @@ class UserServiceTest {
     @DisplayName(value = "중복 회원명 회원가입 테스트")
     @Test
     void signUpExceptionTest() {
-        String name = "KJH";
+        String name = "scsc3204";
         String password = "Neppiness12!";
         UserRequest userRequest = UserRequest.builder()
                 .name(name)
                 .password(password)
                 .build();
-        userService.signUp(userRequest);
 
         Assertions
                 .assertThatThrownBy(() -> userService.signUp(userRequest))
@@ -62,33 +65,31 @@ class UserServiceTest {
     @DisplayName(value = "로그인 테스트")
     @Test
     void loginTest() {
-        String name = "KJH";
+        String name = "scsc3204";
         String password = "Neppiness12!";
         UserRequest userRequest = UserRequest.builder()
                 .name(name)
                 .password(password)
                 .build();
-
-        User createdUser = userService.signUp(userRequest);
         User loginInfo = userService.login(userRequest);
         Assertions
-                .assertThat(createdUser)
-                .isEqualTo(loginInfo);
+                .assertThat(loginInfo.getName())
+                .isEqualTo(name);
+        Assertions
+                .assertThat(loginInfo.getPassword())
+                .isEqualTo(password);
+        Assertions
+                .assertThat(loginInfo.getAuthority())
+                .isEqualTo(Authority.ADMIN);
     }
 
     @DisplayName(value = "권한 상승 테스트")
     @Test
     void promoteTest() {
-        String name = "KJH";
-        String password = "Neppiness12!";
-        UserRequest userRequest = UserRequest.builder()
-                .name(name)
-                .password(password)
-                .build();
-        User createdUser = userService.signUp(userRequest);
-        userService.promote(createdUser.getId());
+        Long userId = 2L;
+        userService.promote(userId);
 
-        Optional<User> mayBePromotedUser = userRepository.findById(createdUser.getId());
+        Optional<User> mayBePromotedUser = userRepository.findById(userId);
         assert mayBePromotedUser.isPresent();
 
         User promotedUser = mayBePromotedUser.get();
