@@ -13,4 +13,6 @@ VALUES (1, 2, '프론트엔드 개발자', 500000, 'javascript', '원티드코�
 INSERT INTO JOB (id, company_id, position, bounty, stack, description, status)
 VALUES (2, 3, 'Django 백엔드 개발자', 1000000, 'Django', '네이버에서 백엔드 개발자를 채용합니다.', 'OPEN');
 INSERT INTO JOB (id, company_id, position, bounty, stack, description, status)
-VALUES (3, 4, 'Django 백엔드 개발자', 300000, 'Django', '카카오에서 Django 백엔드 개발자를 채용합니다.', 'OPEN');
+VALUES (3, 4, '백엔드 주니어 개발자', 300000, 'Django', '카카오에서 Django 백엔드 개발자를 채용합니다.', 'OPEN');
+INSERT INTO JOB (id, company_id, position, bounty, stack, description, status)
+VALUES (4, 3, '프론트엔드 시니어 개발자', 1500000, 'react', '네이버에서 프론트엔드 시니어 개발자를 채용합니다. react 활용 개발 경력 5년 이상', 'OPEN');
