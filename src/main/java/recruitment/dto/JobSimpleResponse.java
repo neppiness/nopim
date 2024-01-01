@@ -9,7 +9,7 @@ import recruitment.domain.Status;
 public class JobSimpleResponse {
 
     @JsonProperty("채용공고_id")
-    private final long id;
+    private final Long id;
 
     @JsonProperty("회사명")
     private final String companyName;
@@ -33,7 +33,7 @@ public class JobSimpleResponse {
     private final Status status;
 
     @Builder
-    public JobSimpleResponse(final long id, final String companyName, final String country, final String region,
+    public JobSimpleResponse(final Long id, final String companyName, final String country, final String region,
                              final String position, final long bounty, final String stack, final Status status) {
         this.id = id;
         this.companyName = companyName;

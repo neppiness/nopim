@@ -22,7 +22,7 @@ public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty("지원내역_id")
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -35,7 +35,7 @@ public class Application {
     private Job job;
 
     @Builder
-    public Application(final long id, final User user, final Job job) {
+    public Application(final Long id, final User user, final Job job) {
         this.id = id;
         this.user = user;
         this.job = job;

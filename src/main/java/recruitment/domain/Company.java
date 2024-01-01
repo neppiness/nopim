@@ -21,7 +21,7 @@ public class Company {
     @JsonProperty("회사_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private long id;
+    private Long id;
 
     @JsonProperty("회사명")
     private String name;
@@ -38,7 +38,7 @@ public class Company {
     private List<Job> jobs;
 
     @Builder
-    public Company(final long id, final String name, final String country, final String region, final List<Job> jobs) {
+    public Company(final Long id, final String name, final String country, final String region, final List<Job> jobs) {
         this.id = id;
         this.name = name;
         this.country = country;
