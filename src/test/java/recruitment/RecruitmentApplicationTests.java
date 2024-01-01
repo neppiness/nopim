@@ -1,5 +1,11 @@
 package recruitment;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+import java.nio.charset.Charset;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,13 +30,9 @@ import recruitment.dto.CompanyRequest;
 import recruitment.dto.JobRequest;
 import recruitment.dto.UserRequest;
 import recruitment.repository.ApplicationRepository;
-
-import java.nio.charset.Charset;
 import recruitment.repository.CompanyRepository;
 import recruitment.repository.JobRepository;
 import recruitment.repository.UserRepository;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest
 @Transactional
@@ -60,7 +62,6 @@ class RecruitmentApplicationTests {
 
     @Autowired
     private UserRepository userRepository;
-
 
     private MockMvc mockMvc;
 
