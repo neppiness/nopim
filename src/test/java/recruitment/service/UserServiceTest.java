@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Authority;
 import recruitment.domain.User;
 import recruitment.dto.UserRequest;
+import recruitment.exception.ResourceAlreadyExist;
 import recruitment.repository.UserRepository;
 
 @Transactional
@@ -39,6 +40,23 @@ class UserServiceTest {
         Assertions
                 .assertThat(createdUser)
                 .isEqualTo(foundUser);
+    }
+
+    @DisplayName(value = "중복 회원명 회원가입 테스트")
+    @Test
+    void signUpExceptionTest() {
+        String name = "KJH";
+        String password = "4567";
+        UserRequest userRequest = UserRequest.builder()
+                .name(name)
+                .password(password)
+                .build();
+        userService.signUp(userRequest);
+
+        Assertions
+                .assertThatThrownBy(() -> userService.signUp(userRequest))
+                .isInstanceOf(ResourceAlreadyExist.class)
+                .hasMessage(ResourceAlreadyExist.USER_ALREADY_EXIST);
     }
 
     @DisplayName(value = "로그인 테스트")
