@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import recruitment.domain.Authority;
 import recruitment.domain.User;
 import recruitment.dto.UserRequest;
+import recruitment.exception.ResourceAlreadyExist;
 import recruitment.exception.ResourceNotFound;
 import recruitment.repository.UserRepository;
 
@@ -18,7 +19,10 @@ public class UserService {
 
     @Transactional
     public User signUp(UserRequest userRequest) {
-        // TODO: 중복되는 이름을 갖는 경우를 배제
+        Optional<User> mayBeFoundUser = userRepository.findByName(userRequest.getName());
+        if (mayBeFoundUser.isPresent()) {
+            throw new ResourceAlreadyExist(ResourceAlreadyExist.USER_ALREADY_EXIST);
+        }
         User user = User.builder()
                 .name(userRequest.getName())
                 .password(userRequest.getPassword())
