@@ -1,6 +1,5 @@
 package recruitment;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -71,6 +70,7 @@ class RecruitmentApplicationTests {
         ).andReturn();
         String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONArray jsonArray = new JSONArray(rawJsonString);
+
         System.out.println("수정 전");
         System.out.println(jsonArray.toString(2));
         System.out.println();
@@ -81,7 +81,8 @@ class RecruitmentApplicationTests {
         ).andReturn();
         rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONObject jsonAfter1stModify = new JSONObject(rawJsonString);
-        System.out.println("1차 수정 후: 채용보상금 변경");
+
+        System.out.println("1차 수정 후: 채용보상금 변경(500000 -> 1000000)");
         System.out.println(jsonAfter1stModify.toString(2));
         System.out.println();
 
@@ -91,7 +92,8 @@ class RecruitmentApplicationTests {
         ).andReturn();
         rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONObject jsonAfter2ndModify = new JSONObject(rawJsonString);
-        System.out.println("2차 수정 후: 사용기술 변경");
+
+        System.out.println("2차 수정 후: 사용기술 변경(javascript -> react)");
         System.out.println(jsonAfter2ndModify.toString(2));
     }
 
@@ -101,31 +103,25 @@ class RecruitmentApplicationTests {
         String idOfJobForWantedAsString = "1";
         String keyword = "원티드코리아";
         MvcResult mvcResult;
+
         mvcResult = mockMvc.perform(
                 get("/jobs/search")
                         .param("keyword", keyword)
         ).andReturn();
-        String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
-        JSONArray jsonArray = new JSONArray(rawJsonString);
+        String rawJsonStringBeforeDelete = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
+        JSONArray jsonArray = new JSONArray(rawJsonStringBeforeDelete);
         System.out.println("삭제 전");
         System.out.println(jsonArray.toString(2));
         System.out.println();
 
         mvcResult = mockMvc.perform(
-                delete("/jobs/" + idOfJobForWantedAsString)
+                post("/jobs/" + idOfJobForWantedAsString)
         ).andReturn();
-        System.out.println("삭제 실행");
-        System.out.println(mvcResult.getResponse().getContentAsString());
-        System.out.println();
-
-        mvcResult = mockMvc.perform(
-                get("/jobs/search")
-                        .param("keyword", keyword)
-        ).andReturn();
-        rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
-        jsonArray = new JSONArray(rawJsonString);
+        String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
+        JSONObject json = new JSONObject(rawJsonString);
         System.out.println("삭제 후");
-        System.out.println(jsonArray.toString(2));
+        System.out.println(json.toString(2));
+        System.out.println();
     }
 
     @DisplayName("4-1. 사용자는 채용공고 목록을 아래와 같이 확인할 수 있습니다.")
@@ -144,42 +140,26 @@ class RecruitmentApplicationTests {
     @DisplayName("4-2. 채용공고 검색 기능 구현")
     @Test
     void functionalRequirementsTest4_2() throws Exception {
-        String idOfWantedLabAsString = "1";
-        System.out.println("키워드-원티드로 검색");
+        String keyword = "네이버";
 
-        MvcResult mvcResult;
-        mvcResult = mockMvc.perform(
-                post("/jobs")
-                        .param("company-id", idOfWantedLabAsString)
-                        .param("position", "백엔드 주니어 개발자")
-                        .param("bounty", "1000000")
-                        .param("stack", "Python")
-                        .param("description", "원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
-        ).andReturn();
-
-        String rawJsonString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
-        JSONObject jsonObject = new JSONObject(rawJsonString);
-        System.out.println("원티드랩 공고 추가");
-        System.out.println(jsonObject.toString(2));
-        System.out.println();
-
-        mvcResult = mockMvc.perform(
+        MvcResult mvcResult = mockMvc.perform(
                 get("/jobs/search")
-                        .param("keyword", "원티드")
+                        .param("keyword", keyword)
         ).andReturn();
+
         String rawJsonArrayString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONArray jsonArray = new JSONArray(rawJsonArrayString);
-        System.out.println("키워드-원티드로 검색");
+        System.out.println("키워드-네이버로 검색");
         System.out.println(jsonArray.toString(2));
     }
 
     @DisplayName("5. 채용 상세 페이지를 가져옵니다.")
     @Test
     void functionalRequirementsTest5() throws Exception {
-        String idOfJobForWanted = "1";
+        String idOfJobForNaver = "2";
         MvcResult mvcResult;
         mvcResult = mockMvc.perform(
-                get("/jobs/detail/" + idOfJobForWanted)
+                get("/jobs/detail/" + idOfJobForNaver)
         ).andReturn();
         String rawJsonArrayString = mvcResult.getResponse().getContentAsString(Charset.defaultCharset());
         JSONObject jsonObject = new JSONObject(rawJsonArrayString);

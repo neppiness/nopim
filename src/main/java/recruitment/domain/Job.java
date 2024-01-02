@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.Builder;
@@ -81,18 +80,11 @@ public class Job {
     }
 
     public JobResponse convertToJobResponse() {
-        List<Long> jobIdList = new ArrayList<>();
-        List<Job> companyJobs = this.company.getJobs();
-        if (companyJobs == null) {
-            companyJobs = new ArrayList<>();
-        }
-        companyJobs.forEach(job -> {
-            Long jobId = job.getId();
-            if (Objects.equals(jobId, this.id)) {
-                return;
-            }
-            jobIdList.add(job.getId());
-        });
+        List<Long> jobIdList = this.company.getJobs()
+                .stream()
+                .map(Job::getId)
+                .filter(jobId -> !Objects.equals(jobId, this.id))
+                .toList();
 
         return JobResponse.builder()
                 .id(this.id)
@@ -104,6 +96,7 @@ public class Job {
                 .stack(this.stack)
                 .description(this.description)
                 .otherJobIdsOfCompany(jobIdList)
+                .status(this.status)
                 .build();
     }
 
@@ -116,6 +109,7 @@ public class Job {
                 .position(this.position)
                 .bounty(this.bounty)
                 .stack(this.stack)
+                .status(this.status)
                 .build();
     }
 

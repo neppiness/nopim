@@ -66,8 +66,9 @@ public class JobService {
                 .company(foundJob.getCompany())
                 .position(jobRequestToBeUpdated.getPosition())
                 .bounty(jobRequestToBeUpdated.getBounty())
-                .description(jobRequestToBeUpdated.getDescription())
                 .stack(jobRequestToBeUpdated.getStack())
+                .description(jobRequestToBeUpdated.getDescription())
+                .status(jobRequestToBeUpdated.getStatus())
                 .build();
 
         Job uploadedJob = jobRepository.save(jobToBeUpdated);
@@ -162,11 +163,16 @@ public class JobService {
         if (stack == null) {
             stack = foundJob.getStack();
         }
+        Status status = jobRequest.getStatus();
+        if (status == null) {
+            status = foundJob.getStatus();
+        }
         return JobRequest.builder()
                 .position(position)
                 .bounty(bounty)
                 .description(description)
                 .stack(stack)
+                .status(status)
                 .build();
     }
 
