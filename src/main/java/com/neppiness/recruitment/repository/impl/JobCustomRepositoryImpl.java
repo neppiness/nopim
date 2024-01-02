@@ -22,11 +22,12 @@ public class JobCustomRepositoryImpl implements JobCustomRepository {
         CriteriaQuery<JobSimpleResponse> query = builder.createQuery(JobSimpleResponse.class);
         Root<Job> job = query.from(Job.class);
 
-        Predicate companyNameLikeKeyword = builder.like(job.get("company").get("name"), "%" + keyword + "%");
-        Predicate companyRegionLikeKeyword = builder.like(job.get("company").get("region"), "%" + keyword + "%");
-        Predicate companyCountryLikeKeyword = builder.like(job.get("company").get("country"), "%" + keyword + "%");
-        Predicate positionLikeKeyword = builder.like(job.get("position"), "%" + keyword + "%");
-        Predicate stackLikeKeyword = builder.like(job.get("stack"), "%" + keyword + "%");
+        String pattern = "%" + keyword + "%";
+        Predicate companyNameLikeKeyword = builder.like(job.get("company").get("name"), pattern);
+        Predicate companyRegionLikeKeyword = builder.like(job.get("company").get("region"), pattern);
+        Predicate companyCountryLikeKeyword = builder.like(job.get("company").get("country"), pattern);
+        Predicate positionLikeKeyword = builder.like(job.get("position"), pattern);
+        Predicate stackLikeKeyword = builder.like(job.get("stack"), pattern);
 
         query.select(builder.construct(JobSimpleResponse.class, job.get("id"), job.get("company").get("name"),
                 job.get("company").get("region"), job.get("company").get("country"), job.get("position"),
