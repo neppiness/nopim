@@ -60,25 +60,6 @@ public class Job {
         this.status = status;
     }
 
-    public boolean hasKeywordInAttributes(String keyword) {
-        if (String.valueOf(this.id).contains(keyword)) {
-            return true;
-        }
-        if (this.position.contains(keyword)) {
-            return true;
-        }
-        if (this.stack.contains(keyword)) {
-            return true;
-        }
-        if (this.description.contains(keyword)) {
-            return true;
-        }
-        if (this.getCompany().getName().contains(keyword)) {
-            return true;
-        }
-        return false;
-    }
-
     public JobResponse convertToJobResponse() {
         List<Long> jobIdList = this.company.getJobs()
                 .stream()

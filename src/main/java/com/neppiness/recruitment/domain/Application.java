@@ -48,11 +48,4 @@ public class Application {
                 .build();
     }
 
-    public ApplicationDetailResponse convertToDetailedResponse() {
-        return ApplicationDetailResponse.builder()
-                .user(this.user)
-                .jobSimpleResponse(this.job.convertToJobSimpleResponse())
-                .build();
-    }
-
 }
