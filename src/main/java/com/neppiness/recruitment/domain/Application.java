@@ -1,7 +1,6 @@
 package com.neppiness.recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.neppiness.recruitment.dto.ApplicationDetailResponse;
 import com.neppiness.recruitment.dto.ApplicationResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
