@@ -4,16 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import recruitment.domain.Company;
 import recruitment.repository.CompanyRepository;
 
-@Transactional
-@SpringBootTest
+@Sql(value = "classpath:data/reset.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(value = "classpath:data/init.sql")
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@DataJpaTest
 class CompanyCustomRepositoryImplTest {
 
     private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -24,25 +30,19 @@ class CompanyCustomRepositoryImplTest {
     @DisplayName(value = "findBySearchRequest 테스트")
     @Test
     void findBySearchRequestTest() throws JsonProcessingException {
-        Company company1 = Company.builder()
-                .name("네이버클라우드 판교오피스")
-                .region("판교")
-                .country("대한민국")
-                .build();
-        companyRepository.save(company1);
-        Company company2 = Company.builder()
-                .name("스노우")
-                .region("판교")
-                .country("대한민국")
-                .build();
-        companyRepository.save(company2);
-
         String givenRegion = "판교";
         String givenCountry = "대한민국";
         List<Company> foundCompanyList = companyRepository.findByParameters(null, givenRegion, givenCountry);
         for (Company foundCompany : foundCompanyList) {
             String foundCompanyAsString = objectWriter.writeValueAsString(foundCompany);
             System.out.println(foundCompanyAsString);
+
+            Assertions
+                    .assertThat(foundCompany.getRegion())
+                    .isEqualTo(givenRegion);
+            Assertions
+                    .assertThat(foundCompany.getCountry())
+                    .isEqualTo(givenCountry);
         }
     }
 

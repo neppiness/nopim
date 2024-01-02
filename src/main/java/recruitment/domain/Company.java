@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Company {
 
     @JsonProperty("회사_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 

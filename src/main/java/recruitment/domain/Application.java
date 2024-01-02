@@ -20,7 +20,7 @@ import recruitment.dto.ApplicationResponse;
 public class Application {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("지원내역_id")
     private Long id;
 
