@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class InvalidArgument extends RuntimeException {
+public class InvalidArgumentException extends RuntimeException {
 
     public static final String INVALID_PASSWORD_LENGTH = "비밀번호는 8자 이상이어야 합니다.";
 
@@ -17,7 +17,7 @@ public class InvalidArgument extends RuntimeException {
     public static final String PASSWORD_REQUIRES_SPECIAL_CHARACTER =
             "비밀번호는 특수문자 $-_.+!*'() 중 하나 이상을 포함해야 합니다.";
 
-    public InvalidArgument(String message) {
+    public InvalidArgumentException(String message) {
         super(message);
     }
 

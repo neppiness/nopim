@@ -3,7 +3,7 @@ package com.neppiness.recruitment.service;
 import com.neppiness.recruitment.domain.Authority;
 import com.neppiness.recruitment.domain.User;
 import com.neppiness.recruitment.dto.UserRequest;
-import com.neppiness.recruitment.exception.ResourceAlreadyExist;
+import com.neppiness.recruitment.exception.ResourceAlreadyExistException;
 import com.neppiness.recruitment.repository.UserRepository;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -58,8 +58,8 @@ class UserServiceTest {
 
         Assertions
                 .assertThatThrownBy(() -> userService.signUp(userRequest))
-                .isInstanceOf(ResourceAlreadyExist.class)
-                .hasMessage(ResourceAlreadyExist.USER_ALREADY_EXIST);
+                .isInstanceOf(ResourceAlreadyExistException.class)
+                .hasMessage(ResourceAlreadyExistException.USER_ALREADY_EXIST);
     }
 
     @DisplayName(value = "로그인 테스트")

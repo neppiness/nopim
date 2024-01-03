@@ -1,6 +1,6 @@
 package com.neppiness.recruitment.util;
 
-import com.neppiness.recruitment.exception.InvalidArgument;
+import com.neppiness.recruitment.exception.InvalidArgumentException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,8 @@ class PasswordValidatorTest {
         String password = "np";
         Assertions
                 .assertThatThrownBy(() -> PasswordValidator.validatePassword(password))
-                .isInstanceOf(InvalidArgument.class)
-                .hasMessage(InvalidArgument.INVALID_PASSWORD_LENGTH);
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessage(InvalidArgumentException.INVALID_PASSWORD_LENGTH);
     }
 
     @DisplayName("숫자 조건이 만족되지 않은 비밀번호에 대한 예외 테스트")
@@ -30,8 +30,8 @@ class PasswordValidatorTest {
         String password = "neppiness";
         Assertions
                 .assertThatThrownBy(() -> PasswordValidator.validatePassword(password))
-                .isInstanceOf(InvalidArgument.class)
-                .hasMessage(InvalidArgument.PASSWORD_REQUIRES_DIGIT);
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessage(InvalidArgumentException.PASSWORD_REQUIRES_DIGIT);
     }
 
     @DisplayName("영문 대문자 조건이 만족되지 않은 비밀번호에 대한 예외 테스트")
@@ -40,8 +40,8 @@ class PasswordValidatorTest {
         String password = "neppiness12";
         Assertions
                 .assertThatThrownBy(() -> PasswordValidator.validatePassword(password))
-                .isInstanceOf(InvalidArgument.class)
-                .hasMessage(InvalidArgument.PASSWORD_REQUIRES_CAPITAL_LETTER);
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessage(InvalidArgumentException.PASSWORD_REQUIRES_CAPITAL_LETTER);
     }
 
     @DisplayName("영문 소문자 조건이 만족되지 않은 비밀번호에 대한 예외 테스트")
@@ -50,8 +50,8 @@ class PasswordValidatorTest {
         String password = "NEPPINESS12";
         Assertions
                 .assertThatThrownBy(() -> PasswordValidator.validatePassword(password))
-                .isInstanceOf(InvalidArgument.class)
-                .hasMessage(InvalidArgument.PASSWORD_REQUIRES_SMALL_LETTER);
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessage(InvalidArgumentException.PASSWORD_REQUIRES_SMALL_LETTER);
     }
 
     @DisplayName("특수문자 조건이 만족되지 않은 비밀번호에 대한 예외 테스트")
@@ -60,8 +60,8 @@ class PasswordValidatorTest {
         String password = "Neppiness12";
         Assertions
                 .assertThatThrownBy(() -> PasswordValidator.validatePassword(password))
-                .isInstanceOf(InvalidArgument.class)
-                .hasMessage(InvalidArgument.PASSWORD_REQUIRES_SPECIAL_CHARACTER);
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessage(InvalidArgumentException.PASSWORD_REQUIRES_SPECIAL_CHARACTER);
     }
 
 }

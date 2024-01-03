@@ -37,7 +37,7 @@ class ApplicationServiceTest {
         jobService.apply(jobIdForWanted, name);
         jobService.apply(jobIdForNaver, name);
 
-        List<ApplicationResponse> foundApplicationResponses = applicationService.getByUsername(name);
+        List<ApplicationResponse> foundApplicationResponses = applicationService.getAllByUsername(name);
         assert foundApplicationResponses != null;
 
         String foundApplicationDtoInJson = objectWriter.writeValueAsString(foundApplicationResponses);

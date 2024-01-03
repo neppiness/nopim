@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class ResourceNotFound extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException {
 
     public static final String APPLICATION_NOT_FOUND = "해당하는 지원 내역을 찾을 수 없습니다.";
 
@@ -14,7 +14,7 @@ public class ResourceNotFound extends RuntimeException {
 
     public static final String COMPANY_NOT_FOUND = "해당하는 회사를 찾을 수 없습니다.";
 
-    public ResourceNotFound(String message) {
+    public ResourceNotFoundException(String message) {
         super(message);
     }
 
