@@ -5,6 +5,9 @@ import com.neppiness.recruitment.dto.ApplicationResponse;
 import com.neppiness.recruitment.dto.JobRequest;
 import com.neppiness.recruitment.dto.JobResponse;
 import com.neppiness.recruitment.dto.JobSimpleResponse;
+import com.neppiness.recruitment.dto.Principal;
+import com.neppiness.recruitment.dto.PrincipalDto;
+import com.neppiness.recruitment.service.AuthorizationService;
 import com.neppiness.recruitment.service.JobService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,53 +29,60 @@ public class JobController {
 
     private final JobService jobService;
 
+    private final AuthorizationService authorizationService;
+
     @PostMapping(path = "")
-    public ResponseEntity<Job> create(@ModelAttribute JobRequest jobRequest) {
+    public ResponseEntity<Job> create(@Principal PrincipalDto principal, @ModelAttribute JobRequest jobRequest) {
+        authorizationService.checkIfManager(principal.getAuthority());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(jobService.create(jobRequest));
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<Job> update(@PathVariable Long id, @ModelAttribute JobRequest jobRequest) {
+    public ResponseEntity<Job> update(@Principal PrincipalDto principal, @PathVariable Long id,
+                                      @ModelAttribute JobRequest jobRequest) {
+        authorizationService.checkIfManager(principal.getAuthority());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.update(id, jobRequest));
     }
 
     @PostMapping(path = "/{id}")
-    public ResponseEntity<Job> softDelete(@PathVariable Long id) {
+    public ResponseEntity<Job> softDelete(@Principal PrincipalDto principal, @PathVariable Long id) {
+        authorizationService.checkIfManager(principal.getAuthority());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.softDelete(id));
     }
 
     @GetMapping(path = "")
-    public ResponseEntity<List<JobSimpleResponse>> getAll() {
+    public ResponseEntity<List<JobSimpleResponse>> getAll(@Principal PrincipalDto principal) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.getAll());
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<JobSimpleResponse>> search(@RequestParam String keyword) {
+    public ResponseEntity<List<JobSimpleResponse>> search(@Principal PrincipalDto principal,
+                                                          @RequestParam String keyword) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.search(keyword));
     }
 
     @GetMapping(path = "/detail/{id}")
-    public ResponseEntity<JobResponse> getDetail(@PathVariable Long id) {
+    public ResponseEntity<JobResponse> getDetail(@Principal PrincipalDto principal, @PathVariable Long id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.getDetail(id));
     }
 
     @PostMapping(path = "/apply/{id}")
-    public ResponseEntity<ApplicationResponse> apply(@PathVariable Long id, @RequestParam String name) {
+    public ResponseEntity<ApplicationResponse> apply(@Principal PrincipalDto principal, @PathVariable Long id) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(jobService.apply(id, name));
+                .body(jobService.apply(id, principal.getName()));
     }
 
 }
