@@ -3,7 +3,7 @@ package com.neppiness.recruitment.service;
 import com.neppiness.recruitment.domain.Application;
 import com.neppiness.recruitment.domain.User;
 import com.neppiness.recruitment.dto.ApplicationResponse;
-import com.neppiness.recruitment.exception.ResourceNotFound;
+import com.neppiness.recruitment.exception.ResourceNotFoundException;
 import com.neppiness.recruitment.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +19,7 @@ public class ApplicationService {
     public List<ApplicationResponse> getByUsername(String username) {
         Optional<User> mayBeFoundUser = userRepository.findByName(username);
         if (mayBeFoundUser.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.USER_NOT_FOUND);
         }
         User foundUser = mayBeFoundUser.get();
 

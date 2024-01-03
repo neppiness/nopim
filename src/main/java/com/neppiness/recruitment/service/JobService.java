@@ -9,7 +9,7 @@ import com.neppiness.recruitment.dto.ApplicationResponse;
 import com.neppiness.recruitment.dto.JobRequest;
 import com.neppiness.recruitment.dto.JobResponse;
 import com.neppiness.recruitment.dto.JobSimpleResponse;
-import com.neppiness.recruitment.exception.ResourceNotFound;
+import com.neppiness.recruitment.exception.ResourceNotFoundException;
 import com.neppiness.recruitment.repository.ApplicationRepository;
 import com.neppiness.recruitment.repository.CompanyRepository;
 import com.neppiness.recruitment.repository.JobRepository;
@@ -37,7 +37,7 @@ public class JobService {
         Long companyId = jobRequest.getCompanyId();
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
         if (mayBeFoundCompany.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.COMPANY_NOT_FOUND);
         }
         Company foundCompany = mayBeFoundCompany.get();
         Job createdJob = Job.builder()
@@ -57,7 +57,7 @@ public class JobService {
     public Job update(Long jobId, JobRequest jobRequest) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);
         }
         Job foundJob = mayBeFoundJob.get();
         JobRequest jobRequestToBeUpdated = getJobRequestToBeUpdated(foundJob, jobRequest);
@@ -82,7 +82,7 @@ public class JobService {
     public Job softDelete(Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);
         }
 
         Job foundJob = mayBeFoundJob.get();
@@ -117,7 +117,7 @@ public class JobService {
     public JobResponse getDetail(Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);
         }
         return mayBeFoundJob.get().convertToJobResponse();
     }
@@ -126,13 +126,13 @@ public class JobService {
     public ApplicationResponse apply(Long jobId, String name) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.JOB_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);
         }
         Job foundJob = mayBeFoundJob.get();
 
         Optional<User> mayBeFoundUser = userRepository.findByName(name);
         if (mayBeFoundUser.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.USER_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.USER_NOT_FOUND);
         }
         User foundUser = mayBeFoundUser.get();
 

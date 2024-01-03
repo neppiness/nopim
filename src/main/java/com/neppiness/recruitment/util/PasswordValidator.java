@@ -1,6 +1,6 @@
 package com.neppiness.recruitment.util;
 
-import com.neppiness.recruitment.exception.InvalidArgument;
+import com.neppiness.recruitment.exception.InvalidArgumentException;
 
 public class PasswordValidator {
 
@@ -17,7 +17,7 @@ public class PasswordValidator {
 
     private static void lengthCheck(int length) {
         if (length < passwordMinimumLength) {
-            throw new InvalidArgument(InvalidArgument.INVALID_PASSWORD_LENGTH);
+            throw new InvalidArgumentException(InvalidArgumentException.INVALID_PASSWORD_LENGTH);
         }
     }
 
@@ -28,7 +28,7 @@ public class PasswordValidator {
                 return;
             }
         }
-        throw new InvalidArgument(InvalidArgument.PASSWORD_REQUIRES_DIGIT);
+        throw new InvalidArgumentException(InvalidArgumentException.PASSWORD_REQUIRES_DIGIT);
     }
 
     private static void letterCheck(String password) {
@@ -44,10 +44,10 @@ public class PasswordValidator {
             }
         }
         if (!hasCapitalLetter) {
-            throw new InvalidArgument(InvalidArgument.PASSWORD_REQUIRES_CAPITAL_LETTER);
+            throw new InvalidArgumentException(InvalidArgumentException.PASSWORD_REQUIRES_CAPITAL_LETTER);
         }
         if (!hasSmallLetter) {
-            throw new InvalidArgument(InvalidArgument.PASSWORD_REQUIRES_SMALL_LETTER);
+            throw new InvalidArgumentException(InvalidArgumentException.PASSWORD_REQUIRES_SMALL_LETTER);
         }
     }
 
@@ -59,7 +59,7 @@ public class PasswordValidator {
                 return;
             }
         }
-        throw new InvalidArgument(InvalidArgument.PASSWORD_REQUIRES_SPECIAL_CHARACTER);
+        throw new InvalidArgumentException(InvalidArgumentException.PASSWORD_REQUIRES_SPECIAL_CHARACTER);
     }
 
 }

@@ -2,7 +2,7 @@ package com.neppiness.recruitment.service;
 
 import com.neppiness.recruitment.domain.Company;
 import com.neppiness.recruitment.dto.CompanyRequest;
-import com.neppiness.recruitment.exception.ResourceNotFound;
+import com.neppiness.recruitment.exception.ResourceNotFoundException;
 import com.neppiness.recruitment.repository.CompanyRepository;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class CompanyService {
     public Company getDetail(Long companyId) {
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
         if (mayBeFoundCompany.isEmpty()) {
-            throw new ResourceNotFound(ResourceNotFound.COMPANY_NOT_FOUND);
+            throw new ResourceNotFoundException(ResourceNotFoundException.COMPANY_NOT_FOUND);
         }
         return mayBeFoundCompany.get();
     }

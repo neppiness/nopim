@@ -2,7 +2,7 @@ package com.neppiness.recruitment.resolver;
 
 import com.neppiness.recruitment.dto.Principal;
 import com.neppiness.recruitment.dto.PrincipalDto;
-import com.neppiness.recruitment.exception.RequireAuthentication;
+import com.neppiness.recruitment.exception.AuthenticationException;
 import com.neppiness.recruitment.util.TokenDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -29,7 +29,7 @@ public class PrincipalArgumentResolver implements HandlerMethodArgumentResolver 
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String authorizationHeader = webRequest.getHeader("Authorization");
         if (authorizationHeader == null) {
-            throw new RequireAuthentication(RequireAuthentication.LOGIN_REQUIRED);
+            throw new AuthenticationException(AuthenticationException.LOGIN_REQUIRED);
         }
         String token = authorizationHeader.split(" ")[1];
         return tokenDecoder.decodePrincipalDto(token);
