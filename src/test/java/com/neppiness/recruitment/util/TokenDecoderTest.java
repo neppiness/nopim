@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.neppiness.recruitment.domain.Authority;
 import com.neppiness.recruitment.dto.PrincipalDto;
 import io.jsonwebtoken.ExpiredJwtException;
-import java.security.SignatureException;
+import io.jsonwebtoken.security.SignatureException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
