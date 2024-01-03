@@ -3,6 +3,7 @@ package com.neppiness.recruitment.service;
 import com.neppiness.recruitment.domain.Authority;
 import com.neppiness.recruitment.domain.User;
 import com.neppiness.recruitment.dto.UserRequest;
+import com.neppiness.recruitment.dto.UserResponse;
 import com.neppiness.recruitment.exception.ResourceAlreadyExistException;
 import com.neppiness.recruitment.exception.ResourceNotFoundException;
 import com.neppiness.recruitment.repository.UserRepository;
@@ -19,7 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User signUp(UserRequest userRequest) {
+    public UserResponse signUp(UserRequest userRequest) {
         PasswordValidator.validatePassword(userRequest.getPassword());
         Optional<User> mayBeFoundUser = userRepository.findByName(userRequest.getName());
         if (mayBeFoundUser.isPresent()) {
@@ -30,7 +31,9 @@ public class UserService {
                 .password(userRequest.getPassword())
                 .authority(Authority.MEMBER)
                 .build();
-        return userRepository.save(user);
+        return userRepository
+                .save(user)
+                .toResponse();
     }
 
     public User login(UserRequest userRequest) {
@@ -45,7 +48,7 @@ public class UserService {
     }
 
     @Transactional
-    public User promote(Long userId) {
+    public UserResponse promote(Long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFoundException(ResourceNotFoundException.USER_NOT_FOUND);
@@ -57,7 +60,9 @@ public class UserService {
                 .password(foundUser.getPassword())
                 .authority(Authority.MANAGER)
                 .build();
-        return userRepository.save(userToBeUpdated);
+        return userRepository
+                .save(userToBeUpdated)
+                .toResponse();
     }
 
 }
