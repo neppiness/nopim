@@ -1,7 +1,10 @@
 package com.neppiness.recruitment.controller;
 
 import com.neppiness.recruitment.domain.User;
+import com.neppiness.recruitment.dto.Principal;
+import com.neppiness.recruitment.dto.PrincipalDto;
 import com.neppiness.recruitment.dto.UserRequest;
+import com.neppiness.recruitment.service.AuthorizationService;
 import com.neppiness.recruitment.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,8 @@ public class UserController {
 
     private final UserService userService;
 
+    private final AuthorizationService authorizationService;
+
     @PostMapping(path = "")
     public ResponseEntity<User> signUp(@ModelAttribute UserRequest userRequest) {
         return ResponseEntity
@@ -35,8 +40,8 @@ public class UserController {
     }
 
     @PostMapping("/promote")
-    public ResponseEntity<User> promote(@RequestParam Long id) {
-        // TODO: API 접근 권한을 관리자(ADMIN)로 설정
+    public ResponseEntity<User> promote(@Principal PrincipalDto principal, @RequestParam Long id) {
+        authorizationService.checkIfAdmin(principal.getAuthority());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.promote(id));
