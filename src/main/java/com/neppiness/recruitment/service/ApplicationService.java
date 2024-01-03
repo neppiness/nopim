@@ -16,7 +16,7 @@ public class ApplicationService {
 
     private final UserRepository userRepository;
 
-    public List<ApplicationResponse> getByUsername(String username) {
+    public List<ApplicationResponse> getAllByUsername(String username) {
         Optional<User> mayBeFoundUser = userRepository.findByName(username);
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFoundException(ResourceNotFoundException.USER_NOT_FOUND);

@@ -20,10 +20,10 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @GetMapping(value = "")
-    public ResponseEntity<List<ApplicationResponse>> getByUsername(@Principal PrincipalDto principal) {
+    public ResponseEntity<List<ApplicationResponse>> getAllApplicationsOfUser(@Principal PrincipalDto principal) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(applicationService.getByUsername(principal.getName()));
+                .body(applicationService.getAllByUsername(principal.getName()));
     }
 
 }
