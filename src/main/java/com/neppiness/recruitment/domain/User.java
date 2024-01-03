@@ -1,7 +1,6 @@
 package com.neppiness.recruitment.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.neppiness.recruitment.dto.UserResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -47,13 +46,6 @@ public class User {
         this.password = password;
         this.authority = authority;
         this.applications = initializeApplications(applications);
-    }
-
-    public UserResponse toResponse() {
-        return UserResponse.builder()
-                .name(this.name)
-                .authority(this.authority)
-                .build();
     }
 
     private List<Application> initializeApplications(List<Application> applications) {

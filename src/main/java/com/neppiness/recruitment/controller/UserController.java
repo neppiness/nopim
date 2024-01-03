@@ -4,7 +4,6 @@ import com.neppiness.recruitment.domain.User;
 import com.neppiness.recruitment.dto.Principal;
 import com.neppiness.recruitment.dto.PrincipalDto;
 import com.neppiness.recruitment.dto.UserRequest;
-import com.neppiness.recruitment.dto.UserResponse;
 import com.neppiness.recruitment.service.AuthorizationService;
 import com.neppiness.recruitment.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class UserController {
     private final AuthorizationService authorizationService;
 
     @PostMapping(path = "")
-    public ResponseEntity<UserResponse> signUp(@ModelAttribute UserRequest userRequest) {
+    public ResponseEntity<User> signUp(@ModelAttribute UserRequest userRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.signUp(userRequest));
@@ -41,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/promote")
-    public ResponseEntity<UserResponse> promote(@Principal PrincipalDto principal, @RequestParam Long id) {
+    public ResponseEntity<User> promote(@Principal PrincipalDto principal, @RequestParam Long id) {
         authorizationService.checkIfAdmin(principal.getAuthority());
         return ResponseEntity
                 .status(HttpStatus.OK)
