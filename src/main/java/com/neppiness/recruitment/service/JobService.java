@@ -9,6 +9,7 @@ import com.neppiness.recruitment.dto.ApplicationResponse;
 import com.neppiness.recruitment.dto.JobRequest;
 import com.neppiness.recruitment.dto.JobResponse;
 import com.neppiness.recruitment.dto.JobSimpleResponse;
+import com.neppiness.recruitment.exception.ResourceAlreadyExistException;
 import com.neppiness.recruitment.exception.ResourceNotFoundException;
 import com.neppiness.recruitment.repository.ApplicationRepository;
 import com.neppiness.recruitment.repository.CompanyRepository;
@@ -124,17 +125,24 @@ public class JobService {
 
     @Transactional
     public ApplicationResponse apply(Long jobId, String name) {
-        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
-        if (mayBeFoundJob.isEmpty()) {
-            throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);
-        }
-        Job foundJob = mayBeFoundJob.get();
-
         Optional<User> mayBeFoundUser = userRepository.findByName(name);
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFoundException(ResourceNotFoundException.USER_NOT_FOUND);
         }
         User foundUser = mayBeFoundUser.get();
+
+        List<Application> applicationList = foundUser.getApplications();
+        for (Application application : applicationList) {
+            if (application.getJob().getId().equals(jobId)) {
+                throw new ResourceAlreadyExistException(ResourceAlreadyExistException.APPLICATION_ALREADY_EXIST);
+            }
+        }
+
+        Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
+        if (mayBeFoundJob.isEmpty()) {
+            throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);
+        }
+        Job foundJob = mayBeFoundJob.get();
 
         Application createdApplication = Application.builder()
                 .job(foundJob)
