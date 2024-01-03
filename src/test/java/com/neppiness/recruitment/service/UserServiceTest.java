@@ -2,9 +2,13 @@ package com.neppiness.recruitment.service;
 
 import com.neppiness.recruitment.domain.Authority;
 import com.neppiness.recruitment.domain.User;
+import com.neppiness.recruitment.dto.PrincipalDto;
+import com.neppiness.recruitment.dto.TokenResponse;
 import com.neppiness.recruitment.dto.UserRequest;
+import com.neppiness.recruitment.dto.UserResponse;
 import com.neppiness.recruitment.exception.ResourceAlreadyExistException;
 import com.neppiness.recruitment.repository.UserRepository;
+import com.neppiness.recruitment.util.TokenDecoder;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +31,9 @@ class UserServiceTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TokenDecoder tokenDecoder;
+
     @DisplayName(value = "회원가입 테스트")
     @Test
     void signUpTest() {
@@ -36,14 +43,13 @@ class UserServiceTest {
                 .name(name)
                 .password(password)
                 .build();
-        User createdUser = userService.signUp(userRequest);
-
-        Optional<User> mayBeFoundUser = userRepository.findById(createdUser.getId());
-        assert mayBeFoundUser.isPresent();
-        User foundUser = mayBeFoundUser.get();
+        UserResponse userResponse = userService.signUp(userRequest);
         Assertions
-                .assertThat(createdUser)
-                .isEqualTo(foundUser);
+                .assertThat(userResponse.getName())
+                .isEqualTo(name);
+        Assertions
+                .assertThat(userResponse.getAuthority())
+                .isEqualTo(Authority.MEMBER);
     }
 
     @DisplayName(value = "중복 회원명 회원가입 테스트")
@@ -71,15 +77,14 @@ class UserServiceTest {
                 .name(name)
                 .password(password)
                 .build();
-        User loginInfo = userService.login(userRequest);
+        TokenResponse tokenResponse = userService.login(userRequest);
+        PrincipalDto principal = tokenDecoder.decodePrincipalDto(tokenResponse.getToken());
+
         Assertions
-                .assertThat(loginInfo.getName())
+                .assertThat(principal.getName())
                 .isEqualTo(name);
         Assertions
-                .assertThat(loginInfo.getPassword())
-                .isEqualTo(password);
-        Assertions
-                .assertThat(loginInfo.getAuthority())
+                .assertThat(principal.getAuthority())
                 .isEqualTo(Authority.ADMIN);
     }
 
