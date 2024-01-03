@@ -2,11 +2,15 @@ package com.neppiness.recruitment.service;
 
 import com.neppiness.recruitment.domain.Authority;
 import com.neppiness.recruitment.domain.User;
+import com.neppiness.recruitment.dto.PrincipalDto;
+import com.neppiness.recruitment.dto.TokenResponse;
 import com.neppiness.recruitment.dto.UserRequest;
+import com.neppiness.recruitment.dto.UserResponse;
 import com.neppiness.recruitment.exception.ResourceAlreadyExistException;
 import com.neppiness.recruitment.exception.ResourceNotFoundException;
 import com.neppiness.recruitment.repository.UserRepository;
 import com.neppiness.recruitment.util.PasswordValidator;
+import com.neppiness.recruitment.util.TokenEncoder;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,8 +22,10 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final TokenEncoder tokenEncoder;
+
     @Transactional
-    public User signUp(UserRequest userRequest) {
+    public UserResponse signUp(UserRequest userRequest) {
         PasswordValidator.validatePassword(userRequest.getPassword());
         Optional<User> mayBeFoundUser = userRepository.findByName(userRequest.getName());
         if (mayBeFoundUser.isPresent()) {
@@ -30,22 +36,31 @@ public class UserService {
                 .password(userRequest.getPassword())
                 .authority(Authority.MEMBER)
                 .build();
-        return userRepository.save(user);
+        return userRepository
+                .save(user)
+                .toResponse();
     }
 
-    public User login(UserRequest userRequest) {
-        // TODO: jwt를 반환하도록 수정
+    public TokenResponse login(UserRequest userRequest) {
         String name = userRequest.getName();
         String password = userRequest.getPassword();
         Optional<User> mayBeFoundUser = userRepository.findByNameAndPassword(name, password);
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFoundException(ResourceNotFoundException.USER_NOT_FOUND);
         }
-        return mayBeFoundUser.get();
+        User foundUser = mayBeFoundUser.get();
+        PrincipalDto principalDto = PrincipalDto.builder()
+                .name(foundUser.getName())
+                .authority(foundUser.getAuthority())
+                .build();
+        String token = tokenEncoder.encodePrincipalDto(principalDto);
+        return TokenResponse.builder()
+                .token(token)
+                .build();
     }
 
     @Transactional
-    public User promote(Long userId) {
+    public UserResponse promote(Long userId) {
         Optional<User> mayBeFoundUser = userRepository.findById(userId);
         if (mayBeFoundUser.isEmpty()) {
             throw new ResourceNotFoundException(ResourceNotFoundException.USER_NOT_FOUND);
@@ -57,7 +72,9 @@ public class UserService {
                 .password(foundUser.getPassword())
                 .authority(Authority.MANAGER)
                 .build();
-        return userRepository.save(userToBeUpdated);
+        return userRepository
+                .save(userToBeUpdated)
+                .toResponse();
     }
 
 }

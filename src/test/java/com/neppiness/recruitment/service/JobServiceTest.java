@@ -9,6 +9,7 @@ import com.neppiness.recruitment.dto.ApplicationResponse;
 import com.neppiness.recruitment.dto.JobRequest;
 import com.neppiness.recruitment.dto.JobResponse;
 import com.neppiness.recruitment.dto.JobSimpleResponse;
+import com.neppiness.recruitment.exception.ResourceAlreadyExistException;
 import com.neppiness.recruitment.repository.JobRepository;
 import java.util.List;
 import java.util.Optional;
@@ -174,6 +175,18 @@ class JobServiceTest {
         Assertions
                 .assertThat(createdApplication.getJobId())
                 .isEqualTo(jobId);
+    }
+
+    @DisplayName(value = "중복 지원 방지 기능 테스트")
+    @Test
+    void applyExceptionTest() {
+        String username = "0414kjh";
+        Long jobId = 1L;
+        jobService.apply(jobId, username);
+        Assertions
+                .assertThatThrownBy(() -> jobService.apply(jobId, username))
+                .isInstanceOf(ResourceAlreadyExistException.class)
+                .hasMessage(ResourceAlreadyExistException.APPLICATION_ALREADY_EXIST);
     }
 
 }
