@@ -1,6 +1,5 @@
 package com.neppiness.nopim.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.neppiness.nopim.dto.UserResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,22 +19,17 @@ import lombok.NoArgsConstructor;
 @Entity
 public class User {
 
-    @JsonProperty("사용자_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @JsonProperty("사용자_이름")
     private String name;
 
-    @JsonProperty("사용자_비밀번호")
     private String password;
 
-    @JsonProperty("사용자_권한")
     @Enumerated(value = EnumType.STRING)
     private Authority authority;
 
-    @JsonProperty("사용자_지원내역")
     @OneToMany(mappedBy = "user")
     private List<Application> applications = new ArrayList<>();
 

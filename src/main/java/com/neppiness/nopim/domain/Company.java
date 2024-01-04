@@ -1,7 +1,6 @@
 package com.neppiness.nopim.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,22 +17,17 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Company {
 
-    @JsonProperty("회사_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @JsonProperty("회사명")
     private String name;
 
-    @JsonProperty("지역")
     private String region;
 
-    @JsonProperty("국가")
     private String country;
 
     @JsonIgnore
-    @JsonProperty("회사가_올린_채용공고")
     @OneToMany(mappedBy = "company")
     private List<Job> jobs;
 
