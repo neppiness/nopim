@@ -1,6 +1,5 @@
 package com.neppiness.nopim.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.neppiness.nopim.dto.JobResponse;
 import com.neppiness.nopim.dto.JobSimpleResponse;
 import jakarta.persistence.Entity;
@@ -22,29 +21,22 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Job {
 
-    @JsonProperty("채용공고_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @JsonProperty("회사")
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 
-    @JsonProperty("채용포지션")
     private String position;
 
-    @JsonProperty("채용보상금")
     private Long bounty;
 
-    @JsonProperty("사용기술")
     private String stack;
 
-    @JsonProperty("채용내용")
     private String description;
 
-    @JsonProperty("상태")
     @Enumerated(EnumType.STRING)
     private Status status;
 

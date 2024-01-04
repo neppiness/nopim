@@ -1,6 +1,5 @@
 package com.neppiness.nopim.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.neppiness.nopim.dto.ApplicationResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,17 +19,14 @@ public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("지원내역_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonProperty("사용자")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @JsonProperty("채용공고")
     private Job job;
 
     @Builder
