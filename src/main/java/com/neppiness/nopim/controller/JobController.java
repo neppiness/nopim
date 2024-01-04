@@ -48,7 +48,7 @@ public class JobController {
                 .body(jobService.update(id, jobRequest));
     }
 
-    @PostMapping(path = "/{id}")
+    @PostMapping(path = "/close/{id}")
     public ResponseEntity<Job> close(@Principal PrincipalDto principal, @PathVariable Long id) {
         authorizationService.checkIfManager(principal.getAuthority());
         return ResponseEntity
