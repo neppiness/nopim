@@ -48,12 +48,12 @@ public class JobController {
                 .body(jobService.update(id, jobRequest));
     }
 
-    @PostMapping(path = "/{id}")
-    public ResponseEntity<Job> softDelete(@Principal PrincipalDto principal, @PathVariable Long id) {
+    @PostMapping(path = "/close/{id}")
+    public ResponseEntity<Job> close(@Principal PrincipalDto principal, @PathVariable Long id) {
         authorizationService.checkIfManager(principal.getAuthority());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(jobService.softDelete(id));
+                .body(jobService.close(id));
     }
 
     @GetMapping(path = "")
