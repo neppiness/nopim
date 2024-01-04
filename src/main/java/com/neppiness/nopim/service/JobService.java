@@ -80,7 +80,7 @@ public class JobService {
     }
 
     @Transactional
-    public Job softDelete(Long jobId) {
+    public Job close(Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);

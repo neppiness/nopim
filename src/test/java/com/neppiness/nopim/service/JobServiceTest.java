@@ -110,11 +110,11 @@ class JobServiceTest {
                 .isEqualTo(jobAfterUpdate.getStatus());
     }
 
-    @DisplayName("채용공고 삭제 기능 테스트")
+    @DisplayName("채용공고 마감 기능 테스트")
     @Test
-    void softDeleteTest() {
+    void closeTest() {
         long jobId = 1L;
-        jobService.softDelete(jobId);
+        jobService.close(jobId);
 
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         assert mayBeFoundJob.isPresent();
