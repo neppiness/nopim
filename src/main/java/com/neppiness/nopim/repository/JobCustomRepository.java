@@ -1,10 +1,10 @@
 package com.neppiness.nopim.repository;
 
-import com.neppiness.nopim.dto.JobSimpleResponse;
+import com.neppiness.nopim.dto.JobResponse;
 import java.util.List;
 
 public interface JobCustomRepository {
 
-    List<JobSimpleResponse> findByKeyword(String keyword);
+    List<JobResponse> findByKeyword(String keyword);
 
 }

@@ -1,19 +1,20 @@
 package com.neppiness.nopim.dto;
 
 import com.neppiness.nopim.domain.Status;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class JobSimpleResponse {
+public class JobDetailResponse {
 
     private final Long id;
 
     private final String companyName;
 
-    private final String region;
-
     private final String country;
+
+    private final String region;
 
     private final String position;
 
@@ -21,11 +22,16 @@ public class JobSimpleResponse {
 
     private final String stack;
 
+    private final String description;
+
+    private final List<Long> otherJobIdsOfCompany;
+
     private final Status status;
 
     @Builder
-    public JobSimpleResponse(final Long id, final String companyName, final String country, final String region,
-                             final String position, final long bounty, final String stack, final Status status) {
+    public JobDetailResponse(final Long id, final String companyName, final String country, final String region,
+                             final String position, final long bounty, final String stack, final String description,
+                             final List<Long> otherJobIdsOfCompany, final Status status) {
         this.id = id;
         this.companyName = companyName;
         this.country = country;
@@ -33,6 +39,8 @@ public class JobSimpleResponse {
         this.position = position;
         this.bounty = bounty;
         this.stack = stack;
+        this.description = description;
+        this.otherJobIdsOfCompany = otherJobIdsOfCompany;
         this.status = status;
     }
 

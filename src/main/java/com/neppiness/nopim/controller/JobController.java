@@ -3,8 +3,8 @@ package com.neppiness.nopim.controller;
 import com.neppiness.nopim.domain.Job;
 import com.neppiness.nopim.dto.ApplicationResponse;
 import com.neppiness.nopim.dto.JobRequest;
+import com.neppiness.nopim.dto.JobDetailResponse;
 import com.neppiness.nopim.dto.JobResponse;
-import com.neppiness.nopim.dto.JobSimpleResponse;
 import com.neppiness.nopim.dto.Principal;
 import com.neppiness.nopim.dto.PrincipalDto;
 import com.neppiness.nopim.service.AuthorizationService;
@@ -57,22 +57,22 @@ public class JobController {
     }
 
     @GetMapping(path = "")
-    public ResponseEntity<List<JobSimpleResponse>> getAll(@Principal PrincipalDto principal) {
+    public ResponseEntity<List<JobResponse>> getAll(@Principal PrincipalDto principal) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.getAll());
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<JobSimpleResponse>> search(@Principal PrincipalDto principal,
-                                                          @RequestParam String keyword) {
+    public ResponseEntity<List<JobResponse>> search(@Principal PrincipalDto principal,
+                                                    @RequestParam String keyword) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.search(keyword));
     }
 
     @GetMapping(path = "/detail/{id}")
-    public ResponseEntity<JobResponse> getDetail(@Principal PrincipalDto principal, @PathVariable Long id) {
+    public ResponseEntity<JobDetailResponse> getDetail(@Principal PrincipalDto principal, @PathVariable Long id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(jobService.getDetail(id));

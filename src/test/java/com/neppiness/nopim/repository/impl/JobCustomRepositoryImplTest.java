@@ -3,7 +3,7 @@ package com.neppiness.nopim.repository.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.neppiness.nopim.dto.JobSimpleResponse;
+import com.neppiness.nopim.dto.JobResponse;
 import com.neppiness.nopim.repository.JobRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -29,9 +29,9 @@ class JobCustomRepositoryImplTest {
     @DisplayName(value = "검색 기능 테스트: 키워드 - 백엔드")
     @Test
     void searchByKeywordTest1() throws JsonProcessingException {
-        List<JobSimpleResponse> foundJobSimpleResponseList = jobRepository.findByKeyword("백엔드");
-        for (JobSimpleResponse jobSimpleResponse : foundJobSimpleResponseList) {
-            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobSimpleResponse);
+        List<JobResponse> foundJobResponseList = jobRepository.findByKeyword("백엔드");
+        for (JobResponse jobResponse : foundJobResponseList) {
+            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobResponse);
             System.out.println(jobSimpleResponseAsString);
         }
     }
@@ -39,9 +39,9 @@ class JobCustomRepositoryImplTest {
     @DisplayName(value = "검색 기능 테스트: 키워드 - 개발자")
     @Test
     void searchByKeywordTest2() throws JsonProcessingException {
-        List<JobSimpleResponse> foundJobSimpleResponseList = jobRepository.findByKeyword("개발자");
-        for (JobSimpleResponse jobSimpleResponse : foundJobSimpleResponseList) {
-            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobSimpleResponse);
+        List<JobResponse> foundJobResponseList = jobRepository.findByKeyword("개발자");
+        for (JobResponse jobResponse : foundJobResponseList) {
+            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobResponse);
             System.out.println(jobSimpleResponseAsString);
         }
     }
