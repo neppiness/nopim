@@ -7,8 +7,8 @@ import com.neppiness.nopim.domain.Job;
 import com.neppiness.nopim.domain.Status;
 import com.neppiness.nopim.dto.ApplicationResponse;
 import com.neppiness.nopim.dto.JobRequest;
+import com.neppiness.nopim.dto.JobDetailResponse;
 import com.neppiness.nopim.dto.JobResponse;
-import com.neppiness.nopim.dto.JobSimpleResponse;
 import com.neppiness.nopim.exception.ResourceAlreadyExistException;
 import com.neppiness.nopim.repository.JobRepository;
 import java.util.List;
@@ -127,13 +127,13 @@ class JobServiceTest {
     @DisplayName("모든 채용공고 조회 기능 테스트")
     @Test
     void findAllJobsTest() throws JsonProcessingException {
-        List<JobSimpleResponse> allJobSimpleResponses = jobService.getAll();
-        for (JobSimpleResponse jobSimpleResponse : allJobSimpleResponses) {
-            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobSimpleResponse);
+        List<JobResponse> allJobResponses = jobService.getAll();
+        for (JobResponse jobResponse : allJobResponses) {
+            String jobSimpleResponseAsString = objectWriter.writeValueAsString(jobResponse);
             System.out.println(jobSimpleResponseAsString);
         }
         Assertions
-                .assertThat(allJobSimpleResponses.size())
+                .assertThat(allJobResponses.size())
                 .isEqualTo(4);
     }
 
@@ -141,11 +141,11 @@ class JobServiceTest {
     @Test
     void searchTest() throws JsonProcessingException {
         String keyword = "네이버";
-        List<JobSimpleResponse> foundJobs = jobService.search(keyword);
-        String foundJobsAsString = objectWriter.writeValueAsString(foundJobs);
-        System.out.println(foundJobsAsString);
+        List<JobResponse> foundJobResponses = jobService.search(keyword);
+        String foundJobResponsesAsString = objectWriter.writeValueAsString(foundJobResponses);
+        System.out.println(foundJobResponsesAsString);
         Assertions
-                .assertThat(foundJobs.size())
+                .assertThat(foundJobResponses.size())
                 .isEqualTo(2);
     }
 
@@ -153,9 +153,9 @@ class JobServiceTest {
     @Test
     void getJobDetailTest() throws JsonProcessingException {
         long jobId = 2L;
-        JobResponse jobDetail = jobService.getDetail(jobId);
-        String jobDetailAsString = objectWriter.writeValueAsString(jobDetail);
-        System.out.println(jobDetailAsString);
+        JobDetailResponse jobDetailResponse = jobService.getDetail(jobId);
+        String jobDetailResponseAsString = objectWriter.writeValueAsString(jobDetailResponse);
+        System.out.println(jobDetailResponseAsString);
     }
 
     @DisplayName(value = "채용공고에 지원하는 기능 테스트")

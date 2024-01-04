@@ -7,8 +7,8 @@ import com.neppiness.nopim.domain.Status;
 import com.neppiness.nopim.domain.User;
 import com.neppiness.nopim.dto.ApplicationResponse;
 import com.neppiness.nopim.dto.JobRequest;
+import com.neppiness.nopim.dto.JobDetailResponse;
 import com.neppiness.nopim.dto.JobResponse;
-import com.neppiness.nopim.dto.JobSimpleResponse;
 import com.neppiness.nopim.exception.ResourceAlreadyExistException;
 import com.neppiness.nopim.exception.ResourceNotFoundException;
 import com.neppiness.nopim.repository.ApplicationRepository;
@@ -104,23 +104,23 @@ public class JobService {
         return uploadedJob;
     }
 
-    public List<JobSimpleResponse> getAll() {
+    public List<JobResponse> getAll() {
         return jobRepository.findAll()
                 .stream()
-                .map(Job::convertToJobSimpleResponse)
+                .map(Job::convertToJobResponse)
                 .toList();
     }
 
-    public List<JobSimpleResponse> search(String keyword) {
+    public List<JobResponse> search(String keyword) {
         return jobRepository.findByKeyword(keyword);
     }
 
-    public JobResponse getDetail(Long jobId) {
+    public JobDetailResponse getDetail(Long jobId) {
         Optional<Job> mayBeFoundJob = jobRepository.findById(jobId);
         if (mayBeFoundJob.isEmpty()) {
             throw new ResourceNotFoundException(ResourceNotFoundException.JOB_NOT_FOUND);
         }
-        return mayBeFoundJob.get().convertToJobResponse();
+        return mayBeFoundJob.get().convertToJobDetailResponse();
     }
 
     @Transactional

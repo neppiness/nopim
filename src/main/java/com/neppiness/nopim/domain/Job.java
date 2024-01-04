@@ -1,7 +1,7 @@
 package com.neppiness.nopim.domain;
 
+import com.neppiness.nopim.dto.JobDetailResponse;
 import com.neppiness.nopim.dto.JobResponse;
-import com.neppiness.nopim.dto.JobSimpleResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -52,14 +52,14 @@ public class Job {
         this.status = status;
     }
 
-    public JobResponse convertToJobResponse() {
+    public JobDetailResponse convertToJobDetailResponse() {
         List<Long> jobIdList = this.company.getJobs()
                 .stream()
                 .map(Job::getId)
                 .filter(jobId -> !Objects.equals(jobId, this.id))
                 .toList();
 
-        return JobResponse.builder()
+        return JobDetailResponse.builder()
                 .id(this.id)
                 .companyName(this.company.getName())
                 .country(this.company.getCountry())
@@ -73,8 +73,8 @@ public class Job {
                 .build();
     }
 
-    public JobSimpleResponse convertToJobSimpleResponse() {
-        return JobSimpleResponse.builder()
+    public JobResponse convertToJobResponse() {
+        return JobResponse.builder()
                 .id(this.id)
                 .companyName(this.company.getName())
                 .country(this.company.getCountry())

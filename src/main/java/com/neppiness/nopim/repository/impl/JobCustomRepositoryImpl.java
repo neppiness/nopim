@@ -1,7 +1,7 @@
 package com.neppiness.nopim.repository.impl;
 
 import com.neppiness.nopim.domain.Job;
-import com.neppiness.nopim.dto.JobSimpleResponse;
+import com.neppiness.nopim.dto.JobResponse;
 import com.neppiness.nopim.repository.JobCustomRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -17,9 +17,9 @@ public class JobCustomRepositoryImpl implements JobCustomRepository {
     private final EntityManager entityManager;
 
     @Override
-    public List<JobSimpleResponse> findByKeyword(String keyword) {
+    public List<JobResponse> findByKeyword(String keyword) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<JobSimpleResponse> query = builder.createQuery(JobSimpleResponse.class);
+        CriteriaQuery<JobResponse> query = builder.createQuery(JobResponse.class);
         Root<Job> job = query.from(Job.class);
 
         String pattern = "%" + keyword + "%";
@@ -29,7 +29,7 @@ public class JobCustomRepositoryImpl implements JobCustomRepository {
         Predicate positionLikeKeyword = builder.like(job.get("position"), pattern);
         Predicate stackLikeKeyword = builder.like(job.get("stack"), pattern);
 
-        query.select(builder.construct(JobSimpleResponse.class, job.get("id"), job.get("company").get("name"),
+        query.select(builder.construct(JobResponse.class, job.get("id"), job.get("company").get("name"),
                 job.get("company").get("region"), job.get("company").get("country"), job.get("position"),
                 job.get("bounty"), job.get("stack"), job.get("status")));
         query.where(builder.or(companyNameLikeKeyword, companyRegionLikeKeyword, companyCountryLikeKeyword,
