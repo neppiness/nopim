@@ -1,6 +1,8 @@
 package com.neppiness.nopim.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.neppiness.nopim.dto.CompanyDetailResponse;
+import com.neppiness.nopim.dto.CompanyResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,6 +47,28 @@ public class Company {
             return new ArrayList<>();
         }
         return jobs;
+    }
+
+    public CompanyResponse convertToResponse() {
+        return CompanyResponse.builder()
+                .id(this.id)
+                .name(this.name)
+                .region(this.region)
+                .country(this.country)
+                .build();
+    }
+
+    public CompanyDetailResponse covertToDetailResponse() {
+        List<Long> jobIds = this.jobs.stream()
+                .map(Job::getId)
+                .toList();
+        return CompanyDetailResponse.builder()
+                .id(this.id)
+                .name(this.name)
+                .region(this.region)
+                .country(this.country)
+                .jobs(jobIds)
+                .build();
     }
 
 }

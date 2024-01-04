@@ -3,7 +3,7 @@ package com.neppiness.nopim.repository.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.neppiness.nopim.domain.Company;
+import com.neppiness.nopim.dto.CompanyResponse;
 import com.neppiness.nopim.repository.CompanyRepository;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -32,16 +32,16 @@ class CompanyCustomRepositoryImplTest {
     void findBySearchRequestTest() throws JsonProcessingException {
         String givenRegion = "판교";
         String givenCountry = "대한민국";
-        List<Company> foundCompanyList = companyRepository.findByParameters(null, givenRegion, givenCountry);
-        for (Company foundCompany : foundCompanyList) {
-            String foundCompanyAsString = objectWriter.writeValueAsString(foundCompany);
+        List<CompanyResponse> foundCompanyResponses = companyRepository.findByParameters(null, givenRegion, givenCountry);
+        for (CompanyResponse foundCompanyResponse : foundCompanyResponses) {
+            String foundCompanyAsString = objectWriter.writeValueAsString(foundCompanyResponse);
             System.out.println(foundCompanyAsString);
 
             Assertions
-                    .assertThat(foundCompany.getRegion())
+                    .assertThat(foundCompanyResponse.getRegion())
                     .isEqualTo(givenRegion);
             Assertions
-                    .assertThat(foundCompany.getCountry())
+                    .assertThat(foundCompanyResponse.getCountry())
                     .isEqualTo(givenCountry);
         }
     }

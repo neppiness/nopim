@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.neppiness.nopim.domain.Company;
+import com.neppiness.nopim.dto.CompanyDetailResponse;
 import com.neppiness.nopim.dto.CompanyRequest;
+import com.neppiness.nopim.dto.CompanyResponse;
 import com.neppiness.nopim.repository.CompanyRepository;
 import java.util.List;
 import java.util.Optional;
@@ -39,13 +41,23 @@ class CompanyServiceTest {
                 .region("당산")
                 .country("대한민국")
                 .build();
-        Company createdCompany = companyService.create(companyRequestForSenvex);
-        long companyId = createdCompany.getId();
+        CompanyResponse createdCompanyAsResponse = companyService.create(companyRequestForSenvex);
+        long companyId = createdCompanyAsResponse.getId();
         Optional<Company> mayBeFoundCompany = companyRepository.findById(companyId);
         assert mayBeFoundCompany.isPresent();
+
         Assertions
-                .assertThat(createdCompany)
-                .isEqualTo(mayBeFoundCompany.get());
+                .assertThat(createdCompanyAsResponse.getId())
+                .isEqualTo(mayBeFoundCompany.get().getId());
+        Assertions
+                .assertThat(createdCompanyAsResponse.getName())
+                .isEqualTo(mayBeFoundCompany.get().getName());
+        Assertions
+                .assertThat(createdCompanyAsResponse.getRegion())
+                .isEqualTo(mayBeFoundCompany.get().getRegion());
+        Assertions
+                .assertThat(createdCompanyAsResponse.getCountry())
+                .isEqualTo(mayBeFoundCompany.get().getCountry());
     }
 
     @DisplayName(value = "회사 검색 테스트")
@@ -57,16 +69,16 @@ class CompanyServiceTest {
                 .region(givenRegion)
                 .country(givenCountry)
                 .build();
-        List<Company> foundCompanyList = companyService.search(companySearchRequest);
+        List<CompanyResponse> foundCompanyResponses = companyService.search(companySearchRequest);
 
-        for (Company foundCompany : foundCompanyList) {
-            String foundCompanyAsString = objectWriter.writeValueAsString(foundCompany);
-            System.out.println(foundCompanyAsString);
+        for (CompanyResponse foundCompanyResponse : foundCompanyResponses) {
+            String foundCompanyResponseAsString = objectWriter.writeValueAsString(foundCompanyResponse);
+            System.out.println(foundCompanyResponseAsString);
             Assertions
-                    .assertThat(foundCompany.getRegion())
+                    .assertThat(foundCompanyResponse.getRegion())
                     .isEqualTo(givenRegion);
             Assertions
-                    .assertThat(foundCompany.getCountry())
+                    .assertThat(foundCompanyResponse.getCountry())
                     .isEqualTo(givenCountry);
         }
     }
@@ -75,9 +87,9 @@ class CompanyServiceTest {
     @Test
     void getDetailTest() throws JsonProcessingException {
         Long savedCompanyId = 1L;
-        Company foundCompanyDetail = companyService.getDetail(savedCompanyId);
-        String foundCompanyDetailAsString = objectWriter.writeValueAsString(foundCompanyDetail);
-        System.out.println(foundCompanyDetailAsString);
+        CompanyDetailResponse foundCompanyDetail = companyService.getDetail(savedCompanyId);
+        String foundCompanyDetailResponseAsString = objectWriter.writeValueAsString(foundCompanyDetail);
+        System.out.println(foundCompanyDetailResponseAsString);
     }
 
 }
