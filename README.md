@@ -45,6 +45,7 @@ ___
 
 <details>
 <summary> 클릭하여 펼치기 </summary>
+<br>
 
 ```
 root
@@ -557,6 +558,7 @@ ___
 ### 사용자(User) 테이블
 <details>
 <summary>클릭하여 상세보기</summary>
+<br>
 
 | Name      | Type    | NotNull | Default | Primary Key | Foreign Key | Description |
 |-----------|---------|---------|---------|-------------|-------------|-------------|
@@ -570,6 +572,7 @@ ___
 ### 회사(Company) 테이블
 <details>
 <summary>클릭하여 상세보기</summary>
+<br>
 
 | Name    | Type    | NotNull | Default | Primary Key | Foreign Key | Description |
 |---------|---------|---------|---------|-------------|-------------|-------------|
@@ -583,6 +586,7 @@ ___
 ### 채용공고(Job) 테이블
 <details>
 <summary>클릭하여 상세보기</summary>
+<br>
 
 | Name        | Type    | NotNull | Default | Primary Key | Foreign Key | Description |
 |-------------|---------|---------|---------|-------------|-------------|-------------|
@@ -599,6 +603,7 @@ ___
 ### 채용공고(Application) 테이블
 <details>
 <summary>클릭하여 상세보기</summary>
+<br>
 
 | Name       | Type    | NotNull | Default | Primary Key | Foreign Key | Description |
 |------------|---------|---------|---------|-------------|-------------|-------------|
@@ -614,6 +619,7 @@ ___
 ### DataJpaTest 트러블 슈팅
 <details>
 <summary>클릭하여 상세보기</summary>
+<br>
 
 * MySql을 활용해 DataJpaTest을 수행하려는 경우 에러가 발생
 * 이는 `@DataJpaTest`가 자동으로 `EmbeddedDatabase`를 활용하기 때문.
@@ -635,6 +641,7 @@ class CompanyCustomRepositoryImplTest {
 ### 연관관계 갱신이 안 되는 문제 해결
 <details>
 <summary>클릭하여 상세보기</summary>
+<br>
 
 * 채용공고(Job)을 생성할 때 회사(Company)를 기록해도 회사의 채용공고 목록이 갱신되지 않는 문제 발생.
     - ManyToOne: `Job` 객체의 `Company`형 변수 `Job.company` 
@@ -678,6 +685,7 @@ public Job create(JobRequest jobRequest) {
 
 <details>
 <summary>클릭하여 상세보기</summary>
+<br>
 
 * Sql 어노테이션은 클래스에 적용하더라도 각 메소드에 개별적으로 적용됨.
 * 이렇게 적용된 경우, 컨텍스트를 정리하지 않으면 AutoIncrement 값이 재설정 되지 않음.
