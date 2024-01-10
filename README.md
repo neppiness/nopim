@@ -34,11 +34,11 @@ ___
 ___
 
 ## 기술 스택
-![SPRING BOOT](https://img.shields.io/badge/spring_boot-6DB33F?style=for-the-badge&logoColor=ffffff)
-![SPRING DATA JPA](https://img.shields.io/badge/spring_data_jpa-6DB33F?style=for-the-badge&logoColor=ffffff)
-![JAVA](https://img.shields.io/badge/java-007396?style=for-the-badge)
-![MySQL](https://img.shields.io/badge/my_sql-004088?style=for-the-badge&logoColor=white)
-
+![JAVA](https://img.shields.io/badge/-java-007396?style=for-the-badge)
+![SPRING BOOT](https://img.shields.io/badge/-spring_boot-6DB33F?style=for-the-badge&logoColor=ffffff)
+![SPRING DATA JPA](https://img.shields.io/badge/-spring_data_jpa-6DB33F?style=for-the-badge&logoColor=ffffff)
+![QueryDSL](https://img.shields.io/badge/-query_dsl-028bcf?style=for-the-badge&logoColor=white)
+![MySQL](https://img.shields.io/badge/-my_sql-004088?style=for-the-badge&logoColor=white)
 ___
 
 ## 패키지 구조
@@ -94,7 +94,7 @@ ___
     - jjwt 라이브러리 활용
 
 * 관계형 데이터베이스 설계
-    - JPA Criteria를 활용한 쿼리
+    - QueryDSL을 활용한 쿼리
 
 * ORM 활용
     - JPA Persistence 활용한 엔티티 지정
@@ -720,6 +720,8 @@ class JobServiceTest {
 * QueryDSL을 활용하기 위해서 JPAQueryFactory를 활용해야 함.
     - 이를 QueryDSL이 적용된 Repository에서 주입받아 사용하기엔 불편함.
     - 따라서, Config을 생성하여 JPAQueryFactory를 Bean으로 등록하고 생성자 주입을 수행할 수 있도록 설정.
+* 만약 Config을 하지 않는 경우엔 EntityManager를 내려받아서 매번 새로운 JPAQueryFactory 인스턴스를 만들어야 함.
+    - JPA Criteria의 경우엔 CriteriaBuilder를 만들 때 EntityManager를 항상 활용했기 때문에 달리 설정할 방법이 없었음.
 
 ```java
 @Configuration
