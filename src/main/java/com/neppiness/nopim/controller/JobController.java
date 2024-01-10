@@ -2,8 +2,8 @@ package com.neppiness.nopim.controller;
 
 import com.neppiness.nopim.domain.Job;
 import com.neppiness.nopim.dto.ApplicationResponse;
-import com.neppiness.nopim.dto.JobRequest;
 import com.neppiness.nopim.dto.JobDetailResponse;
+import com.neppiness.nopim.dto.JobRequest;
 import com.neppiness.nopim.dto.JobResponse;
 import com.neppiness.nopim.dto.Principal;
 import com.neppiness.nopim.dto.PrincipalDto;
