@@ -1,49 +1,34 @@
 package com.neppiness.nopim.repository.impl;
 
+import static com.neppiness.nopim.domain.QUser.user;
+
 import com.neppiness.nopim.domain.User;
 import com.neppiness.nopim.repository.UserCustomRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class UserCustomRepositoryImpl implements UserCustomRepository {
 
-    private final EntityManager entityManager;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public Optional<User> findByNameAndPassword(String name, String password) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> query = builder.createQuery(User.class);
-        Root<User> user = query.from(User.class);
-
-        Predicate hasGivenName = builder.equal(user.get("name"), builder.literal(name));
-        Predicate hasGivenPassword = builder.equal(user.get("password"), builder.literal(password));
-        query.select(user);
-        query.where(builder.and(hasGivenName, hasGivenPassword));
-
-        return entityManager
-                .createQuery(query)
-                .getResultStream()
+        return queryFactory
+                .selectFrom(user)
+                .where(user.name.eq(name))
+                .where(user.password.eq(password))
+                .stream()
                 .findFirst();
     }
 
     @Override
     public Optional<User> findByName(String name) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> query = builder.createQuery(User.class);
-        Root<User> user = query.from(User.class);
-
-        Predicate hasGivenName = builder.equal(user.get("name"), builder.literal(name));
-        query.select(user);
-        query.where(hasGivenName);
-        return entityManager
-                .createQuery(query)
-                .getResultStream()
+        return queryFactory
+                .selectFrom(user)
+                .where(user.name.eq(name))
+                .stream()
                 .findFirst();
     }
 
