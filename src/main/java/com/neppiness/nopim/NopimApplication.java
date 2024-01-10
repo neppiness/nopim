@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RecruitmentApplication {
+public class NopimApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RecruitmentApplication.class, args);
+		SpringApplication.run(NopimApplication.class, args);
 	}
 
 }
