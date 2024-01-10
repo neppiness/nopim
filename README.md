@@ -710,6 +710,118 @@ class JobServiceTest {
 
 </details>
 
+### QueryDSL 적용
+
+<details>
+<summary>클릭하여 상세보기</summary>
+<br>
+
+#### 1. Config
+* QueryDSL을 활용하기 위해서 JPAQueryFactory를 활용해야 함.
+    - 이를 QueryDSL이 적용된 Repository에서 주입받아 사용하기엔 불편함.
+    - 따라서, Config을 생성하여 JPAQueryFactory를 Bean으로 등록하고 생성자 주입을 수행할 수 있도록 설정.
+
+```java
+@Configuration
+public class JpaConfig {
+
+    @Bean
+    JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
+        return new JPAQueryFactory(entityManager);
+    }
+}
+```
+
+#### 2. 적용 결과
+* QueryDSL과 JPA Criteria를 비교하면 아래와 같음.이를 적용하면 아래와 같음
+    - 먼저 JPA Criteria로 작성됐던 이전 findByName 메소드는 아래와 같음.
+
+```java
+@Override
+public Optional<User> findByName(String name) {
+    CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> query = builder.createQuery(User.class);
+    Root<User> user = query.from(User.class);
+
+    Predicate hasGivenName = builder.equal(user.get("name"), builder.literal(name));
+    query.select(user);
+    query.where(hasGivenName);
+    return entityManager
+            .createQuery(query)
+            .getResultStream()
+            .findFirst();
+}
+```
+
+* QueryDSL을 적용하면 아래와 같이 간단히 작성할 수 있음.
+
+```java
+@Override
+public Optional<User> findByName(String name) {
+    return queryFactory
+            .selectFrom(user)
+            .where(user.name.eq(name))
+            .stream()
+            .findFirst();
+}
+```
+
+* 마찬가지로 stream으로 변환한 뒤 findFirst를 활용하면 Optional로 감싼 값을 반환할 수 있음.
+    - list를 반환받기 위해선 fetch라는 메소드를 활용함.
+
+#### 3. 클래스 생성자를 활용하여 원하는 객체를 반환하기
+* 이전에 builder.construct를 활용했던 것과 동일한 동작을 수행하기 위해 Projections.constructor를 활용해야 함.
+    - 예시 코드는 아래와 같음.
+
+```java
+query = new JPASQLQuery<Void>(entityManager, templates);
+List<CatDTO> catDTOs = query.select(Projections.constructor(CatDTO.class, cat.id, cat.name))
+        .from(cat)
+        .orderBy(cat.name.asc())
+        .fetch();
+```
+
+#### 4. DataJpaTest 오류에 대한 트러블슈팅
+* SpringBootTest 어노테이션이 붙은 테스트들은 문제없이 동작하였으나, DataJpaTest 어노테이션을 활용한 테스트가 모두 오류가 발생.
+* 이는 JPAQueryFactor를 제대로 불러오지 못해 발생하는 문제.
+    - 이를 수정하기 위해 아래와 같이 QueryDslTestConfig을 따로 작성함.
+
+```java
+@TestConfiguration
+public class QueryDslTestConfig {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory() {
+        return new JPAQueryFactory(entityManager);
+    }
+
+}
+```
+
+* 이를 불러오는 어노테이션을 붙인 테스트는 아래와 같음.
+    - org.springframework.context.annotation.Import을 활용하고, 설정한 Config 파일의 클래스를 넣어줌.
+
+```java
+@Sql(value = "classpath:data/reset.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(value = "classpath:data/init.sql")
+@Import(QueryDslTestConfig.class)
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@DataJpaTest
+class CompanyCustomRepositoryImplTest {
+    // 테스트 내용
+}
+```
+
+* 참고 자료
+    - [Querydsl - Repository에서 Querydsl 사용하기 | IT 개발자들의 울타리 - 티스토리](https://jddng.tistory.com/341)
+    - [2. Tutorials | querydsl.com](http://querydsl.com/static/querydsl/4.0.0/reference/html/ch02.html)
+    - [[QueryDsl] @DataJpaTest 에서 @Repository 테스트하기](https://rachel0115.tistory.com/entry/QueryDsl-DataJpaTest-%EC%97%90%EC%84%9C-Repository-%ED%85%8C%EC%8A%A4%ED%8A%B8%ED%95%98%EA%B8%B0)
+
+</details>
+
 ___
 
 ## 기타 링크
