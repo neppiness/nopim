@@ -1,43 +1,44 @@
 package com.neppiness.nopim.repository.impl;
 
-import com.neppiness.nopim.domain.Job;
+import static com.neppiness.nopim.domain.QJob.job;
+
 import com.neppiness.nopim.dto.JobResponse;
 import com.neppiness.nopim.repository.JobCustomRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import com.querydsl.core.types.ConstructorExpression;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class JobCustomRepositoryImpl implements JobCustomRepository {
 
-    private final EntityManager entityManager;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public List<JobResponse> findByKeyword(String keyword) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<JobResponse> query = builder.createQuery(JobResponse.class);
-        Root<Job> job = query.from(Job.class);
+        ConstructorExpression<JobResponse> jobResponse = Projections.constructor(JobResponse.class,
+                job.id, job.company.name, job.company.country, job.company.region, job.position, job.bounty, job.stack,
+                job.status);
 
-        String pattern = "%" + keyword + "%";
-        Predicate companyNameLikeKeyword = builder.like(job.get("company").get("name"), pattern);
-        Predicate companyRegionLikeKeyword = builder.like(job.get("company").get("region"), pattern);
-        Predicate companyCountryLikeKeyword = builder.like(job.get("company").get("country"), pattern);
-        Predicate positionLikeKeyword = builder.like(job.get("position"), pattern);
-        Predicate stackLikeKeyword = builder.like(job.get("stack"), pattern);
+        BooleanExpression companyNameHasKeyword = job.company.name.contains(keyword);
+        BooleanExpression companyRegionHasKeyword = job.company.region.contains(keyword);
+        BooleanExpression companyCountryHasKeyword = job.company.country.contains(keyword);
+        BooleanExpression positionHasKeyword = job.position.contains(keyword);
+        BooleanExpression stackHasKeyword = job.stack.contains(keyword);
 
-        query.select(builder.construct(JobResponse.class, job.get("id"), job.get("company").get("name"),
-                job.get("company").get("region"), job.get("company").get("country"), job.get("position"),
-                job.get("bounty"), job.get("stack"), job.get("status")));
-        query.where(builder.or(companyNameLikeKeyword, companyRegionLikeKeyword, companyCountryLikeKeyword,
-                positionLikeKeyword, stackLikeKeyword));
+        BooleanExpression orAll = companyNameHasKeyword
+                .or(companyRegionHasKeyword)
+                .or(companyCountryHasKeyword)
+                .or(positionHasKeyword)
+                .or(stackHasKeyword);
 
-        return entityManager
-                .createQuery(query)
-                .getResultList();
+        return jpaQueryFactory
+                .select(jobResponse)
+                .where(orAll)
+                .from(job)
+                .fetch();
     }
 
 }
